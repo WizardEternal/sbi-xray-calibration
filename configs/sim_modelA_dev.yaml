@@ -1,0 +1,37 @@
+# Model A (dev): tbabs * powerlaw  -- 3 parameters
+# Priors follow Barret & Dupourque 2024 (A&A 686, A133; arXiv:2401.06061),
+# Table 1, "Model 1: tbabs*powerlaw". Uniform in linear coords for N_H and
+# Gamma, log-uniform for the power-law normalization (their stated convention).
+# Units: N_H in 1e22 atoms/cm^2; Gamma dimensionless; norm in photons/keV/cm^2/s
+# at 1 keV. Response: bundled real XMM EPIC-pn (NGC7793_ULX4_PN), 102 channels.
+
+name: modelA_dev
+base_model: tbabs_powerlaw
+response: NGC7793_ULX4_PN
+seed: 20260611
+n: 10000              # spectra per exposure level
+
+priors:
+  tbabs_1_nh:       {dist: uniform,    low: 0.1,    high: 0.3}    # B&D24 Tab.1 Model 1: N_H in [0.1,0.3] (exact)
+  powerlaw_1_alpha: {dist: uniform,    low: 0.5,    high: 2.5}    # B&D24 Tab.1 Model 1: Gamma in [0.5,2.5] (exact)
+  # NormPL: B&D24 Tab.1 Model 1 uses log-uniform [0.01,100], but that range is
+  # tuned to their NICER response and the raw range gives 1e4-1e8 counts on the
+  # ~10x-larger-area EPIC-pn response used here (sub-second exposures). We keep
+  # their log-uniform CONVENTION but shift the 4-decade window down to
+  # [1e-4,1e-2] so the count regimes land at realistic ~0.4-40 ks exposures.
+  # (B&D24 themselves restrict this prior for the same count-control reason,
+  # Sect. 3.2; the shift is documented in README + RESULTS.md.)
+  powerlaw_1_norm:  {dist: loguniform, low: 1.0e-4, high: 1.0e-2} # shifted from B&D24 [0.01,100]; see note
+
+calibration:
+  probe_exposure_s: 10000.0   # used by --calibrate-exposure (counts scale linearly)
+
+# Three exposure levels chosen EMPIRICALLY so the median total counts over the
+# prior is ~100 / ~1000 / ~10000. Values from a deterministic n=20000 probe via
+# `python -m sbixcal.simulate --config <this> --calibrate-exposure`
+# (counts scale linearly with exposure; achieved medians 97 / 968 / 9684).
+# See RESULTS.md "exposure calibration (modelA_dev)" row.
+levels:
+  - {name: faint,  target_counts: 100,   exposure_s: 64.9,   n: 10000, seed_offset: 1}
+  - {name: medium, target_counts: 1000,  exposure_s: 649.1,  n: 10000, seed_offset: 2}
+  - {name: bright, target_counts: 10000, exposure_s: 6491.4, n: 10000, seed_offset: 3}

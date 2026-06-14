@@ -1,0 +1,51 @@
+# NPE training config -- PRODUCTION model (tbabs*(powerlaw+blackbody), 5 params).
+#
+# ONE FLOW PER COUNT LEVEL (3 flows: faint/medium/bright). Amortizing over
+# exposure is deliberately avoided: it is a confound for the calibration
+# analysis (coverage is exposure-dependent) and fixed-exposure flows match
+# Barret & Dupourque (2024). See train_npe_dev.yaml header for the full rationale.
+#
+# Training size (50000) follows the dev learning-curve verdict in RESULTS.md.
+# Device chosen by the Phase-2 CNN-embedding benchmark (RESULTS.md); override
+# with --device.
+
+name: train_npe_prod
+base_model: tbabs_powerlaw_bb
+seed: 20260611
+device: cpu        # overridden per the CNN benchmark / --device flag
+
+priors:
+  tbabs_1_nh:         {dist: uniform,    low: 0.15,   high: 0.35}
+  powerlaw_1_alpha:   {dist: uniform,    low: 1.0,    high: 3.0}
+  powerlaw_1_norm:    {dist: loguniform, low: 1.0e-4, high: 1.0e-2}
+  blackbodyrad_1_kT:   {dist: uniform,    low: 0.3,    high: 3.0}
+  blackbodyrad_1_norm: {dist: loguniform, low: 1.0e-2, high: 1.0}
+
+embedding:
+  embed_dim: 20            # slightly larger embedding for the 5-param model
+  conv_channels: [16, 32]
+  kernel_size: 5
+  mlp_hidden: 64
+
+flow:
+  hidden_features: 50
+  num_transforms: 5
+  num_bins: 10
+
+train:
+  batch_size: 200
+  learning_rate: 5.0e-4
+  validation_fraction: 0.1
+  stop_after_epochs: 20
+  # Capped at 150 epochs to keep the 3 production flows within the phase wall-
+  # clock budget on CPU (the dev learning curve shows the easy params plateau
+  # well before this; N_H is the slow one and benefits from more data, not more
+  # epochs). Early stopping (patience 20) usually fires before the cap.
+  max_num_epochs: 150
+  show_progress: false
+
+# one flow per count level, each on its 50k training dataset.
+levels:
+  - {name: faint,  dataset: modelA_prod_train_faint,  n_train: 50000, seed_offset: 1}
+  - {name: medium, dataset: modelA_prod_train_medium, n_train: 50000, seed_offset: 2}
+  - {name: bright, dataset: modelA_prod_train_bright, n_train: 50000, seed_offset: 3}

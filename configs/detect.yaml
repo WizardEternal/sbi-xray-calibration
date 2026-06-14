@@ -1,0 +1,80 @@
+# Phase-4 misspecification-detection benchmark config.
+#
+# Drives scripts/run_detect_benchmark.py. The benchmark evaluates THREE detectors
+# (detect.py) against FOUR misspecification families (B1-B4, misspec.py) over a
+# strength grid x 3 count levels, building a ROC/AUC per
+# (family, strength, level, detector) cell.
+#
+# It operates on the PRODUCTION trained flows
+# (outputs/models/train_npe_prod_{faint,medium,bright}/), which were trained on
+# Model A production = tbabs*(powerlaw+blackbody), 5 params. The prior, base model,
+# exposure and response are read FROM each checkpoint's arch.json; this config only
+# sets the misspecification grid, the per-cell sample sizes, the detector
+# hyperparameters, and the seeds.
+#
+# Crash-resumability: every per-(family,strength,level,detector,spectrum) score is
+# appended to outputs/detect/scores.jsonl keyed uniquely; existing keys are skipped
+# on resume. Safe to kill and restart.
+
+name: detect_modelA_prod
+
+# trained run to benchmark (matches `name:` in train_npe_prod.yaml). The script
+# loads outputs/models/<train_run>_<level>/ per level.
+train_run: train_npe_prod
+response: NGC7793_ULX4_PN
+
+# count levels (must match the trained checkpoint level suffixes).
+levels: [faint, medium, bright]
+
+seed: 20260611
+
+# ---- per-cell test-set sizes ----------------------------------------------
+# Each (family, strength, level) cell draws n_misspec misspecified test spectra.
+# A SHARED pool of n_clean clean Model-A spectra per level serves as the common
+# negative class for every family/strength ROC at that level (drawn once, reused).
+n_misspec: 100        # misspecified spectra per (family, strength, level) cell
+n_clean: 200          # shared clean spectra per level (the ROC negative class)
+
+# ---- pilot sizes (used with --pilot) --------------------------------------
+# 1 strength per family (the marginal/strong one) x 3 levels x n spectra.
+pilot:
+  n_misspec: 30
+  n_clean: 30
+  strength_index: -1   # which strength to use per family in the pilot (-1 = last/strongest)
+
+# ---- detector hyperparameters ---------------------------------------------
+detectors: [D1, D2, D3]
+
+d1:                    # PPC
+  k: 200               # posterior-predictive replicates per spectrum
+d2:                    # embedding-space OOD (Schmitt+23/24)
+  n_ref: 500           # clean Model-A reference embeddings (per level, reused)
+  knn_k: 5             # k for the kNN-distance variant
+  reg: 1.0e-3          # covariance ridge for Mahalanobis
+d3:                    # simplified C2ST
+  n_ref: 500           # clean reference embeddings (per level, reused)
+  k_rep: 200           # posterior-predictive replicate embeddings per spectrum
+  kind: logreg         # logreg | mlp
+
+# ---- misspecification families + strength grids ----------------------------
+# Base model + priors are read from the checkpoint, so families just need their
+# strength grids (thinned to <=5 points/family) and fixed params. The grids are
+# the production-model analogues of configs/misspec_modelA_dev.yaml, with the
+# first entry of each ordered grid being the (near-)CONTROL and the last the
+# STRONGEST misspecification. Strength 0 / gain 0 / f=1 / kT=10 are near-clean.
+#
+# For B1 the strength is the unmodeled Fe-K line norm (maps monotonically to
+# equivalent width; the EW per strength is reported by the consequence analysis).
+families:
+  B1:                  # unmodeled narrow Gaussian (Fe-K) at 6.4 keV; grid = line norm
+    fixed: {line_energy_kev: 6.4, line_sigma_kev: 0.05}
+    strength_grid: [5.0e-6, 2.0e-5, 8.0e-5, 3.0e-4]      # ascending: faint -> strong line
+  B2:                  # Tbpcf partial covering; grid = covering fraction f (1=full~clean)
+    fixed: {}
+    strength_grid: [0.9, 0.7, 0.5, 0.3]                  # descending f: weak -> strong leak
+  B3:                  # continuum swap powerlaw -> thermal bremsstrahlung; grid = kT [keV]
+    fixed: {use_diskbb: false}
+    strength_grid: [10.0, 5.0, 3.0, 1.5]                 # high kT ~ PL-like; low kT strongly curved
+  B4:                  # detector gain shift; grid = gain percent (0 = nominal)
+    fixed: {}
+    strength_grid: [0.5, 1.0, 2.0, 3.0]                  # sub-percent -> few-percent gain

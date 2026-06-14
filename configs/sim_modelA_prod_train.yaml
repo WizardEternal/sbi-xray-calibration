@@ -1,0 +1,30 @@
+# Training datasets for the PRODUCTION model (tbabs*(powerlaw+blackbody),
+# 5 params). Same base model, priors, response, seed and CALIBRATED exposures as
+# sim_modelA_prod.yaml; per-level size is 50k (the Phase-2 production training
+# size -- see RESULTS.md learning-curve verdict). One dataset per count level;
+# the production flows are trained one-per-level (NOT amortized over exposure).
+#
+# Distinct dataset names (suffix _train) so they do not collide with the
+# Phase-1 sanity datasets.
+
+name: modelA_prod_train
+base_model: tbabs_powerlaw_bb
+response: NGC7793_ULX4_PN
+seed: 20260611
+n: 50000
+
+priors:
+  tbabs_1_nh:         {dist: uniform,    low: 0.15,   high: 0.35}   # = sim_modelA_prod
+  powerlaw_1_alpha:   {dist: uniform,    low: 1.0,    high: 3.0}
+  powerlaw_1_norm:    {dist: loguniform, low: 1.0e-4, high: 1.0e-2}
+  blackbodyrad_1_kT:   {dist: uniform,    low: 0.3,    high: 3.0}
+  blackbodyrad_1_norm: {dist: loguniform, low: 1.0e-2, high: 1.0}
+
+calibration:
+  probe_exposure_s: 10000.0
+
+# Same calibrated exposures as sim_modelA_prod (100 / 1000 / 10000 median counts).
+levels:
+  - {name: faint,  target_counts: 100,   exposure_s: 35.3,   n: 50000, seed_offset: 11}
+  - {name: medium, target_counts: 1000,  exposure_s: 353.4,  n: 50000, seed_offset: 12}
+  - {name: bright, target_counts: 10000, exposure_s: 3534.0, n: 50000, seed_offset: 13}

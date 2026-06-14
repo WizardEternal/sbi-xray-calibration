@@ -1,0 +1,68 @@
+# NPE training config -- DEV model (tbabs*powerlaw, 3 params).
+#
+# WHY ONE FLOW PER COUNT LEVEL (not amortized over exposure):
+#   Amortizing a single flow over all exposures would let the network trade
+#   information across count regimes, which is a CONFOUND for a calibration
+#   analysis: coverage/misspecification behaviour is exposure-dependent and we
+#   want to measure it AT a fixed exposure. Training one fixed-exposure flow per
+#   count level matches Barret & Dupourque (2024)'s setup and keeps each flow's
+#   calibration interpretable. (Amortized-over-exposure is left as an explicit
+#   extension, not the default.)
+#
+# This config drives BOTH:
+#   * the single dev flow (per level), and
+#   * the learning curve (10k/25k/50k), which uses the `medium` level dataset
+#     and the n_train_grid below (prefixes of the 50k dataset).
+#
+# Device: chosen by the Phase-2 CNN-embedding benchmark (see RESULTS.md). Plain
+# NSF flows train ~equally fast CPU/GPU, but with the 1-D CNN embedding net the
+# GPU is expected to win -- the benchmark picks; override with --device.
+
+name: train_npe_dev
+base_model: tbabs_powerlaw
+seed: 20260611
+device: cpu        # overridden per the CNN benchmark / --device flag
+
+priors:
+  tbabs_1_nh:       {dist: uniform,    low: 0.1,    high: 0.3}
+  powerlaw_1_alpha: {dist: uniform,    low: 0.5,    high: 2.5}
+  powerlaw_1_norm:  {dist: loguniform, low: 1.0e-4, high: 1.0e-2}
+
+# 1-D CNN embedding over the 102-channel counts spectrum (log1p-normalized
+# inside the module). ~tens of k params.
+embedding:
+  embed_dim: 16
+  conv_channels: [16, 32]
+  kernel_size: 5
+  mlp_hidden: 64
+
+flow:
+  hidden_features: 50
+  num_transforms: 5
+  num_bins: 10
+
+train:
+  batch_size: 200
+  learning_rate: 5.0e-4
+  validation_fraction: 0.1
+  stop_after_epochs: 20      # early-stopping patience
+  # Capped at 120 epochs: at 50k the validation loss keeps creeping down by tiny
+  # amounts so the patience-20 early stop does not fire, and an uncapped run
+  # marches to hundreds of epochs (>30 min on CPU) for negligible quality gain.
+  # The easy params (Gamma, NormPL) saturate well before 120 epochs; the cap
+  # keeps the whole learning curve inside the phase wall-clock budget. (Brief
+  # explicitly permits reducing epochs and noting it.)
+  max_num_epochs: 120
+  show_progress: false
+
+# one flow per count level; each references its 50k training dataset.
+levels:
+  - {name: faint,  dataset: modelA_dev_train_faint,  n_train: 50000, seed_offset: 1}
+  - {name: medium, dataset: modelA_dev_train_medium, n_train: 50000, seed_offset: 2}
+  - {name: bright, dataset: modelA_dev_train_bright, n_train: 50000, seed_offset: 3}
+
+# learning-curve settings (consumed by scripts/run_learning_curve.py):
+learning_curve:
+  level: medium                 # middle count regime
+  dataset: modelA_dev_train_medium
+  n_train_grid: [10000, 25000, 50000]

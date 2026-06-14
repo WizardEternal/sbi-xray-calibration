@@ -1,0 +1,53 @@
+# Misspecification families B1-B4 on top of Model A (dev): tbabs*powerlaw.
+# Shares the base model, priors, response, seed and the EMPIRICALLY CALIBRATED
+# exposure levels with configs/sim_modelA_dev.yaml (so each misspecified set is
+# directly comparable to the clean set at the same count regime).
+#
+# Strength = 0 (or gain = 0%) reproduces clean Model A and is the control point.
+
+name: misspec_modelA_dev
+base_model: tbabs_powerlaw
+response: NGC7793_ULX4_PN
+seed: 20260611
+n: 5000   # spectra per (family, level, strength) cell
+
+priors:
+  tbabs_1_nh:       {dist: uniform,    low: 0.1,    high: 0.3}     # = sim_modelA_dev
+  powerlaw_1_alpha: {dist: uniform,    low: 0.5,    high: 2.5}
+  powerlaw_1_norm:  {dist: loguniform, low: 1.0e-4, high: 1.0e-2}
+
+# Same calibrated exposures as sim_modelA_dev (100 / 1000 / 10000 counts).
+levels:
+  - {name: faint,  exposure_s: 64.9,   n: 5000, seed_offset: 1}
+  - {name: medium, exposure_s: 649.1,  n: 5000, seed_offset: 2}
+  - {name: bright, exposure_s: 6491.4, n: 5000, seed_offset: 3}
+
+families:
+  # B1: unmodeled narrow Gaussian (Fe-K) at 6.4 keV. Grid = line norm
+  # (photons/cm^2/s in the line), spanning negligible -> strong. norm 0 is the
+  # control (no line). The line norm maps monotonically to equivalent width; the
+  # EW per strength is reported by the diagnostic, not fixed here.
+  B1:
+    fixed: {line_energy_kev: 6.4, line_sigma_kev: 0.05}
+    strength_grid: [0.0, 5.0e-6, 2.0e-5, 8.0e-5, 3.0e-4]   # line norm
+
+  # B2: Tbpcf partial-covering absorber replacing tbabs. Grid = covering
+  # fraction f in [0,1]. f=1 is full covering (close to tbabs); lower f leaks
+  # unabsorbed continuum (the misspecification). N_H reuses the tbabs prior.
+  B2:
+    fixed: {}
+    strength_grid: [1.0, 0.9, 0.7, 0.5, 0.3]               # covering fraction f
+
+  # B3: continuum-family swap. powerlaw -> custom thermal bremsstrahlung
+  # (use_diskbb: false). Grid = brems temperature kT (keV): high kT ~ hard,
+  # nearly powerlaw-like; low kT strongly curved (most misspecified).
+  B3:
+    fixed: {use_diskbb: false}
+    strength_grid: [10.0, 5.0, 3.0, 1.5, 1.0]              # brems kT [keV]
+
+  # B4: detector gain shift via response energy-grid rescale. Grid = gain
+  # percent (0 = nominal/control; +/- values shift features). Sub-percent to a
+  # few percent, the regime where bias is silent.
+  B4:
+    fixed: {}
+    strength_grid: [0.0, 0.5, 1.0, 2.0, 3.0]               # gain percent

@@ -1,0 +1,93 @@
+{
+  "n_spectra": 76,
+  "n_clean": 56,
+  "n_misspec": 20,
+  "n_error_rows": 0,
+  "speed_agreement": {
+    "faint": {
+      "n": 25,
+      "ns_wall_mean": 1065.5111862439999,
+      "ns_wall_median": 901.5585559000028,
+      "ns_eval_mean": 49877.8,
+      "npe_ms_mean": 83.22729599974991,
+      "speedup": 12802.424654613334,
+      "q_agree_mean": 0.06845194911821711,
+      "counts": 47.0
+    },
+    "medium": {
+      "n": 16,
+      "ns_wall_mean": 941.1851685624997,
+      "ns_wall_median": 891.6013349999994,
+      "ns_eval_mean": 52463.0,
+      "npe_ms_mean": 106.17821249979897,
+      "speedup": 8864.202423489485,
+      "q_agree_mean": 0.037237006328025755,
+      "counts": 540.0
+    },
+    "bright": {
+      "n": 15,
+      "ns_wall_mean": 1751.4232813666667,
+      "ns_wall_median": 1849.6059055000005,
+      "ns_eval_mean": 95386.0,
+      "npe_ms_mean": 177.22674000057546,
+      "speedup": 9882.387281744164,
+      "q_agree_mean": 0.09955924157086972,
+      "counts": 7910.0
+    }
+  },
+  "ns_misspec_flags": [
+    {
+      "family": "B1",
+      "strength": 0.0003,
+      "level": "bright",
+      "n": 6,
+      "mean_dlogz": -886.4609364833174,
+      "detector_auc": {
+        "D1": 0.97015,
+        "D2": 0.81,
+        "D3": 0.89285
+      },
+      "detector_status": "ready"
+    },
+    {
+      "family": "B1",
+      "strength": 0.0003,
+      "level": "medium",
+      "n": 6,
+      "mean_dlogz": -81.83178887411047,
+      "detector_auc": {
+        "D1": 0.9719,
+        "D2": 0.84575,
+        "D3": 0.9173
+      },
+      "detector_status": "ready"
+    },
+    {
+      "family": "B4",
+      "strength": 3.0,
+      "level": "bright",
+      "n": 4,
+      "mean_dlogz": -1.8905752304972339,
+      "detector_auc": {
+        "D1": 0.474325,
+        "D2": 0.48395,
+        "D3": 0.4459
+      },
+      "detector_status": "ready"
+    },
+    {
+      "family": "B4",
+      "strength": 3.0,
+      "level": "medium",
+      "n": 4,
+      "mean_dlogz": -7.829971170151971,
+      "detector_auc": {
+        "D1": 0.48195,
+        "D2": 0.47745,
+        "D3": 0.4558
+      },
+      "detector_status": "ready"
+    }
+  ],
+  "detector_status": "READY"
+}

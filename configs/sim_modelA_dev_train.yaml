@@ -1,0 +1,29 @@
+# Training datasets for the DEV model (tbabs*powerlaw, 3 params).
+# Same base model, priors, response, seed and CALIBRATED exposures as
+# sim_modelA_dev.yaml -- only the per-level training-set size differs (50k, the
+# learning-curve maximum). The 10k/25k learning-curve points are taken as fixed
+# prefixes of these 50k sets (rows are in deterministic seed order), so no extra
+# datasets are needed.
+#
+# Distinct dataset names (suffix _50k) so these do NOT collide with the Phase-1
+# 10k sanity datasets in data/sim/.
+
+name: modelA_dev_train
+base_model: tbabs_powerlaw
+response: NGC7793_ULX4_PN
+seed: 20260611
+n: 50000
+
+priors:
+  tbabs_1_nh:       {dist: uniform,    low: 0.1,    high: 0.3}     # = sim_modelA_dev
+  powerlaw_1_alpha: {dist: uniform,    low: 0.5,    high: 2.5}
+  powerlaw_1_norm:  {dist: loguniform, low: 1.0e-4, high: 1.0e-2}
+
+calibration:
+  probe_exposure_s: 10000.0
+
+# Same calibrated exposures as sim_modelA_dev (100 / 1000 / 10000 median counts).
+levels:
+  - {name: faint,  target_counts: 100,   exposure_s: 64.9,   n: 50000, seed_offset: 11}
+  - {name: medium, target_counts: 1000,  exposure_s: 649.1,  n: 50000, seed_offset: 12}
+  - {name: bright, target_counts: 10000, exposure_s: 6491.4, n: 50000, seed_offset: 13}

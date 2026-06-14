@@ -1,0 +1,45 @@
+# Phase-6 figure-build config, consumed by scripts/make_plots.py.
+#
+# make_plots.py is a thin, config-driven orchestrator: it (re)builds every README
+# / RESULTS figure from the benchmark artifacts (calibration npz + detect JSONL),
+# with no model loading and no heavy compute. The figures themselves are committed;
+# regenerating them from a fixed seed requires those source artifacts to be present
+# locally (they are gitignored, so run the benchmarks first), not the repo alone.
+# Each figure is skip-if-exists unless --force.
+#
+# The per-figure builders live in:
+#   make_money_plot.py            -> outputs/money_plot.png            (the money plot)
+#   make_coverage_money_panel.py  -> outputs/diagnostics/coverage_money_panel.png
+#   make_support_figs.py          -> outputs/diagnostics/detector_auc_grid.png
+#                                    outputs/diagnostics/dgamma_silent_failure.png
+#   analyze_detect.py             -> outputs/detect/{auc_table.md,auc_heatmap.png,consequence.md}
+#
+# Seeds are irrelevant for these (they only read finished artifacts), but the
+# underlying benchmarks that PRODUCED the artifacts are themselves seeded (see
+# each run-config). This file exists so `make_plots.py --config configs/make_plots.yaml`
+# is the single documented entry point for "rebuild all the figures".
+
+seed: 20260611
+detect_config: configs/detect.yaml      # passed through to analyze_detect.py
+
+# figures, in build order. Each entry: a builder key + the output file(s) it
+# writes (used for the skip-if-exists check). Builder keys map to functions in
+# make_plots.py.
+figures:
+  - builder: money_plot
+    outputs: [outputs/money_plot.png]
+
+  - builder: coverage_money_panel
+    outputs: [outputs/diagnostics/coverage_money_panel.png]
+
+  - builder: support_figs
+    outputs:
+      - outputs/diagnostics/detector_auc_grid.png
+      - outputs/diagnostics/dgamma_silent_failure.png
+      - outputs/diagnostics/tarp_bright_curve.png
+
+  - builder: detect_tables
+    outputs:
+      - outputs/detect/auc_table.md
+      - outputs/detect/auc_heatmap.png
+      - outputs/detect/consequence.md

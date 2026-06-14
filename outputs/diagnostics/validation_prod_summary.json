@@ -1,0 +1,39 @@
+{
+  "what": "Phase-2 sanity validation of the three production flows (scripts/run_validate_npe.py, 200 fresh sims/level, seed 20260611). Recovery Pearson r, 90% credible-interval coverage, median 90%-CI width as fraction of prior width. NOT the rigorous SBC/TARP pass (Phase 3).",
+  "config": "configs/train_npe_prod.yaml",
+  "base_model": "tbabs_powerlaw_bb",
+  "n_test": 200,
+  "cred": 0.9,
+  "param_names": ["tbabs_1_nh", "powerlaw_1_alpha", "powerlaw_1_norm", "blackbodyrad_1_kT", "blackbodyrad_1_norm"],
+  "levels": {
+    "faint": {
+      "median_total_counts": 98,
+      "r": [0.289, 0.670, 0.986, 0.789, 0.719],
+      "r2": [0.058, 0.435, 0.970, 0.619, 0.466],
+      "mean_r": 0.690,
+      "cover_per_param": [0.87, 0.89, 0.90, 0.89, 0.89],
+      "cover_joint": 0.59,
+      "med_width_frac_of_prior": [0.879, 0.734, 0.107, 0.566, 0.438]
+    },
+    "medium": {
+      "median_total_counts": 986,
+      "r": [0.511, 0.793, 0.993, 0.897, 0.792],
+      "r2": [0.245, 0.624, 0.987, 0.802, 0.604],
+      "mean_r": 0.797,
+      "cover_per_param": [0.87, 0.89, 0.89, 0.90, 0.84],
+      "cover_joint": 0.60,
+      "med_width_frac_of_prior": [0.813, 0.460, 0.051, 0.310, 0.329]
+    },
+    "bright": {
+      "median_total_counts": 9982,
+      "r": [0.718, 0.841, 0.996, 0.925, 0.898],
+      "r2": [0.438, 0.683, 0.970, 0.827, 0.782],
+      "mean_r": 0.876,
+      "cover_per_param": [0.81, 0.73, 0.66, 0.89, 0.88],
+      "cover_joint": 0.41,
+      "med_width_frac_of_prior": [0.669, 0.309, 0.047, 0.227, 0.155]
+    }
+  },
+  "monotone_width_shrink_all_params": true,
+  "note": "Recovery improves with counts (mean r 0.69 -> 0.80 -> 0.88); posterior widths shrink monotonically with counts for every parameter; but the quick 90% credible-interval coverage proxy is already below nominal at all levels and is lowest at bright (joint 0.59/0.60/0.41), i.e. the flows grow over-confident as counts grow, the raw-NPE under-coverage that Phase 3 quantifies rigorously."
+}
