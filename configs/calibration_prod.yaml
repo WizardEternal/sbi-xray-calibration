@@ -1,0 +1,47 @@
+# Phase-3 calibration suite config -- PRODUCTION flows (tbabs*(powerlaw+blackbody),
+# 5 params; one flow per count level: train_npe_prod_{faint,medium,bright}).
+#
+# Drives scripts/run_calibration.py. The suite operates on a CHECKPOINT DIRECTORY
+# (outputs/models/<train_run>_<level>/). Prior, base model, exposure and response
+# are all read FROM the checkpoint's arch.json (written by train_npe.save_checkpoint),
+# so this config only sets the suite's sample sizes / seeds and names the run+levels.
+#
+# Usage (repo venv, OMP_NUM_THREADS=6):
+#   .venv\Scripts\python.exe scripts\run_calibration.py --config configs\calibration_prod.yaml
+#   .venv\Scripts\python.exe scripts\run_calibration.py --config configs\calibration_prod.yaml --level faint
+#
+# All artifacts go to outputs/calibration/<level>/ with skip-if-exists (crash-safe);
+# delete a level's folder (or pass --force) to regenerate.
+
+name: calibration_modelA_prod
+
+# the trained run to evaluate (matches `name:` in configs/train_npe_prod.yaml).
+train_run: train_npe_prod
+response: NGC7793_ULX4_PN
+
+# count levels to evaluate (must match the trained checkpoints' level suffixes).
+levels: [faint, medium, bright]
+
+seed: 20260611
+
+# ---- suite sample sizes ----------------------------------------------------
+# SBC: N fresh sims from the SAME prior/simulator the flow was trained for.
+n_sbc: 1000                  # Talts+18 recommend O(100s-1000); brief default 1000.
+n_tarp: 1000                 # TARP expected-coverage test sample size.
+n_posterior_samples: 1000    # posterior draws per SBC/TARP observation.
+
+# before/after coverage (conformal recalibration is FIT on the calibration set,
+# evaluated on the disjoint test set):
+n_cal: 400
+n_test: 400
+coverage_posterior_samples: 1000
+
+# importance-sampling refinement (Paper III, arXiv:2512.16709):
+n_is_cases: 30               # observations to IS-refine for the ESS report.
+n_is_samples: 2000           # NPE proposal draws per case.
+low_ess_frac: 0.1            # ESS/n below this flags NPE failure (Paper III diag).
+
+# nominal credibility levels for the empirical-coverage curves.
+# Includes 0.5 / 0.68 / 0.9 explicitly so the main coverage numbers at the
+# standard 1-sigma / 90% nominal levels read straight off the curves.
+nominal_levels: [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.68, 0.7, 0.8, 0.9, 0.95]

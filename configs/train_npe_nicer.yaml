@@ -1,0 +1,41 @@
+# NPE training config -- NICER second instrument, production model (5 params).
+# Mirrors train_npe_prod.yaml; datasets point at modelA_nicer_train_*.
+# max_num_epochs raised 150 -> 350: the XMM bright flow's miscalibration was an
+# undertraining/epoch-cap artifact (verified, gonogo uncapped control), so the
+# NICER flows get headroom to converge under early stopping (patience 20) from
+# the start, avoiding a repeat. device: cuda (RTX 4050 available).
+name: train_npe_nicer
+base_model: tbabs_powerlaw_bb
+seed: 20260611
+device: cuda
+
+priors:
+  tbabs_1_nh:          {dist: uniform,    low: 0.15,   high: 0.35}
+  powerlaw_1_alpha:    {dist: uniform,    low: 1.0,    high: 3.0}
+  powerlaw_1_norm:     {dist: loguniform, low: 1.0e-4, high: 1.0e-2}
+  blackbodyrad_1_kT:   {dist: uniform,    low: 0.3,    high: 3.0}
+  blackbodyrad_1_norm: {dist: loguniform, low: 1.0e-2, high: 1.0}
+
+embedding:
+  embed_dim: 20
+  conv_channels: [16, 32]
+  kernel_size: 5
+  mlp_hidden: 64
+
+flow:
+  hidden_features: 50
+  num_transforms: 5
+  num_bins: 10
+
+train:
+  batch_size: 200
+  learning_rate: 5.0e-4
+  validation_fraction: 0.1
+  stop_after_epochs: 20
+  max_num_epochs: 350
+  show_progress: false
+
+levels:
+  - {name: faint,  dataset: modelA_nicer_train_faint,  n_train: 50000, seed_offset: 1}
+  - {name: medium, dataset: modelA_nicer_train_medium, n_train: 50000, seed_offset: 2}
+  - {name: bright, dataset: modelA_nicer_train_bright, n_train: 50000, seed_offset: 3}

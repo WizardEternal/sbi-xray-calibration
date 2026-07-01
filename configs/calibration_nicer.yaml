@@ -1,0 +1,17 @@
+# Calibration/SBC/coverage for the NICER flows. Mirrors calibration_prod.yaml;
+# only train_run + response change (NICER, train_npe_nicer).
+name: calibration_modelA_nicer
+train_run: train_npe_nicer
+response: NICER
+levels: [faint, medium, bright]
+seed: 20260611
+n_sbc: 1000
+n_tarp: 1000
+n_posterior_samples: 1000
+n_cal: 400
+n_test: 400
+coverage_posterior_samples: 1000
+n_is_cases: 30
+n_is_samples: 2000
+low_ess_frac: 0.1
+nominal_levels: [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.68, 0.7, 0.8, 0.9, 0.95]

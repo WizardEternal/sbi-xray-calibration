@@ -1,0 +1,34 @@
+# Model A (production) on the SECOND INSTRUMENT: NICER XTI.
+# Identical model + priors + count targets as sim_modelA_prod.yaml; only the
+# response changes (response: NICER -> real NICER on-axis ARF+RMF in data/nicer/,
+# loaded as a 0.3-10 keV mock obsconf, 969 folded channels). This is the article
+# extension: show the XMM EPIC-pn findings replicate on a second real response.
+#
+# Effective-area note (CORRECTED vs the XMM config comment): NICER XTI peaks at
+# ~1860 cm^2 (this ARF) and XMM EPIC-pn at ~1000-1500 cm^2, so the two are within
+# ~1.3x, NOT 10x. The XMM config's "~10x larger EPIC-pn" rationale was wrong; the
+# count regime is set empirically by --calibrate-exposure regardless, so the
+# shifted-down B&D24 normalization windows are kept here for a direct comparison.
+
+name: modelA_nicer
+base_model: tbabs_powerlaw_bb
+response: NICER
+seed: 20260611
+n: 10000
+
+priors:
+  tbabs_1_nh:          {dist: uniform,    low: 0.15,   high: 0.35}   # B&D24 Tab.1 Model 2 (exact)
+  powerlaw_1_alpha:    {dist: uniform,    low: 1.0,    high: 3.0}    # B&D24 Tab.1 Model 2 (exact)
+  powerlaw_1_norm:     {dist: loguniform, low: 1.0e-4, high: 1.0e-2} # same shifted window as XMM prod
+  blackbodyrad_1_kT:   {dist: uniform,    low: 0.3,    high: 3.0}    # B&D24 Tab.1 Model 2 (exact)
+  blackbodyrad_1_norm: {dist: loguniform, low: 1.0e-2, high: 1.0}    # same shifted window as XMM prod
+
+calibration:
+  probe_exposure_s: 10000.0
+
+# Placeholder exposures from the n=64 NICER smoke probe (~330 s -> ~1000 counts);
+# refined deterministically by `--calibrate-exposure` (writes achieved medians).
+levels:
+  - {name: faint,  target_counts: 100,   exposure_s: 26.6,   n: 10000, seed_offset: 1}   # achieved median 98
+  - {name: medium, target_counts: 1000,  exposure_s: 266.5,  n: 10000, seed_offset: 2}   # achieved median 984
+  - {name: bright, target_counts: 10000, exposure_s: 2664.7, n: 10000, seed_offset: 3}   # achieved median 9845

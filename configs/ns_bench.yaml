@@ -1,0 +1,60 @@
+# Phase-5 nested-sampling benchmark config.
+#
+# Drives scripts/run_ns_benchmark.py: UltraNest vs amortized NPE on the SAME
+# Poisson likelihood (calibrate.poisson_loglik + simulate.fold_theta) and the SAME
+# box prior (read from each checkpoint's arch.json). For each spectrum in the
+# config-driven subsample we record NS quantiles/logZ/n_like_evals/wall-clock and
+# NPE quantiles/wall-clock, appended (resume-keyed by spectrum_id) to
+# outputs/ns_bench/results.jsonl.
+#
+# The subsample spans: clean Model-A at all 3 count levels + a few B1 (unmodeled
+# Fe-K line) and B4 (gain shift) MISSPECIFIED spectra at medium/bright -- so the
+# analysis can ask whether the NS evidence / residual flags the misspecified cases
+# that the Phase-4 detectors flag.
+
+name: ns_bench_modelA_prod
+
+# trained run to benchmark (matches `name:` in train_npe_prod.yaml); the script
+# loads outputs/models/<train_run>_<level>/ per level and reads prior/base-model/
+# exposure/response from each checkpoint's arch.json.
+train_run: train_npe_prod
+response: NGC7793_ULX4_PN
+
+seed: 20260611
+
+# ---- nested-sampling settings ---------------------------------------------
+# NOTE (pilot finding): the per-spectrum NS cost has LARGE variance because the
+# log-uniform norm makes some draws (even at a "faint" exposure) high-count, which
+# gives a very tight Poisson posterior that UltraNest converges to only slowly. An
+# uncapped run can stall for tens of minutes on a single tail-case spectrum, so a
+# max_ncalls cap is REQUIRED for a practical 100-spectrum run; the cap is recorded
+# per spectrum (ns.n_like_evals == cap flags a non-converged case in the analysis).
+ns:
+  min_num_live_points: 400     # UltraNest default; the production run value.
+  dlogz: 0.5                   # evidence-tolerance stopping criterion.
+  max_ncalls: 400000           # per-spectrum eval cap (keeps tail cases bounded).
+
+# ---- NPE sampling ----------------------------------------------------------
+npe:
+  n_samples: 2000              # posterior draws for the NPE quantiles/wall-clock.
+
+# ---- the subsample ---------------------------------------------------------
+# Total ~100 spectra. Each block draws `n` spectra at a count `level`, either
+# clean Model-A (`family: clean`) or a misspecification family (B1/B4) at a fixed
+# `strength`. Spectra are drawn with simulate.simulate_spectra / misspec for the
+# clean / misspecified blocks respectively, seeded deterministically from the
+# global seed + block index so the SAME subsample is reproduced on resume.
+#
+# B1 strength = unmodeled Fe-K line norm; B4 strength = gain percent (matches
+# configs/detect.yaml grids). The clean blocks carry truth theta (for the
+# recovers-truth check); misspecified blocks carry the base Model-A truth theta.
+subsample:
+  # --- clean Model-A across the count regime (the speed-vs-agreement spine) ---
+  - {family: clean, level: faint,  n: 25}
+  - {family: clean, level: medium, n: 16}
+  - {family: clean, level: bright, n: 15}
+  # --- a few misspecified cases (does NS evidence/residual flag them?) ---
+  - {family: B1, level: medium, strength: 3.0e-4, n: 6}    # strong Fe-K line
+  - {family: B1, level: bright, strength: 3.0e-4, n: 6}
+  - {family: B4, level: medium, strength: 3.0,    n: 4}    # 3% gain shift
+  - {family: B4, level: bright, strength: 3.0,    n: 4}

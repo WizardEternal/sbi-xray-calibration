@@ -1,0 +1,35 @@
+# Model A (production): tbabs * (powerlaw + blackbody)  -- 5 parameters
+# Priors follow Barret & Dupourque 2024 (A&A 686, A133; arXiv:2401.06061),
+# Table 1, "Model 2: tbabs*(powerlaw+bbodyrad)". Uniform in linear coords for
+# N_H, Gamma, kTbb; log-uniform for the two normalizations (their convention).
+# Units: N_H in 1e22 atoms/cm^2; Gamma dimensionless; NormPL photons/keV/cm^2/s
+# at 1 keV; kTbb in keV; NormBB = R_km^2 / D_10^2 (bbodyrad). Response: bundled
+# real XMM EPIC-pn (NGC7793_ULX4_PN), 102 channels.
+
+name: modelA_prod
+base_model: tbabs_powerlaw_bb
+response: NGC7793_ULX4_PN
+seed: 20260611
+n: 10000
+
+priors:
+  tbabs_1_nh:         {dist: uniform,    low: 0.15,   high: 0.35}   # B&D24 Tab.1 Model 2: N_H in [0.15,0.35] (exact)
+  powerlaw_1_alpha:   {dist: uniform,    low: 1.0,    high: 3.0}    # B&D24 Tab.1 Model 2: Gamma in [1,3] (exact)
+  # NormPL / NormBB: B&D24 Tab.1 Model 2 lists NormPL [0.1,10] and NormBB
+  # [100,1000] (log-uniform). As in the dev config, these are tuned to their
+  # NICER response; on the ~10x-larger EPIC-pn area used here they give >>1e4
+  # counts. We keep the log-uniform CONVENTION and the 2-decade / ~1-decade
+  # WIDTHS but shift both windows down so the count regimes land at realistic
+  # ~0.1-10 ks exposures. Shift documented in the README.
+  powerlaw_1_norm:    {dist: loguniform, low: 1.0e-4, high: 1.0e-2} # shifted from B&D24 [0.1,10]
+  blackbodyrad_1_kT:   {dist: uniform,    low: 0.3,    high: 3.0}    # B&D24 Tab.1 Model 2: kTbb in [0.3,3.0] (exact)
+  blackbodyrad_1_norm: {dist: loguniform, low: 1.0e-2, high: 1.0}    # shifted from B&D24 [100,1000]
+
+calibration:
+  probe_exposure_s: 10000.0
+
+# Exposures from a deterministic n=20000 probe (achieved medians 98/983/9828).
+levels:
+  - {name: faint,  target_counts: 100,   exposure_s: 35.3,   n: 10000, seed_offset: 1}
+  - {name: medium, target_counts: 1000,  exposure_s: 353.4,  n: 10000, seed_offset: 2}
+  - {name: bright, target_counts: 10000, exposure_s: 3534.0, n: 10000, seed_offset: 3}

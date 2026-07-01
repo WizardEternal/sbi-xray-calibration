@@ -1,0 +1,33 @@
+# Top-level dependencies (>= pins from installed versions, 2026-06-11)
+# Install torch first with CUDA wheel:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu130
+torch>=2.12.0
+sbi>=0.26.1
+jaxspec>=0.3.4
+jax>=0.6.2
+jaxlib>=0.6.2
+ultranest>=4.5.0
+numpy>=2.4.6
+scipy>=1.15.3
+matplotlib>=3.10.9
+corner>=2.2.3
+arviz>=0.23.4
+pyyaml>=6.0.3
+pytest>=9.0.3
+h5py>=3.16.0
+tqdm>=4.68.2
+numpyro>=0.19.0
+flax>=0.11.2
+equinox>=0.13.8
+interpax>=0.3.14
+astropy>=7.2.0
+pandas>=2.3.3
+seaborn>=0.13.2
+scikit-learn>=1.9.0
+cython>=3.2.5
+
+# Notebook-only (optional): needed solely to execute notebooks/walkthrough.ipynb.
+# Not required by the library, scripts, or tests.
+nbclient>=0.11.0
+ipykernel>=7.3.0
+nbformat>=5.10.4

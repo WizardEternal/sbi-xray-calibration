@@ -1,0 +1,116 @@
+{
+  "what": "Phase-2 sanity validation of the production flows (scripts/run_validate_npe.py, deterministic per-level seed). Recovery Pearson r, 90% credible-interval coverage, median 90%-CI width as a fraction of the prior width. NOT the rigorous SBC/TARP pass (Phase 3).",
+  "config": "configs/train_npe_prod.yaml",
+  "base_model": "tbabs_powerlaw_bb",
+  "n_test": 200,
+  "cred": 0.9,
+  "param_names": [
+    "tbabs_1_nh",
+    "powerlaw_1_alpha",
+    "powerlaw_1_norm",
+    "blackbodyrad_1_kT",
+    "blackbodyrad_1_norm"
+  ],
+  "levels": {
+    "faint": {
+      "median_total_counts": 98,
+      "r": [
+        0.396,
+        0.675,
+        0.982,
+        0.757,
+        0.749
+      ],
+      "r2": [
+        0.143,
+        0.452,
+        0.964,
+        0.542,
+        0.536
+      ],
+      "mean_r": 0.712,
+      "cover_per_param": [
+        0.91,
+        0.87,
+        0.905,
+        0.925,
+        0.91
+      ],
+      "cover_joint": 0.64,
+      "med_width_frac_of_prior": [
+        0.88,
+        0.729,
+        0.099,
+        0.56,
+        0.451
+      ]
+    },
+    "medium": {
+      "median_total_counts": 986,
+      "r": [
+        0.57,
+        0.796,
+        0.993,
+        0.866,
+        0.874
+      ],
+      "r2": [
+        0.32,
+        0.622,
+        0.987,
+        0.747,
+        0.755
+      ],
+      "mean_r": 0.82,
+      "cover_per_param": [
+        0.915,
+        0.88,
+        0.9,
+        0.88,
+        0.93
+      ],
+      "cover_joint": 0.66,
+      "med_width_frac_of_prior": [
+        0.829,
+        0.502,
+        0.054,
+        0.31,
+        0.259
+      ]
+    },
+    "bright": {
+      "median_total_counts": 9982,
+      "r": [
+        0.617,
+        0.879,
+        0.995,
+        0.896,
+        0.814
+      ],
+      "r2": [
+        0.201,
+        0.768,
+        0.958,
+        0.764,
+        0.616
+      ],
+      "mean_r": 0.84,
+      "cover_per_param": [
+        0.735,
+        0.74,
+        0.575,
+        0.895,
+        0.85
+      ],
+      "cover_joint": 0.4,
+      "med_width_frac_of_prior": [
+        0.657,
+        0.297,
+        0.05,
+        0.254,
+        0.147
+      ]
+    }
+  },
+  "monotone_width_shrink_all_params": true
+}

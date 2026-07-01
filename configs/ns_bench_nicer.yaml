@@ -1,0 +1,23 @@
+# Nested-sampling cross-check on NICER. Mirrors ns_bench.yaml (same subsample,
+# live points, tolerance) so the NICER evidence behavior is comparable to XMM.
+# NOTE for analysis: compute Delta logZ COUNT-CONTROLLED (regress logZ on
+# log10 counts on the clean subset, residual-compare B1/B4) -- NOT the raw
+# level-matched mean difference, which is count-confounded (the XMM v1 error).
+name: ns_bench_modelA_nicer
+train_run: train_npe_nicer
+response: NICER
+seed: 20260611
+ns:
+  min_num_live_points: 400
+  dlogz: 0.5
+  max_ncalls: 400000
+npe:
+  n_samples: 2000
+subsample:
+  - {family: clean, level: faint,  n: 25}
+  - {family: clean, level: medium, n: 16}
+  - {family: clean, level: bright, n: 15}
+  - {family: B1, level: medium, strength: 3.0e-4, n: 6}
+  - {family: B1, level: bright, strength: 3.0e-4, n: 6}
+  - {family: B4, level: medium, strength: 3.0,    n: 4}
+  - {family: B4, level: bright, strength: 3.0,    n: 4}

@@ -1,0 +1,38 @@
+# Detection benchmark on the NICER flows. Mirrors detect.yaml exactly (same
+# families, strengths, detectors, counts) so the NICER AUC grid is directly
+# comparable to the XMM EPIC-pn grid; only train_run + response change.
+name: detect_modelA_nicer
+train_run: train_npe_nicer
+response: NICER
+levels: [faint, medium, bright]
+seed: 20260611
+n_misspec: 100
+n_clean: 200
+pilot:
+  n_misspec: 30
+  n_clean: 30
+  strength_index: -1
+detectors: [D1, D2, D3]
+d1:
+  k: 200
+d2:
+  n_ref: 500
+  knn_k: 5
+  reg: 1.0e-3
+d3:
+  n_ref: 500
+  k_rep: 200
+  kind: logreg
+families:
+  B1:
+    fixed: {line_energy_kev: 6.4, line_sigma_kev: 0.05}
+    strength_grid: [5.0e-6, 2.0e-5, 8.0e-5, 3.0e-4]
+  B2:
+    fixed: {}
+    strength_grid: [0.9, 0.7, 0.5, 0.3]
+  B3:
+    fixed: {use_diskbb: false}
+    strength_grid: [10.0, 5.0, 3.0, 1.5]
+  B4:
+    fixed: {}
+    strength_grid: [0.5, 1.0, 2.0, 3.0]

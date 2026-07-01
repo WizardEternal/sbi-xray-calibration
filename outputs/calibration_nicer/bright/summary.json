@@ -1,0 +1,95 @@
+{
+  "level": "bright",
+  "checkpoint": "outputs/models/train_npe_nicer_bright",
+  "median_total_counts": 10038.5,
+  "param_names": [
+    "tbabs_1_nh",
+    "powerlaw_1_alpha",
+    "powerlaw_1_norm",
+    "blackbodyrad_1_kT",
+    "blackbodyrad_1_norm"
+  ],
+  "sbc": {
+    "ks_pvals": [
+      0.004533426370471716,
+      0.00013874185970053077,
+      1.2099692179180083e-13,
+      1.8058306523016654e-05,
+      1.0875840228408151e-09
+    ],
+    "c2st_ranks": [
+      0.5984999999999999,
+      0.561,
+      0.574,
+      0.5485,
+      0.5894999999999999
+    ],
+    "c2st_dap": 0.475,
+    "uniformity_stat": "ks_pvals (KS test of rank uniformity) + c2st_ranks",
+    "n_sbc": 1000
+  },
+  "tarp": {
+    "atc": -0.0024799839593470097,
+    "ks_pval": 0.9999999999971402,
+    "n_tarp": 1000
+  },
+  "coverage": {
+    "raw_mean_abs_dev": 0.011458333333333326,
+    "recal_mean_abs_dev": 0.017291666666666667,
+    "nominal_levels": [
+      0.05,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.68,
+      0.7,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "at_levels": {
+      "50": {
+        "nominal_used": 0.5,
+        "raw": 0.49949999999999994,
+        "conformal": 0.509,
+        "raw_is_testset": 0.48133333333333334,
+        "is_refined": 0.46799999999999997,
+        "is_refined_okess": 0.5
+      },
+      "68": {
+        "nominal_used": 0.68,
+        "raw": 0.69,
+        "conformal": 0.695,
+        "raw_is_testset": 0.6559999999999999,
+        "is_refined": 0.628,
+        "is_refined_okess": 0.653846153846154
+      },
+      "90": {
+        "nominal_used": 0.9,
+        "raw": 0.8955,
+        "conformal": 0.9099999999999999,
+        "raw_is_testset": 0.8653333333333333,
+        "is_refined": 0.8413333333333333,
+        "is_refined_okess": 0.8576923076923076
+      }
+    }
+  },
+  "is_refinement": {
+    "median_ess": 100.06039385975487,
+    "median_ess_frac": 0.05003019692987743,
+    "n_low_ess": 23,
+    "n_cases": 30,
+    "low_ess_frac_threshold": 0.1,
+    "mean_median_shift": 0.06073945431011802,
+    "cov_testset_median_ess": 111.4994994110773,
+    "cov_testset_median_ess_frac": 0.055749749705538656,
+    "cov_testset_n_low_ess": 98,
+    "cov_testset_n_cases": 150,
+    "cov_testset_low_ess_fraction": 0.6533333333333333,
+    "raw_mean_abs_dev": 0.029666666666666664,
+    "is_mean_abs_dev": 0.04200000000000001
+  }
+}
