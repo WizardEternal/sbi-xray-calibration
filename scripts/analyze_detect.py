@@ -78,11 +78,12 @@ def write_auc_markdown(table, levels, families, detectors, out_path: Path):
     return out_path
 
 
-def write_consequence_markdown(cons, out_path: Path):
+def write_consequence_markdown(cons, out_path: Path) -> bool:
+    """Write the B1 dGamma-bias table. Returns False and leaves out_path
+    untouched when there are no consequence rows -- a committed table must
+    never be replaced by a placeholder generated from empty or missing input."""
     if not cons:
-        out_path.write_text("# B1 dGamma-bias\n\n(no consequence rows)\n",
-                            encoding="utf-8")
-        return out_path
+        return False
     lines = ["# B1 unmodeled-line silent-failure cost: NPE Gamma bias\n",
              "Posterior-median Gamma minus the clean-truth Gamma that generated "
              "the (line-contaminated) spectrum, per strength/level. The undetected-"
@@ -96,7 +97,7 @@ def write_consequence_markdown(cons, out_path: Path):
             f"{r['dGamma_bias_median']:+.3f} | {r['abs_bias_mean']:.3f} |"
         )
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return out_path
+    return True
 
 
 def make_heatmap(table, levels, families, detectors, out_path: Path):
@@ -143,10 +144,13 @@ def main(argv=None):
     suffix = "_pilot" if args.pilot else ""
     out = _out_dir()
 
-    results = _read_jsonl(out / f"results{suffix}.jsonl")
-    cons = _read_jsonl(out / f"consequence{suffix}.jsonl")
+    results_path = out / f"results{suffix}.jsonl"
+    cons_path = out / f"consequence{suffix}.jsonl"
+    cons_md_path = out / f"consequence{suffix}.md"
+    results = _read_jsonl(results_path)
+    cons = _read_jsonl(cons_path)
     if not results:
-        print(f"[analyze] no results in {out / f'results{suffix}.jsonl'}")
+        print(f"[analyze] no results in {results_path}")
         return 1
 
     levels = cfg["levels"]
@@ -156,16 +160,24 @@ def main(argv=None):
     table = build_auc_table(results, levels, families, detectors)
     p1 = write_auc_markdown(table, levels, families, detectors,
                             out / f"auc_table{suffix}.md")
-    p2 = write_consequence_markdown(cons, out / f"consequence{suffix}.md")
+    cons_ok = write_consequence_markdown(cons, cons_md_path)
     p3 = make_heatmap(table, levels, families, detectors,
                       out / f"auc_heatmap{suffix}.png")
-    print(f"[analyze] wrote {p1.name}, {p2.name}" + (f", {p3.name}" if p3 else ""))
+    print(f"[analyze] wrote {p1.name}"
+          + (f", {cons_md_path.name}" if cons_ok else "")
+          + (f", {p3.name}" if p3 else ""))
+    if not cons_ok:
+        print(f"[analyze] no consequence rows in {cons_path} -- leaving "
+              f"{cons_md_path.name} untouched (not overwriting a committed "
+              f"table with a placeholder). Regenerate it with:\n"
+              f"  .venv\\Scripts\\python.exe scripts\\run_detect_benchmark.py "
+              f"--config configs/detect.yaml")
 
     # print the table to stdout too
     print("\n" + (out / f"auc_table{suffix}.md").read_text(encoding="utf-8"))
-    if cons:
-        print((out / f"consequence{suffix}.md").read_text(encoding="utf-8"))
-    return 0
+    if cons_ok:
+        print(cons_md_path.read_text(encoding="utf-8"))
+    return 0 if cons_ok else 1
 
 
 if __name__ == "__main__":

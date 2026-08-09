@@ -10,8 +10,8 @@ unless --force or the stage's own re-run is requested):
 
   1. simulate   data/sim/<name>_<level>.npz                       (5e4-row training sets + sanity sets)
   2. train      outputs/models/train_npe_prod_<level>/flow_state.pt
-  3. calibrate  outputs/calibration/<level>/summary.json
-  4. detect     outputs/detect/results.jsonl  (144 cells)  + analyze_detect tables
+  3. calibrate  outputs/calibration/<level>/coverage_before_after.npz
+  4. detect     outputs/detect/results.jsonl (144 cells) + consequence.jsonl + analyze_detect tables
   5. ns_bench   outputs/ns_bench/results.jsonl              -- opt-in only (--with-ns),
                 because the NS run is multi-hour and is normally launched
                 separately in the background. Default run_all does not touch it.
@@ -86,13 +86,21 @@ def _train_done() -> bool:
 
 
 def _calib_done() -> bool:
+    # Gate on an actual intermediate (coverage_before_after.npz), not the
+    # committed summary.json -- summary.json ships in the repo, so checking it
+    # would report the stage done on a fresh clone where none of the npz
+    # intermediates have been computed.
     root = _repo_root() / "outputs" / "calibration"
-    return all((root / lv / "summary.json").exists() for lv in LEVELS)
+    return all((root / lv / "coverage_before_after.npz").exists() for lv in LEVELS)
 
 
 def _detect_done() -> bool:
     p = _repo_root() / "outputs" / "detect" / "results.jsonl"
-    if not p.exists():
+    cons = _repo_root() / "outputs" / "detect" / "consequence.jsonl"
+    # consequence.jsonl is gitignored, so a fresh clone has results.jsonl
+    # (committed, 144 rows) but no consequence.jsonl; require both so the
+    # stage is re-run rather than reported done with the B1 evidence missing.
+    if not p.exists() or not cons.exists() or cons.stat().st_size == 0:
         return False
     # 144-cell full grid
     with open(p) as f:
@@ -132,7 +140,7 @@ def stage_train(force, env):
 
 def stage_calibrate(force, env):
     if _calib_done() and not force:
-        print("[skip] calibrate (all 3 levels have summary.json)")
+        print("[skip] calibrate (all 3 levels have coverage_before_after.npz)")
         return
     py = _py()
     _run([py, "scripts/run_calibration.py", "--config",
@@ -148,7 +156,7 @@ def stage_detect(force, env):
         _run([py, "scripts/run_detect_benchmark.py", "--config",
               "configs/detect.yaml"], env=env)
     else:
-        print("[skip] detect benchmark (144 cells present)")
+        print("[skip] detect benchmark (144 cells + consequence.jsonl present)")
     # always (cheaply) regenerate the derived tables/heatmap from the JSONL
     _run([py, "scripts/analyze_detect.py", "--config", "configs/detect.yaml"],
          env=env)
