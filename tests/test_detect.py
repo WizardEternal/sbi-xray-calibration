@@ -1,26 +1,26 @@
-"""Phase-4 unit tests for the misspecification detectors (detect.py).
+"""Unit tests for the misspecification detectors (detect.py).
 
 Run with the repo venv:
     .venv\\Scripts\\python.exe -m pytest -q tests/test_detect.py
 
-All tests are seeded and use a TINY throwaway flow trained inside the module
+All tests are seeded and use a tiny throwaway flow trained inside the module
 fixture (dev Model A = tbabs*powerlaw, 3 params, 1000 sims, <=80 epochs, ~10 s on
-CPU). The flow is small but well-trained at a high count level, so an OBVIOUS
+CPU). The flow is small but well-trained at a high count level, so an obvious
 misspecification (a strong 6.4 keV Fe-K line that several-folds the counts) is
 cleanly separated from clean Model-A spectra by all three detectors (AUC > 0.9).
 
-Contract exercised (brief Phase-4 deliverable 4):
+Contract exercised (brief deliverable 4):
   * D1, D2, D3 each separate an obvious strong Fe-K line from clean, AUC > 0.9.
   * scores are deterministic given the seed.
-  * D1 returns BOTH sub-scores (chi2 + KS-on-cumulative).
+  * D1 returns both sub-scores (chi2 + KS-on-cumulative).
   * D2 reference embedding cache roundtrips (same array object reused).
   * the marginal-C2ST machinery (D3) returns a CV accuracy + per-spectrum probs.
 
-NOTE (documented, not a bug): a detector gain shift (B4) is NOT separable even at
+NOTE (documented, not a bug): a detector gain shift (B4) is not separable even at
 an extreme 10% by any of the three detectors (a gain shift preserves spectral
-SHAPE; the NPE absorbs it into the continuum). That is a genuine scientific
-negative result (Phase 4), so the AUC>0.9 gate is tested with the
-strong LINE (obvious AND detectable); B4 is tested only for finite/deterministic
+shape; the NPE absorbs it into the continuum). That is a genuine scientific
+negative result, so the AUC>0.9 gate is tested with the
+strong line (obvious and detectable); B4 is tested only for finite/deterministic
 operation.
 """
 
@@ -49,7 +49,7 @@ PRIOR_CFG = {
     "powerlaw_1_norm": {"dist": "loguniform", "low": 1e-4, "high": 1e-2},
 }
 EXPOSURE = 3000.0          # bright-ish: ~3k clean counts so an obvious line is clear
-LINE_NORM = 1e-2           # a STRONG, unambiguous Fe-K line (several-folds the counts)
+LINE_NORM = 1e-2           # a strong, unambiguous Fe-K line (several-folds the counts)
 N_TEST = 30
 
 
@@ -89,7 +89,7 @@ def setup():
 
     _, x_clean = ctx.clean_sim(N_TEST, seed=2)
 
-    # OBVIOUS B1: strong Fe-K line
+    # obvious B1: strong Fe-K line
     rng = np.random.default_rng(5)
     samp = P.sample_prior(PRIOR_CFG, order, N_TEST, rng)
     samp["gauss_1_El"] = np.full(N_TEST, 6.4)
@@ -110,9 +110,7 @@ def setup():
     return post, ctx, x_clean, x_b1, x_b4, ref
 
 
-# ==========================================================================
 # 1. each detector separates the obvious strong line from clean, AUC > 0.9
-# ==========================================================================
 
 def test_d1_ppc_separates_strong_line(setup):
     post, ctx, x_clean, x_b1, _, _ = setup
@@ -141,9 +139,7 @@ def test_d3_marginal_c2st_separates_strong_line(setup):
     assert res.mis_proba.shape[0] == N_TEST
 
 
-# ==========================================================================
 # 2. determinism: same seed -> identical scores
-# ==========================================================================
 
 def test_d1_deterministic(setup):
     post, ctx, x_clean, _, _, _ = setup
@@ -167,9 +163,7 @@ def test_d3_deterministic(setup):
     assert np.array_equal(r1.mis_proba, r2.mis_proba)
 
 
-# ==========================================================================
-# 3. D1 returns BOTH sub-scores (chi2 + KS-on-cumulative)
-# ==========================================================================
+# 3. D1 returns both sub-scores (chi2 + KS-on-cumulative)
 
 def test_d1_returns_both_subscores(setup):
     post, ctx, x_clean, _, _, _ = setup
@@ -178,17 +172,15 @@ def test_d1_returns_both_subscores(setup):
     assert "d1_chi2" in parts and "d1_ks" in parts
     assert 0.0 <= parts["d1_chi2"] <= 1.0
     assert 0.0 <= parts["d1_ks"] <= 1.0
-    # combined score is the max of the two sub-scores (suspicious if EITHER fails)
+    # combined score is the max of the two sub-scores (suspicious if either fails)
     assert score == pytest.approx(max(parts["d1_chi2"], parts["d1_ks"]))
 
 
-# ==========================================================================
 # 4. D2 reference embedding cache roundtrip
-# ==========================================================================
 
 def test_d2_reference_cache_roundtrip(setup):
     post, ctx, _, _, _, _ = setup
-    # first build populates the ctx cache; second build returns the SAME embeddings
+    # first build populates the ctx cache; second build returns the same embeddings
     r1 = D.build_embedding_reference(post, ctx, n_ref=64, seed=42)
     key = ("embed", 64, 42)
     assert key in ctx._ref_embed_cache
@@ -201,9 +193,7 @@ def test_d2_reference_cache_roundtrip(setup):
     assert np.allclose(r1.mean, r2.mean)
 
 
-# ==========================================================================
 # 5. D2 sub-scores: kNN is primary, Mahalanobis returned as secondary
-# ==========================================================================
 
 def test_d2_returns_knn_and_mahalanobis(setup):
     post, ctx, x_clean, _, _, ref = setup
@@ -215,11 +205,9 @@ def test_d2_returns_knn_and_mahalanobis(setup):
     assert parts["d2_knn"] >= 0.0 and parts["d2_mahalanobis"] >= 0.0
 
 
-# ==========================================================================
 # 6. all detectors run finite + deterministic on a gain shift (B4).
-#    (B4 is NOT separable -- a documented negative result -- so we do not assert
+#    (B4 is not separable -- a documented negative result -- so we do not assert
 #     AUC>0.9 here, only finite/deterministic operation.)
-# ==========================================================================
 
 def test_detectors_run_on_gain_shift(setup):
     post, ctx, x_clean, _, x_b4, ref = setup
@@ -231,9 +219,7 @@ def test_detectors_run_on_gain_shift(setup):
     assert s1 == D.detect_d1_ppc(x_b4[0], post, ctx, k=60, seed=5)
 
 
-# ==========================================================================
 # 7. roc_auc identities (pure function, no flow needed)
-# ==========================================================================
 
 def test_roc_auc_perfect_and_chance():
     # perfectly separated: misspec all above clean -> AUC 1.0

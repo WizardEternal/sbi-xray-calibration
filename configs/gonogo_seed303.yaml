@@ -1,14 +1,14 @@
-# GO/NO-GO robustness variant -- FULL RESEED, seed 303 (bright level ONLY).
+# GO/NO-GO robustness variant -- full reseed, seed 303 (bright level only).
 #
 # The cheap decisive test for the paper's primary result: is the bright-level NPE
 # over-confidence (raw coverage deviation ~0.113, U-shaped SBC ranks) ROBUST across
 # independent training runs, or a single-training-run fluke?
 #
-# "FULL reseed" = new SIMULATION DRAWS (a fresh bright training dataset, distinct
-# seed) AND new torch/numpy init (the flow's training RNG). Architecture, training
+# "full reseed" = new simulation draws (a fresh bright training dataset, distinct
+# seed) and new torch/numpy init (the flow's training RNG). Architecture, training
 # budget (50k sims, cap 150 epochs, patience 20) and the calibration suite are
 # byte-for-byte the production setup (configs/train_npe_prod.yaml +
-# configs/sim_modelA_prod_train.yaml + configs/calibration_prod.yaml) -- ONLY the
+# configs/sim_modelA_prod_train.yaml + configs/calibration_prod.yaml) -- only the
 # seed lineage changes, so any difference in the over-confidence is attributable to
 # the training-run randomness, nothing else.
 #
@@ -20,13 +20,13 @@ variant: gonogo_seed303
 base_model: tbabs_powerlaw_bb
 response: NGC7793_ULX4_PN
 
-# the global seed for this variant. It salts BOTH the simulation draw (new dataset)
-# AND the flow training init -- a genuine full reseed.
+# the global seed for this variant. It salts both the simulation draw (new dataset)
+# and the flow training init -- a genuine full reseed.
 seed: 303
 
-device: cpu        # per the Phase-2 CNN-embedding CPU benchmark
+device: cpu        # per the CNN-embedding CPU benchmark
 
-# prior = EXACT production prior (sim_modelA_prod_train.yaml / train_npe_prod.yaml).
+# prior = exact production prior (sim_modelA_prod_train.yaml / train_npe_prod.yaml).
 priors:
   tbabs_1_nh:         {dist: uniform,    low: 0.15,   high: 0.35}
   powerlaw_1_alpha:   {dist: uniform,    low: 1.0,    high: 3.0}
@@ -34,14 +34,14 @@ priors:
   blackbodyrad_1_kT:   {dist: uniform,    low: 0.3,    high: 3.0}
   blackbodyrad_1_norm: {dist: loguniform, low: 1.0e-2, high: 1.0}
 
-# bright level ONLY (the primary regime). Same calibrated exposure / target counts
+# bright level only (the primary regime). Same calibrated exposure / target counts
 # and same 50k training size as production.
 bright:
   exposure_s: 3534.0       # = sim_modelA_prod_train bright (median ~10k counts)
   target_counts: 10000
   n_train: 50000
 
-# embedding + flow = EXACT production architecture.
+# embedding + flow = exact production architecture.
 embedding:
   embed_dim: 20
   conv_channels: [16, 32]
@@ -53,7 +53,7 @@ flow:
   num_transforms: 5
   num_bins: 10
 
-# training budget = EXACT production (cap 150, patience 20).
+# training budget = exact production (cap 150, patience 20).
 train:
   batch_size: 200
   learning_rate: 5.0e-4

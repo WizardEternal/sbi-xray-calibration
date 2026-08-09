@@ -1,17 +1,17 @@
-"""Phase-3 unit tests for the calibration suite (calibrate.py).
+"""Unit tests for the calibration suite (calibrate.py).
 
 Run with the repo venv:
     .venv\\Scripts\\python.exe -m pytest -q tests/test_calibrate.py
 
-All tests are tiny, fast, and seeded. They exercise the Phase-3 contract
-on GAUSSIAN / Poisson TOY problems where the answer is analytically known:
+All tests are tiny, fast, and seeded. They exercise the calibration-suite contract
+on Gaussian / Poisson toy problems where the answer is analytically known:
 
   * SBC on a tiny NSF flow trained on a linear-Gaussian toy (x = theta + noise):
     sbi's run_sbc ranks are roughly uniform (loose, seeded KS bound), and TARP
     expected coverage is near-diagonal.
   * IS-refinement sanity on a Poisson "spectrum" toy where the exact 1-D
     posterior is computable: a deliberately-perturbed proposal is IS-corrected
-    TOWARD the truth, the weights normalize to 1, and ESS is computed.
+    toward the truth, the weights normalize to 1, and ESS is computed.
   * Conformal recalibration on synthetic too-narrow (overconfident) posteriors:
     after recalibration the empirical coverage matches nominal within tolerance.
 
@@ -30,9 +30,7 @@ import torch
 from sbixcal import calibrate as C
 
 
-# ==========================================================================
 # shared tiny Gaussian-toy flow (trained once for SBC + TARP)
-# ==========================================================================
 
 TOY_DIM = 2
 TOY_SIGMA = 0.3
@@ -76,9 +74,7 @@ def toy_flow():
     return post, prior
 
 
-# ==========================================================================
 # 1. SBC on the Gaussian toy: ranks roughly uniform
-# ==========================================================================
 
 def test_sbc_ranks_uniform_on_gaussian_toy(toy_flow):
     post, prior = toy_flow
@@ -95,7 +91,7 @@ def test_sbc_ranks_uniform_on_gaussian_toy(toy_flow):
     assert sbc.ks_pvals.shape == (TOY_DIM,)
     assert sbc.c2st_ranks.shape == (TOY_DIM,)
 
-    # ranks roughly uniform: KS p-value should NOT reject uniformity hard.
+    # ranks roughly uniform: KS p-value should not reject uniformity hard.
     # Loose, seeded bound (a well-calibrated toy gives p ~ 0.2-0.6 here).
     assert np.all(sbc.ks_pvals > 0.02), sbc.ks_pvals
     # C2ST accuracy of ranks vs uniform should be near 0.5 (not strongly > 0.5)
@@ -116,9 +112,7 @@ def test_sbc_figure_renders(tmp_path, toy_flow):
     assert out.exists() and out.stat().st_size > 0
 
 
-# ==========================================================================
 # 2. TARP expected coverage on the Gaussian toy: near-diagonal
-# ==========================================================================
 
 def test_tarp_near_diagonal_on_gaussian_toy(tmp_path, toy_flow):
     post, prior = toy_flow
@@ -140,9 +134,7 @@ def test_tarp_near_diagonal_on_gaussian_toy(tmp_path, toy_flow):
     assert "ecp" in d and "alpha" in d
 
 
-# ==========================================================================
 # 3a. IS-refinement on a Poisson toy with a computable posterior
-# ==========================================================================
 
 # A Poisson "spectrum" toy: theta = (a,) in [1,8]; per-channel model counts
 # lambda_c = a * template_c; observed counts x_c ~ Poisson(lambda_c). The exact
@@ -198,7 +190,7 @@ def test_is_refinement_moves_toward_truth_and_computes_ess():
     exact = _exact_poisson_posterior_quantiles(x_obs, [0.05, 0.5, 0.95])
     exact_med = exact[1]
 
-    # proposal deliberately centered LOW (a~3.4) and a bit wide -> clearly biased,
+    # proposal deliberately centered low (a~3.4) and a bit wide -> clearly biased,
     # but not so pathological that ESS collapses to a handful.
     prop = _GaussProposal(mu=3.4, sd=1.0, seed=1)
     prior_logp = C._prior_box_log_prob(
@@ -218,7 +210,7 @@ def test_is_refinement_moves_toward_truth_and_computes_ess():
     ref = C.is_refined_quantiles(is_res, [0.05, 0.5, 0.95])
     ref_med = float(ref[1, 0])
 
-    # the IS-corrected median is MUCH closer to the exact posterior median than
+    # the IS-corrected median is much closer to the exact posterior median than
     # the raw (biased) proposal median.
     assert abs(ref_med - exact_med) < abs(raw_med - exact_med)
     # and lands near the exact posterior median in absolute terms
@@ -232,7 +224,7 @@ def test_is_low_ess_flag_fires_for_pathological_proposal():
     low_ess flag (Paper III's NPE-failure diagnostic) must fire."""
     rng = np.random.default_rng(2)
     x_obs = rng.poisson(_TOY_A_TRUE * _TOY_TEMPLATE).astype(np.float64)
-    # proposal far from the truth AND narrow -> tiny overlap -> low ESS
+    # proposal far from the truth and narrow -> tiny overlap -> low ESS
     prop = _GaussProposal(mu=1.5, sd=0.25, seed=5)
     prior_logp = C._prior_box_log_prob(
         {"a": {"dist": "uniform", "low": _TOY_A_LOW, "high": _TOY_A_HIGH}}, ["a"])
@@ -261,18 +253,16 @@ def test_weighted_quantile_matches_unweighted_for_uniform_weights():
     assert np.allclose(got, ref, atol=0.02), (got, ref)
 
 
-# ==========================================================================
 # 3b. Conformal recalibration on too-narrow (overconfident) posteriors
-# ==========================================================================
 
 def _miscalibrated_set(seed, n_obs=600, n_params=2, n_samp=2000,
                        obs_sd=1.0, post_sd=0.55):
     """Synthetic too-narrow posteriors.
 
     Truth ~ N(0,1); a noisy estimate m = truth + N(0, obs_sd) is the posterior
-    CENTER; the reported posterior is N(m, post_sd^2) with post_sd < obs_sd, i.e.
-    OVERCONFIDENT. Because the center is offset from the truth, narrow intervals
-    systematically MISS the truth -> empirical coverage below nominal.
+    center; the reported posterior is N(m, post_sd^2) with post_sd < obs_sd, i.e.
+    overconfident. Because the center is offset from the truth, narrow intervals
+    systematically miss the truth -> empirical coverage below nominal.
     """
     g = np.random.default_rng(seed)
     truths = g.normal(0.0, 1.0, (n_obs, n_params))

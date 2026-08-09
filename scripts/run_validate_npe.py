@@ -1,4 +1,4 @@
-"""Phase-2 sanity validation of trained flows (NOT full SBC -- that's Phase 3).
+"""Sanity validation of trained flows (not the full SBC suite).
 
 For each trained flow named in a train config this script:
   * draws fresh test sims from the same generator (disjoint seed),
@@ -7,16 +7,16 @@ For each trained flow named in a train config this script:
   * checks recovery: truth-vs-median scatter + Pearson r / R^2 per parameter,
   * checks calibration cheaply: the fraction of test spectra whose truth falls
     inside the 90% credible interval (target ~0.90; this is a quick coverage
-    proxy, the rigorous SBC/TARP pass is Phase 3),
+    proxy, the rigorous SBC/TARP pass is separate),
   * highlights N_HIGHLIGHT (default 5) random test spectra and reports, per
     spectrum, whether the truth is inside the 90% CR for every parameter
     (the "truth inside the 90% credible region most of the time" check),
   * records the median 90%-CI width per parameter (absolute and as a fraction of
-    the prior width) so widths can be compared ACROSS count levels.
+    the prior width) so widths can be compared across count levels.
 
 Outputs one figure per count level:
   outputs/diagnostics/npe_recovery_<level>.png
-and, after all levels, a posterior-width-vs-count-level MONOTONICITY table +
+and, after all levels, a posterior-width-vs-count-level monotonicity table +
 verdict (widths must shrink as counts grow).
 
 Usage (repo venv):

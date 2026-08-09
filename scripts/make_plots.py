@@ -1,4 +1,4 @@
-"""Rebuild ALL README figures (config-driven).
+"""Rebuild all README figures (config-driven).
 
 The figures themselves are committed. This is the single documented entry point
 for regenerating them by `python scripts/make_plots.py --config ...` from a fixed
@@ -8,7 +8,7 @@ gitignored, so the pipeline outputs must be present locally (i.e. after running
 the benchmarks). It then dispatches to the per-figure builders:
 
     money_plot           -> make_money_plot.main()            (outputs/money_plot.png)
-    coverage_money_panel -> make_coverage_money_panel.main()  (the Phase-3 panel)
+    coverage_money_panel -> make_coverage_money_panel.main()  (the calibration panel)
     support_figs         -> make_support_figs.main()          (AUC grid + dGamma)
     detect_tables        -> analyze_detect.main()             (AUC md/heatmap + consequence)
 

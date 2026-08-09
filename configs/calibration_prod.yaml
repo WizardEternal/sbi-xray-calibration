@@ -1,9 +1,9 @@
-# Phase-3 calibration suite config -- PRODUCTION flows (tbabs*(powerlaw+blackbody),
+# Calibration suite config -- production flows (tbabs*(powerlaw+blackbody),
 # 5 params; one flow per count level: train_npe_prod_{faint,medium,bright}).
 #
-# Drives scripts/run_calibration.py. The suite operates on a CHECKPOINT DIRECTORY
+# Drives scripts/run_calibration.py. The suite operates on a checkpoint directory
 # (outputs/models/<train_run>_<level>/). Prior, base model, exposure and response
-# are all read FROM the checkpoint's arch.json (written by train_npe.save_checkpoint),
+# are all read from the checkpoint's arch.json (written by train_npe.save_checkpoint),
 # so this config only sets the suite's sample sizes / seeds and names the run+levels.
 #
 # Usage (repo venv, OMP_NUM_THREADS=6):
@@ -25,12 +25,12 @@ levels: [faint, medium, bright]
 seed: 20260611
 
 # ---- suite sample sizes ----------------------------------------------------
-# SBC: N fresh sims from the SAME prior/simulator the flow was trained for.
+# SBC: N fresh sims from the same prior/simulator the flow was trained for.
 n_sbc: 1000                  # Talts+18 recommend O(100s-1000); brief default 1000.
 n_tarp: 1000                 # TARP expected-coverage test sample size.
 n_posterior_samples: 1000    # posterior draws per SBC/TARP observation.
 
-# before/after coverage (conformal recalibration is FIT on the calibration set,
+# before/after coverage (conformal recalibration is fit on the calibration set,
 # evaluated on the disjoint test set):
 n_cal: 400
 n_test: 400

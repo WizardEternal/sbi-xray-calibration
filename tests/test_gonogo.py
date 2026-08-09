@@ -47,9 +47,7 @@ def _cal_row(variant, dev, **extra):
     return row
 
 
-# --------------------------------------------------------------------------
 # reseed verdict: ROBUST / FRAGILE / MIXED
-# --------------------------------------------------------------------------
 
 def test_all_reseeds_overconfident_is_robust():
     V = _load_verdict_module()
@@ -107,7 +105,7 @@ def test_incomplete_when_reseeds_missing():
 
 def test_boundary_at_robust_threshold_is_not_robust():
     V = _load_verdict_module()
-    # exactly at 0.06 is NOT > 0.06, so the all-robust condition fails -> MIXED
+    # exactly at 0.06 is not > 0.06, so the all-robust condition fails -> MIXED
     rows = [
         _cal_row("gonogo_seed101", 0.060),
         _cal_row("gonogo_seed202", 0.113),
@@ -116,9 +114,7 @@ def test_boundary_at_robust_threshold_is_not_robust():
     assert V.classify(rows)["verdict"] == "MIXED"
 
 
-# --------------------------------------------------------------------------
 # uncapped (epoch-cap mechanism) interpretation
-# --------------------------------------------------------------------------
 
 def test_uncapped_near_calibrated_means_undertraining():
     V = _load_verdict_module()
@@ -159,9 +155,7 @@ def test_uncapped_intermediate_is_partial():
     assert "partial" in res["uncapped_interpretation"].lower()
 
 
-# --------------------------------------------------------------------------
 # robustness of the loader against the real summary.jsonl shape
-# --------------------------------------------------------------------------
 
 def test_loader_skips_blank_and_garbled_lines(tmp_path):
     V = _load_verdict_module()

@@ -5,9 +5,9 @@ total counts (logZ ~ a*log10(counts)+b here), and a count "level" spans a ~30x
 count range. A level-matched mean(logZ_mis) - mean(logZ_clean) over unmatched
 spectra is therefore confounded by which spectra land in each group.
 
-This script instead fits logZ vs log10(counts) on the CLEAN spectra (all levels),
+This script instead fits logZ vs log10(counts) on the clean spectra (all levels),
 then reports each misspecified cell's mean residual from that clean trend, with a
-bootstrap CI and a per-spectrum breakdown. A real model error sits BELOW the clean
+bootstrap CI and a per-spectrum breakdown. A real model error sits below the clean
 trend (negative residual); a count artifact sits on it.
 
 Usage:
@@ -58,7 +58,7 @@ def cell_residual(rows, coef, sd, boot, fam, level, rng):
         idx = rng.integers(0, n, n)
         bmeans.append((gz[idx] - predb[idx]).mean())
     lo, hi = np.percentile(bmeans, [2.5, 97.5])
-    # significance from the cell's OWN residual scatter (honest per-cell t-statistic).
+    # significance from the cell's own residual scatter (honest per-cell t-statistic).
     # dividing by the clean-trend SD understates the noise badly for high-count cells,
     # where the per-spectrum penalty varies by hundreds of nats; the bootstrap CI is
     # the robust statement and the one the note reports.

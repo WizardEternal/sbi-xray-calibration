@@ -1,7 +1,7 @@
 # Nested-sampling cross-check on NICER. Mirrors ns_bench.yaml (same subsample,
 # live points, tolerance) so the NICER evidence behavior is comparable to XMM.
-# NOTE for analysis: compute Delta logZ COUNT-CONTROLLED (regress logZ on
-# log10 counts on the clean subset, residual-compare B1/B4) -- NOT the raw
+# NOTE for analysis: compute Delta logZ count-controlled (regress logZ on
+# log10 counts on the clean subset, residual-compare B1/B4) -- not the raw
 # level-matched mean difference, which is count-confounded (the XMM v1 error).
 name: ns_bench_modelA_nicer
 train_run: train_npe_nicer

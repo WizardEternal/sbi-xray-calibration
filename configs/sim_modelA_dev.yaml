@@ -17,7 +17,7 @@ priors:
   # NormPL: B&D24 Tab.1 Model 1 uses log-uniform [0.01,100], but that range is
   # tuned to their NICER response and the raw range gives 1e4-1e8 counts on the
   # ~10x-larger-area EPIC-pn response used here (sub-second exposures). We keep
-  # their log-uniform CONVENTION but shift the 4-decade window down to
+  # their log-uniform convention but shift the 4-decade window down to
   # [1e-4,1e-2] so the count regimes land at realistic ~0.4-40 ks exposures.
   # (B&D24 themselves restrict this prior for the same count-control reason,
   # Sect. 3.2; the shift is documented in the README.)
@@ -26,7 +26,7 @@ priors:
 calibration:
   probe_exposure_s: 10000.0   # used by --calibrate-exposure (counts scale linearly)
 
-# Three exposure levels chosen EMPIRICALLY so the median total counts over the
+# Three exposure levels chosen empirically so the median total counts over the
 # prior is ~100 / ~1000 / ~10000. Values from a deterministic n=20000 probe via
 # `python -m sbixcal.simulate --config <this> --calibrate-exposure`
 # (counts scale linearly with exposure; achieved medians 97 / 968 / 9684).

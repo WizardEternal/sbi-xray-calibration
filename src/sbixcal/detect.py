@@ -1,12 +1,12 @@
-"""Misspecification detectors for sbi-xray-calibration (Phase 4).
+"""Misspecification detectors for sbi-xray-calibration.
 
-Three detectors behind ONE interface
+Three detectors behind one interface
 
     score(spectrum, posterior, simulator_ctx, *, cfg, seed) -> float
 
-where a HIGHER score means MORE suspicious (more likely the observed spectrum is
+where a higher score means more suspicious (more likely the observed spectrum is
 misspecified relative to the well-specified Model A the flow was trained on). All
-three are config-driven and operate on ANY trained checkpoint via
+three are config-driven and operate on any trained checkpoint via
 ``train_npe.load_posterior`` (the flow carries its own CNN embedding net and the
 prior/base-model/exposure needed to rebuild the simulator context).
 
@@ -19,11 +19,11 @@ detector's docstring cites its methodological ancestor.
 Detectors
 ---------
 D1  **Posterior predictive check (PPC).** Draw K theta ~ posterior(.|x_obs),
-    fold each through the SAME response to get noiseless model counts lambda_k,
+    fold each through the same response to get noiseless model counts lambda_k,
     Poisson-realize K replicate spectra. Two discrepancy statistics:
       (a) chi2-like statistic on binned counts using the replicate-ensemble
           variance (so the null distribution is the replicate ensemble itself);
-      (b) a KS-like distance between the observed and replicate CUMULATIVE count
+      (b) a KS-like distance between the observed and replicate cumulative count
           spectra -- the direct descendant of Buchner et al. (2014, A&A 564,
           A125) QQ-plot model-discovery methodology (cumulative-counts QQ plot).
     Score = a tail-probability-style statistic: the fraction of replicates whose
@@ -33,7 +33,7 @@ D1  **Posterior predictive check (PPC).** Draw K theta ~ posterior(.|x_obs),
 
 D2  **Embedding-space OOD.** Push spectra through the flow's trained CNN
     embedding net (the learned summary statistic). Reference distribution =
-    embeddings of N_ref clean Model-A simulations at the SAME count level. Score
+    embeddings of N_ref clean Model-A simulations at the same count level. Score
     = regularized Mahalanobis distance of the observed embedding from the clean
     reference cloud (primary), with a k-NN mean-distance variant also returned.
     Methodological ancestor: Schmitt et al. (2023, arXiv:2112.08866; IJCV
@@ -41,10 +41,10 @@ D2  **Embedding-space OOD.** Push spectra through the flow's trained CNN
     learned summary-statistic (embedding) space for SBI misspecification.
 
     **Scoping vs Schmitt.** Our D2 operates on the flow's
-    *posterior-trained, un-regularized* CNN embedding -- a NEAR-SUFFICIENT summary
-    learned for inference, NOT Schmitt's MMD-regularized, deliberately OVERCOMPLETE
+    *posterior-trained, un-regularized* CNN embedding -- a near-sufficient summary
+    learned for inference, not Schmitt's MMD-regularized, deliberately overcomplete
     summary network trained specifically to surface misspecification. Schmitt's
-    Eq. 12-13 give the consequence: a misspecification that PRESERVES the summary
+    Eq. 12-13 give the consequence: a misspecification that preserves the summary
     distribution is *provably invisible* to any test in that summary space. That is
     exactly why a gain shift (B4) -- which the NPE folds into the
     continuum parameters, leaving the near-sufficient summary distribution
@@ -52,8 +52,8 @@ D2  **Embedding-space OOD.** Push spectra through the flow's trained CNN
     near-sufficient embedding; an MMD-regularized overcomplete summary space
     (Schmitt+23/24) is the natural next attempt, not refuted by this benchmark.
 
-D3  **Simplified MARGINAL C2ST.** A single classifier per benchmark cell, trained
-    with stratified k-fold CV on the EMBEDDING features to distinguish the
+D3  **Simplified marginal C2ST.** A single classifier per benchmark cell, trained
+    with stratified k-fold CV on the embedding features to distinguish the
     clean-population from the misspecified-population. The cell statistic is the CV
     accuracy (0.5 = indistinguishable populations = undetectable misspecification;
     ->1 = perfectly separable); per-spectrum out-of-fold class-1 probabilities give
@@ -63,7 +63,7 @@ D3  **Simplified MARGINAL C2ST.** A single classifier per benchmark cell, traine
     its posterior-predictive replicates. We found that conditional form pathological
     against overconfident NPE posteriors (tight replicate clusters are trivially
     separable from the broad clean cloud for clean and misspec alike -- see
-    Phase 4), so we take the marginal population two-sample test instead.
+    the D3 discussion below), so we take the marginal population two-sample test instead.
 
 Everything here is pure / importable; the benchmark CLI lives in
 ``scripts/run_detect_benchmark.py``.
@@ -82,9 +82,7 @@ import torch
 from . import train_npe as _tn
 
 
-# ==========================================================================
 # simulator context: everything a detector needs to (re)simulate
-# ==========================================================================
 
 @dataclass
 class SimulatorContext:
@@ -157,9 +155,7 @@ def context_from_checkpoint(ckpt_dir, response_name: str | None = None):
     )
 
 
-# ==========================================================================
 # embedding extraction (the flow's trained CNN summary statistic)
-# ==========================================================================
 
 def get_embedding_net(posterior):
     """Return the trained CNN embedding net living inside the flow.
@@ -196,9 +192,7 @@ def embed_spectra(posterior, x: np.ndarray, device: str = "cpu") -> np.ndarray:
     return e.detach().cpu().numpy()
 
 
-# ==========================================================================
 # posterior-predictive replicate machinery (shared by D1 + D3)
-# ==========================================================================
 
 def posterior_predictive_replicates(
     posterior,
@@ -212,13 +206,13 @@ def posterior_predictive_replicates(
     """Draw K posterior-predictive replicate spectra for one observed spectrum.
 
     1. theta_k ~ q_NPE(. | x_obs), k = 1..K  (reject outside prior).
-    2. lambda_k = fold(theta_k) through the SAME response (noiseless model counts).
+    2. lambda_k = fold(theta_k) through the same response (noiseless model counts).
     3. x_rep_k ~ Poisson(lambda_k).
 
     Returns ``(x_rep (K,C) float, lam (K,C) float, theta (K,P) float)``.
 
     ``max_sampling_time`` caps the rejection-sampling wall time: for a *strongly
-    misspecified* spectrum the flow's posterior mass can fall largely OUTSIDE the
+    misspecified* spectrum the flow's posterior mass can fall largely outside the
     training prior box, so ``reject_outside_prior=True`` would loop slowly. We pass
     sbi's ``max_sampling_time`` so the draw returns promptly; if rejection cannot
     fill K samples in time we fall back to a single unrejected batch and clip into
@@ -253,9 +247,7 @@ def posterior_predictive_replicates(
     return x_rep, lam, theta
 
 
-# ==========================================================================
 # D1: posterior predictive check (PPC)
-# ==========================================================================
 
 def _chi2_stat(counts: np.ndarray, mean: np.ndarray, var: np.ndarray) -> np.ndarray:
     """chi2-like statistic sum_c (counts_c - mean_c)^2 / var_c, per row.
@@ -310,11 +302,11 @@ def detect_d1_ppc(
 
         score = #{ T(x_rep_k) < T(x_obs) } / K          (PPP-complement)
 
-    i.e. the fraction of replicates LESS extreme than the observation. ~0.5 means
+    i.e. the fraction of replicates less extreme than the observation. ~0.5 means
     the observation is a typical draw from its own posterior predictive (well
     specified); ->1 means it sits in the far tail (misspecified -> suspicious).
     The combined D1 score is the max of the two (a spectrum is suspicious if it
-    fails EITHER check). Higher = more suspicious.
+    fails either check). Higher = more suspicious.
     """
     x_obs = np.asarray(x_obs, dtype=np.float64).reshape(-1)
     x_rep, lam, theta = posterior_predictive_replicates(
@@ -346,9 +338,7 @@ def detect_d1_ppc(
     return score
 
 
-# ==========================================================================
 # D2: embedding-space OOD (Mahalanobis + kNN)  -- Schmitt+23/24
-# ==========================================================================
 
 @dataclass
 class EmbeddingReference:
@@ -427,13 +417,13 @@ def detect_d2_embedding(
 ):
     """D2 embedding-space OOD score. Both the Schmitt+23/24 variants are computed:
 
-      * **k-NN mean distance** to the clean reference cloud (the PRIMARY score);
+      * **k-NN mean distance** to the clean reference cloud (the primary score);
       * **regularized Mahalanobis** distance to the cloud mean (secondary).
 
     Higher = more suspicious. The reference is reused across many spectra (build it
     once per count level with :func:`build_embedding_reference`).
 
-    Why k-NN is primary (empirical, Phase 4): the clean reference
+    Why k-NN is primary (empirical): the clean reference
     cloud is dominated by a single high-variance brightness axis (the log-uniform
     norm prior spans decades of total counts). The Mahalanobis whitening inverts
     that covariance and *amplifies* the low-variance noise directions, washing out
@@ -450,21 +440,19 @@ def detect_d2_embedding(
     return knn
 
 
-# ==========================================================================
-# D3: simplified MARGINAL C2ST on embedding features
-# ==========================================================================
+# D3: simplified marginal C2ST on embedding features
 #
 # Why "marginal" and not the per-spectrum conditional C2ST: the full conditional
 # C2ST (Lopez-Paz & Oquab 2017; used for SBI misspecification by e.g. the sbi
 # toolkit and Schmitt+23/24) trains a fresh classifier *per observed spectrum* to
 # tell that spectrum's posterior-predictive replicates from clean simulations and
 # reports a calibrated per-spectrum statistic. We tried that against the
-# production flows and it is PATHOLOGICAL here (Phase 4): an
-# overconfident NPE posterior (the very failure mode Phase 2/3 documents) yields a
-# *tight* replicate cluster that is trivially separable from the broad clean
-# reference cloud for clean AND misspecified spectra alike, so the per-spectrum
+# production flows and it is pathological here: an overconfident NPE posterior
+# (the same failure mode the training and calibration diagnostics document)
+# yields a *tight* replicate cluster that is trivially separable from the broad clean
+# reference cloud for clean and misspecified spectra alike, so the per-spectrum
 # C2ST carries no misspecification signal. We therefore implement the
-# simplified MARGINAL version, and label it as such:
+# simplified marginal version, and label it as such:
 #
 #   D3 = a single classifier per benchmark cell, trained to separate the
 #   clean-population embeddings from the misspecified-population embeddings, with
@@ -475,7 +463,7 @@ def detect_d2_embedding(
 #
 # This is a population two-sample test, by construction supervised on the cell's
 # clean/misspec labels -- that is exactly the C2ST definition (measure how
-# distinguishable two samples are), NOT a blind per-spectrum deployment, and the
+# distinguishable two samples are), not a blind per-spectrum deployment, and the
 # benchmark's job is precisely to report that distinguishability per cell.
 
 
@@ -576,9 +564,7 @@ def detect_d3_c2st_cell(
     return marginal_c2st(ec, em, kind=kind, n_splits=n_splits, seed=seed)
 
 
-# ==========================================================================
 # unified interface
-# ==========================================================================
 
 DETECTORS = ("D1", "D2", "D3")
 
@@ -596,15 +582,15 @@ def score(
     device: str = "cpu",
     return_parts: bool = False,
 ):
-    """Unified PER-SPECTRUM detector interface for ``detector`` in {"D1","D2"}.
+    """Unified per-spectrum detector interface for ``detector`` in {"D1","D2"}.
 
     Higher score => more suspicious. ``cfg`` (optional) supplies per-detector
     hyperparameters; sensible defaults are used otherwise. For D2 the caller should
-    pass the prebuilt clean ``reference`` so it is fit ONCE per count level, not per
+    pass the prebuilt clean ``reference`` so it is fit once per count level, not per
     spectrum (the benchmark does this).
 
-    **D3 is NOT a per-spectrum detector** -- it is the simplified MARGINAL C2ST,
-    which operates on whole clean/misspecified POPULATIONS per benchmark cell. Call
+    **D3 is not a per-spectrum detector** -- it is the simplified marginal C2ST,
+    which operates on whole clean/misspecified populations per benchmark cell. Call
     :func:`detect_d3_c2st_cell` (clean+misspec embeddings -> CV accuracy +
     per-spectrum held-out probabilities) instead; calling ``score(..., "D3")``
     raises, by design, to prevent the leaky per-spectrum misuse.
@@ -639,9 +625,7 @@ def score(
     raise ValueError(f"unknown detector '{detector}'. known: {DETECTORS}")
 
 
-# ==========================================================================
 # ROC / AUC analysis (used by the benchmark + reusable in tests)
-# ==========================================================================
 
 def roc_auc(clean_scores: np.ndarray, misspec_scores: np.ndarray):
     """ROC curve + AUC for a detector, given clean (negative) and misspecified

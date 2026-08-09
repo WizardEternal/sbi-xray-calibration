@@ -1,11 +1,11 @@
-# Training datasets for the DEV model (tbabs*powerlaw, 3 params).
-# Same base model, priors, response, seed and CALIBRATED exposures as
+# Training datasets for the dev model (tbabs*powerlaw, 3 params).
+# Same base model, priors, response, seed and calibrated exposures as
 # sim_modelA_dev.yaml -- only the per-level training-set size differs (50k, the
 # learning-curve maximum). The 10k/25k learning-curve points are taken as fixed
 # prefixes of these 50k sets (rows are in deterministic seed order), so no extra
 # datasets are needed.
 #
-# Distinct dataset names (suffix _50k) so these do NOT collide with the Phase-1
+# Distinct dataset names (suffix _50k) so these do not collide with the
 # 10k sanity datasets in data/sim/.
 
 name: modelA_dev_train

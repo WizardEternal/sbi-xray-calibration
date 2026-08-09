@@ -1,18 +1,18 @@
 """GO/NO-GO robustness pack runner -- the cheap decisive test of whether the
 primary bright-level NPE over-confidence is robust or a single-run fluke.
 
-Per variant (gonogo_seed101 / seed202 / seed303 / uncapped) this script, ALL
+Per variant (gonogo_seed101 / seed202 / seed303 / uncapped) this script, all
 crash-resumable at every stage:
 
   1. generates the bright training dataset  (skip-if-exists; the uncapped variant
-     REUSES the production bright dataset, same draws -- see its config);
+     reuses the production bright dataset, same draws -- see its config);
   2. trains the bright NPE+NSF flow          (skip-if-checkpoint-exists);
   3. runs the GO/NO-GO calibration suite     (SBC N=500 + coverage at the three
      nominal levels {50,68,90}); artifacts -> outputs/gonogo/<variant>/;
   4. appends a one-line summary               (variant, cov@50/68/90, dev, SBC KS
      p min) to outputs/gonogo/summary.jsonl.
 
-With --detect-spot it ALSO recomputes a 2-cell detector spot-check against the
+With --detect-spot it also recomputes a 2-cell detector spot-check against the
 seed101 flow (B1 bright strongest line ~0.97 expected; B4 bright 3% ~0.50
 expected; N=100/class) and appends those AUCs to the summary.
 
@@ -21,7 +21,7 @@ Usage (repo venv, OMP_NUM_THREADS=4):
     .venv\\Scripts\\python.exe scripts\\run_gonogo.py --config configs\\gonogo_seed101.yaml --detect-spot
     .venv\\Scripts\\python.exe scripts\\run_gonogo.py --config configs\\gonogo_uncapped.yaml
 
-Writes ONLY to data/sim/ (training datasets), outputs/models/gonogo_*/
+Writes only to data/sim/ (training datasets), outputs/models/gonogo_*/
 (checkpoints) and outputs/gonogo/ (calibration artifacts + summary). It never
 touches outputs/calibration/, outputs/detect/ or outputs/ns_bench/.
 """
@@ -44,9 +44,7 @@ from sbixcal import simulate as _sim
 from sbixcal import train_npe as _tn
 
 
-# ==========================================================================
 # paths
-# ==========================================================================
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
@@ -77,15 +75,13 @@ def load_config(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-# ==========================================================================
 # stage 1: bright training dataset (skip-if-exists)
-# ==========================================================================
 
 def ensure_dataset(cfg: dict) -> tuple[str, Path]:
     """Ensure the bright training dataset exists; return (dataset_name, path).
 
-    For a FULL-RESEED variant we generate a fresh bright dataset under the
-    variant's own seed (new simulation draws). For the UNCAPPED variant we REUSE
+    For a full-reseed variant we generate a fresh bright dataset under the
+    variant's own seed (new simulation draws). For the uncapped variant we reuse
     the production bright dataset (same draws as production -- the mechanism test
     changes only the epoch budget, not the data)."""
     variant = cfg["variant"]
@@ -132,9 +128,7 @@ def ensure_dataset(cfg: dict) -> tuple[str, Path]:
     return name, out
 
 
-# ==========================================================================
 # stage 2: train the bright flow (skip-if-checkpoint-exists)
-# ==========================================================================
 
 def ensure_checkpoint(cfg: dict, dataset_name: str) -> Path:
     """Train the bright flow into outputs/models/<variant>_bright/, skipping if a
@@ -189,9 +183,7 @@ def ensure_checkpoint(cfg: dict, dataset_name: str) -> Path:
     return out_dir
 
 
-# ==========================================================================
 # stage 3: GO/NO-GO calibration suite (SBC N=500 + coverage @ {50,68,90})
-# ==========================================================================
 
 def _cov_at(nominal, cov, target):
     """Mean-over-params coverage at the nominal level nearest ``target``."""
@@ -239,7 +231,7 @@ def run_calibration(cfg: dict, ckpt_dir: Path, force: bool = False) -> dict:
     print(f"[stage3] {variant}: calibrating {ckpt_dir.name} "
           f"(~{info['median_total_counts']:.0f} counts; SBC N={n_sbc}) ...")
 
-    # ---- SBC (fresh sims from the SAME prior/simulator the flow trained on) ----
+    # ---- SBC (fresh sims from the same prior/simulator the flow trained on) ----
     theta_sbc, x_sbc, _, names = C.make_fresh_test_set(
         base_model, prior_cfg, exposure_s, n_sbc,
         seed=base_seed + 101, response_name=response)
@@ -324,9 +316,7 @@ def run_calibration(cfg: dict, ckpt_dir: Path, force: bool = False) -> dict:
     return result
 
 
-# ==========================================================================
 # stage 4: append the one-line summary
-# ==========================================================================
 
 def _summary_has(variant: str, kind: str) -> bool:
     """True if a summary.jsonl row with this (variant, kind) already exists."""
@@ -373,9 +363,7 @@ def append_summary_line(cal: dict):
     print(f"[stage4] {variant}: appended calibration summary line")
 
 
-# ==========================================================================
 # detector spot-check (--detect-spot): 2 cells with the seed101 flow
-# ==========================================================================
 
 # the two spot cells: (family, strength, expected AUC) for the seed101 bright flow.
 SPOT_CELLS = [
@@ -443,9 +431,7 @@ def run_detect_spot(spot_ckpt: Path, n_per_class: int = 100,
     print(f"[spot] appended {len(rows)} detector spot-check rows")
 
 
-# ==========================================================================
 # driver
-# ==========================================================================
 
 def run_variant(cfg: dict, detect_spot: bool = False, force: bool = False):
     variant = cfg["variant"]

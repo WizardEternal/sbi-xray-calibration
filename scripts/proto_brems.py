@@ -1,6 +1,6 @@
-"""Phase 0 prototype: B3 custom analytic thermal-bremsstrahlung component.
+"""Prototype: B3 custom analytic thermal-bremsstrahlung component.
 
-jaxspec has NO apec/mekal/bremss (verified). For the B3 "wrong continuum
+jaxspec has no apec/mekal/bremss (verified). For the B3 "wrong continuum
 family" misspecification we try a custom additive component first. A
 Gaunt-factor-free thermal bremsstrahlung emissivity is, up to constants,
 

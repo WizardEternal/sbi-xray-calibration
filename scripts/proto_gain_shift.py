@@ -1,4 +1,4 @@
-"""Phase 0 prototype: B4 gain-shift on the jaxspec EPIC-pn response.
+"""Prototype: B4 gain-shift on the jaxspec EPIC-pn response.
 
 We need a way to perturb the
 response energy calibration so that a *fixed* source model, folded through a
@@ -21,7 +21,7 @@ Mechanism investigated here (in-place, no FITS rewrite):
     factor and re-deriving the per-bin photon flux on the original physical
     grid. Concretely: we build a gain-shifted ObsConfiguration whose
     e_min_unfolded / e_max_unfolded coords are multiplied by `gain`. When the
-    SAME source model is folded through it, a feature the source emits at
+    same source model is folded through it, a feature the source emits at
     energy E lands where the nominal response would have put energy E*gain,
     i.e. the folded spectrum's features move by the gain factor. This is the
     response-energy-axis surgery used for the B4 misspecification family.
@@ -73,7 +73,7 @@ def main():
 
     obs = load_example_obsconf("NGC7793_ULX4_PN")
 
-    # Source model with a STRONG narrow Fe-K line at 6.4 keV so the shift is
+    # Source model with a strong narrow Fe-K line at 6.4 keV so the shift is
     # unmistakable. Same model folded through both responses.
     model = Tbabs() * (Powerlaw() + Gauss())
     params = {
@@ -87,7 +87,7 @@ def main():
 
     gains = {"nominal (g=1.000)": 1.0, "+2% gain (g=1.020)": 1.02, "-2% gain (g=0.980)": 0.98}
 
-    # Channel energies (folded) of the NOMINAL response for the x-axis.
+    # Channel energies (folded) of the nominal response for the x-axis.
     e_out = np.asarray(obs.out_energies)  # (2, 102)
     e_mid = 0.5 * (e_out[0] + e_out[1])
 
@@ -145,8 +145,8 @@ def main():
 
     # Verdict numbers. Convention: rescaling the unfolded grid by `gain` means
     # the source feature at model-energy E is placed where the nominal response
-    # expected energy E/gain. So gain>1 (+2%) pushes the line to LOWER channel
-    # energy and gain<1 (-2%) to HIGHER channel energy. Both are real gain
+    # expected energy E/gain. So gain>1 (+2%) pushes the line to lower channel
+    # energy and gain<1 (-2%) to higher channel energy. Both are real gain
     # errors; the sign is just a convention choice and is documented in
     # docs/gain_shift_notes.md.
     e_nom = peak_energy["nominal (g=1.000)"]

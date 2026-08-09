@@ -1,21 +1,21 @@
-# GO/NO-GO mechanism test -- UNCAPPED bright flow (production seed lineage).
+# GO/NO-GO mechanism test -- uncapped bright flow (production seed lineage).
 #
 # Tests the "epoch-cap / undertraining" mechanism for the bright over-confidence.
-# In production the bright flow hit its 150-epoch cap WITH a train/val gap
-# (Phase-2 benchmark: final train -14.91 vs final val -13.36) -- so a live
+# In production the bright flow hit its 150-epoch cap with a train/val gap
+# (CNN-embedding benchmark: final train -14.91 vs final val -13.36) -- so a live
 # question is whether the over-confidence is just the flow being cut off early,
 # or a structural property that persists when it trains to convergence.
 #
-# This variant therefore changes ONLY the epoch budget: it reuses the PRODUCTION
-# SEED LINEAGE (seed 20260611, bright seed_offset 3) for BOTH the simulation draw
-# and the flow init -- i.e. the SAME 50k bright training dataset and the SAME
+# This variant therefore changes only the epoch budget: it reuses the production
+# seed lineage (seed 20260611, bright seed_offset 3) for both the simulation draw
+# and the flow init -- i.e. the same 50k bright training dataset and the same
 # torch init as the production bright flow -- but raises the cap to 400 epochs and
-# RELIES ON EARLY STOPPING (patience 20) to terminate at the true convergence
-# point. So this is NOT a reseed: it is the production flow allowed to keep
+# relies on early stopping (patience 20) to terminate at the true convergence
+# point. So this is not a reseed: it is the production flow allowed to keep
 # training. If the over-confidence vanishes at convergence, the claim must soften
 # to "undertraining"; if it persists at 400 epochs, the cap is not the mechanism.
 #
-# Because the seed lineage matches production, run_gonogo.py REUSES the existing
+# Because the seed lineage matches production, run_gonogo.py reuses the existing
 # data/sim/modelA_prod_train_bright.npz (no new draw) -- only the longer-trained
 # checkpoint is new.
 
@@ -23,7 +23,7 @@ variant: gonogo_uncapped
 base_model: tbabs_powerlaw_bb
 response: NGC7793_ULX4_PN
 
-# PRODUCTION seed lineage (NOT a reseed): same global seed as train_npe_prod.yaml.
+# production seed lineage (not a reseed): same global seed as train_npe_prod.yaml.
 # run_gonogo.py reuses the bright training dataset generated under this seed and
 # applies the bright seed_offset (3) for the flow init, matching production exactly.
 seed: 20260611
@@ -32,7 +32,7 @@ bright_seed_offset: 3             # = train_npe_prod.yaml bright level seed_offs
 
 device: cpu
 
-# prior = EXACT production prior.
+# prior = exact production prior.
 priors:
   tbabs_1_nh:         {dist: uniform,    low: 0.15,   high: 0.35}
   powerlaw_1_alpha:   {dist: uniform,    low: 1.0,    high: 3.0}
@@ -45,7 +45,7 @@ bright:
   target_counts: 10000
   n_train: 50000
 
-# embedding + flow = EXACT production architecture.
+# embedding + flow = exact production architecture.
 embedding:
   embed_dim: 20
   conv_channels: [16, 32]
@@ -57,8 +57,8 @@ flow:
   num_transforms: 5
   num_bins: 10
 
-# training budget: the ONLY change vs production. Cap raised to 400 (>=400 per the
-# brief); patience UNCHANGED at 20 so proper early stopping decides convergence.
+# training budget: the only change vs production. Cap raised to 400 (>=400 per the
+# brief); patience unchanged at 20 so proper early stopping decides convergence.
 train:
   batch_size: 200
   learning_rate: 5.0e-4

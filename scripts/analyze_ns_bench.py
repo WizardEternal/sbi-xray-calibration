@@ -1,4 +1,4 @@
-r"""Phase-5 NS-vs-NPE benchmark analysis: the speed-vs-agreement table + the
+r"""NS-vs-NPE benchmark analysis: the speed-vs-agreement table + the
 NS-flag-vs-detector-flag cross-check.
 
 Usage (repo venv):
@@ -7,12 +7,12 @@ Usage (repo venv):
 Reads outputs/ns_bench/results.jsonl (written by run_ns_benchmark.py) and prints
 (and writes to outputs/ns_bench/analysis.md):
 
-  1. SPEED-VS-AGREEMENT table, per count level (clean Model-A spectra only -- the
+  1. speed-vs-agreement table, per count level (clean Model-A spectra only -- the
      well-specified spine): NS wall-clock (s/spectrum) and n_like_evals vs NPE
      sampling (ms/spectrum), the NS/NPE speed ratio, and the NS-vs-NPE posterior
-     QUANTILE agreement (mean |q_NS - q_NPE| / prior-width). Small agreement where
+     quantile agreement (mean |q_NS - q_NPE| / prior-width). Small agreement where
      raw NPE is well calibrated (faint/medium) = NS validates the amortized flow;
-     larger at bright = NS exposes the over-confidence Phase-3 measured.
+     larger at bright = NS exposes the over-confidence the calibration suite measured.
 
   2. NS misspecification-flag check on the B1/B4 spectra: per misspecified
      spectrum we form two NS-side flags --
@@ -20,17 +20,17 @@ Reads outputs/ns_bench/results.jsonl (written by run_ns_benchmark.py) and prints
           (reduced) -- a poor fit to the well-specified Model A flags misspec;
         * evidence flag: logZ relative to the clean-population logZ at the same
           level (a misspecified spectrum the model cannot fit has lower evidence).
-     and reports them next to the Phase-4 DETECTOR AUC for the matching
+     and reports them next to the detector AUC for the matching
      (family, strength, level) cell.
 
-  *** Detector cross-check status ***  The Phase-4 detector benchmark
-  (outputs/detect/results.jsonl) may still be RUNNING (the full 144-cell grid).
-  This script READS that file if present (read-only; it never writes there) and
+  *** Detector cross-check status ***  The detector benchmark
+  (outputs/detect/results.jsonl) may still be running (the full 144-cell grid).
+  This script reads that file if present (read-only; it never writes there) and
   fills the detector-AUC column where the matching cell exists; cells not yet
-  computed are shown as "pending" and the whole cross-check is labelled a STUB
+  computed are shown as "pending" and the whole cross-check is labelled a stub
   until the detector grid finishes. The NS-side flags are always computed.
 
-Writes ONLY to outputs/ns_bench/analysis.md. Reads outputs/ns_bench/results.jsonl
+Writes only to outputs/ns_bench/analysis.md. Reads outputs/ns_bench/results.jsonl
 and (read-only, if present) outputs/detect/results.jsonl.
 """
 
@@ -70,12 +70,10 @@ def _read_jsonl(path: Path):
     return rows
 
 
-# --------------------------------------------------------------------------
 # 1. speed-vs-agreement (clean spine)
-# --------------------------------------------------------------------------
 
 def speed_agreement_table(rows):
-    """Per-level aggregates over the CLEAN Model-A spectra."""
+    """Per-level aggregates over the clean Model-A spectra."""
     by_level = defaultdict(list)
     for r in rows:
         if r["family"] == "clean":
@@ -112,9 +110,7 @@ def speed_agreement_table(rows):
     return "\n".join(lines), agg
 
 
-# --------------------------------------------------------------------------
 # 2. NS misspecification flags vs detector AUC
-# --------------------------------------------------------------------------
 
 def _clean_trend(rows, rng):
     """Fit logZ = a*log10(counts)+b on the clean spectra. logZ scales with total
@@ -165,7 +161,7 @@ def ns_flag_table(rows, detect_rows):
                  "D1 AUC | D2 AUC | D3 AUC | detector status |")
     lines.append("|---|---|---|---|---|---|---|---|---|")
     rowsout = []
-    # iterate in (family, canonical count-level order) -- NOT alphabetical on level,
+    # iterate in (family, canonical count-level order) -- not alphabetical on level,
     # since "bright" < "medium" as strings would consume the shared bootstrap rng
     # stream in a different order per cell than the canonical reproducer
     # (scripts/analyze_ns_bench_countctl.py, which visits medium before bright for
@@ -177,7 +173,7 @@ def ns_flag_table(rows, detect_rows):
         gz = np.array([r["ns"]["logz"] for r in rs], float)
         resid = gz - (coef[0] * np.log10(gc) + coef[1])
         mean_r = float(resid.mean())
-        # bootstrap the residual estimate over BOTH sources of uncertainty: the clean
+        # bootstrap the residual estimate over both sources of uncertainty: the clean
         # trend fit (each b) and the finite cell itself (resample the n cell spectra).
         # dropping the cell resample understates the CI badly for small n.
         bmeans = []
@@ -203,9 +199,7 @@ def ns_flag_table(rows, detect_rows):
     return "\n".join(lines), rowsout
 
 
-# --------------------------------------------------------------------------
 # truth-recovery summary (clean spectra: NS 90% interval contains truth?)
-# --------------------------------------------------------------------------
 
 def truth_recovery(rows):
     """Per level, fraction of clean spectra whose truth falls in the NS 5-95%

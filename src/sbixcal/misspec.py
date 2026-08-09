@@ -1,4 +1,4 @@
-"""Misspecification generators B1-B4 (Phase 1).
+"""Misspecification generators B1-B4.
 
 Each family takes a base model + its priors and produces spectra that deviate
 from the well-specified Model A along a configurable strength grid:
@@ -60,9 +60,7 @@ def _base_nuisance(base_model_name, prior_cfg, n, rng):
     return _priors.sample_prior(prior_cfg, order, n, rng), order
 
 
-# --------------------------------------------------------------------------
 # per-family parameter assembly
-# --------------------------------------------------------------------------
 
 def _params_b1(base_model_name, prior_cfg, n, rng, strength, fixed):
     """B1: base params + Gaussian line. strength = line norm."""
@@ -107,7 +105,7 @@ def _params_b3(base_model_name, prior_cfg, n, rng, strength, fixed):
 
 def _params_b4(base_model_name, prior_cfg, n, rng, strength, fixed):
     """B4: gain shift. strength = gain percent (e.g. 2.0 -> gain 1.02). The model
-    is the CLEAN base model; the misspecification lives in the response."""
+    is the clean base model; the misspecification lives in the response."""
     src, _ = _base_nuisance(base_model_name, prior_cfg, n, rng)
     model = _models.build_model(base_model_name)
     return model, src  # gain applied to obsconf by caller
@@ -116,9 +114,7 @@ def _params_b4(base_model_name, prior_cfg, n, rng, strength, fixed):
 FAMILIES = {"B1": _params_b1, "B2": _params_b2, "B3": _params_b3, "B4": _params_b4}
 
 
-# --------------------------------------------------------------------------
-# in-memory population generation (used by the Phase-4 detect benchmark)
-# --------------------------------------------------------------------------
+# in-memory population generation (used by the detect benchmark)
 
 def simulate_misspec_population(
     base_model_name: str,
@@ -130,14 +126,14 @@ def simulate_misspec_population(
     seed: int,
     fixed: dict | None = None,
 ):
-    """Generate ``n`` misspecified spectra for one (family, strength) IN MEMORY.
+    """Generate ``n`` misspecified spectra for one (family, strength) in memory.
 
     Mirrors :func:`generate_family_point` exactly (same per-family parameter
     assembly, same B4 gain-shift-on-response path) but returns arrays instead of
     writing an npz -- the detection benchmark needs to draw fresh misspecified test
     populations on the fly without disk round-trips.
 
-    ``obsconf`` is the EXPOSURE-SCALED ObsConfiguration for the count level (the
+    ``obsconf`` is the exposure-scaled ObsConfiguration for the count level (the
     caller scales it from the checkpoint's exposure). For B4 the gain shift is
     applied here to a copy, leaving the caller's obsconf untouched.
 
@@ -167,9 +163,7 @@ def simulate_misspec_population(
     return x, theta, present
 
 
-# --------------------------------------------------------------------------
 # generation
-# --------------------------------------------------------------------------
 
 def generate_family_point(config, family, level, strength, force=False):
     """Generate one (family, exposure-level, strength) dataset -> npz, skip-if-exists."""
@@ -191,7 +185,7 @@ def generate_family_point(config, family, level, strength, force=False):
     obsconf = _responses.scale_exposure(base, float(level["exposure_s"]))
 
     n = int(level.get("n", config.get("n", 5000)))
-    # NOTE: use a stable sha1-based hash, NOT Python's built-in
+    # NOTE: use a stable sha1-based hash, not Python's built-in
     # hash(), which is per-process salted (PYTHONHASHSEED) and would make this seed
     # -- and hence the generated dataset -- non-reproducible across runs/sessions.
     seed = config["seed"] + level.get("seed_offset", 0) + _stable_hash(family + slabel)

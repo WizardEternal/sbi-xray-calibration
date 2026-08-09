@@ -1,4 +1,4 @@
-"""Config-driven spectral simulator for sbi-xray-calibration (Phase 1).
+"""Config-driven spectral simulator for sbi-xray-calibration.
 
 Generates Poisson-sampled X-ray spectra for the well-specified Model A (dev /
 production) at three exposure levels, from a YAML config + global seed, and
@@ -26,9 +26,7 @@ from . import priors as _priors
 from . import responses as _responses
 
 
-# --------------------------------------------------------------------------
 # config IO
-# --------------------------------------------------------------------------
 
 def load_config(path: str) -> dict:
     with open(path, "r") as f:
@@ -44,9 +42,7 @@ def _resolve_data_path(name: str) -> Path:
     return _repo_root() / "data" / "sim" / f"{name}.npz"
 
 
-# --------------------------------------------------------------------------
 # core simulation
-# --------------------------------------------------------------------------
 
 def simulate_spectra(
     base_model_name: str,
@@ -77,11 +73,11 @@ def simulate_spectra(
 
 def fold_theta(base_model_name, param_order, theta, obsconf):
     """Fold an explicit array of parameter vectors through ``obsconf`` to get the
-    NOISELESS per-channel model counts (lambda).
+    noiseless per-channel model counts (lambda).
 
     Unlike ``simulate_spectra`` (which draws theta from a prior), this takes theta
-    directly -- used by the Phase-3 importance-sampling refinement, where the
-    proposal samples must be folded through the SAME response to evaluate the
+    directly -- used by the importance-sampling refinement, where the
+    proposal samples must be folded through the same response to evaluate the
     exact Poisson likelihood p(x | theta) = Poisson(x; lambda(theta)).
 
     ``theta`` is ``(M, n_params)`` in ``param_order`` (linear units). Returns
@@ -106,9 +102,7 @@ def _fold_expected_counts(base_model_name, prior_cfg, obsconf, n, rng):
     return np.median(x.sum(axis=1))
 
 
-# --------------------------------------------------------------------------
 # exposure calibration
-# --------------------------------------------------------------------------
 
 def calibrate_exposures(config: dict, n_probe: int = 20000):
     """Find, for each requested count target, the exposure (seconds) giving that
@@ -146,9 +140,7 @@ def calibrate_exposures(config: dict, n_probe: int = 20000):
     return results
 
 
-# --------------------------------------------------------------------------
 # dataset generation (skip-if-exists)
-# --------------------------------------------------------------------------
 
 def generate_level(config: dict, level: dict, force: bool = False) -> Path:
     """Generate one exposure level's dataset and save to data/sim/. Skips if the
@@ -204,9 +196,7 @@ def generate_all(config: dict, force: bool = False, only_level: str | None = Non
     return paths
 
 
-# --------------------------------------------------------------------------
 # CLI
-# --------------------------------------------------------------------------
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Config-driven X-ray spectral simulator")

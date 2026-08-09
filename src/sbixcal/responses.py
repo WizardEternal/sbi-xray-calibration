@@ -50,7 +50,7 @@ def scale_exposure(obsconf, target_exposure: float):
     `target_exposure` (seconds).
 
     The example obsconf folds exposure into the transfer matrix (verified:
-    setting the `exposure` data_var alone does NOT change counts). We instead
+    setting the `exposure` data_var alone does not change counts). We instead
     rescale the transfer matrix by target/native, which scales expected counts
     exactly linearly while preserving the realistic 102-channel grouping.
     """

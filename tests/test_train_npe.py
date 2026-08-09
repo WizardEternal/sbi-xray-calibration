@@ -1,10 +1,10 @@
-"""Phase-2 unit tests for NPE training (train_npe.py).
+"""Unit tests for NPE training (train_npe.py).
 
 Run with the repo venv:
     .venv\\Scripts\\python.exe -m pytest -q tests/test_train_npe.py
 
 These are deliberately small (1k sims, 2 epochs) so the suite runs in seconds.
-They check the Phase-2 contract from the task brief:
+They check the training contract from the task brief:
   - the 1-D CNN embedding net forward produces the configured embed_dim,
   - a short training run on 1k sims completes and yields finite loss curves,
   - a checkpoint round-trips: save -> cold load_posterior -> sample, and
@@ -21,9 +21,7 @@ import torch
 from sbixcal import train_npe as tn
 
 
-# --------------------------------------------------------------------------
 # helpers / fixtures
-# --------------------------------------------------------------------------
 
 DEV_CFG = {
     "name": "test_dev",
@@ -60,9 +58,7 @@ def _fake_data(n=1000, n_channels=102, seed=0):
             torch.as_tensor(x, dtype=torch.float32))
 
 
-# --------------------------------------------------------------------------
 # embedding net forward shape
-# --------------------------------------------------------------------------
 
 def test_embedding_forward_shape():
     net = tn.build_embedding_net(DEV_CFG, n_channels=102)
@@ -89,9 +85,7 @@ def test_embedding_log1p_handles_zeros_and_large():
     assert torch.isfinite(out).all()
 
 
-# --------------------------------------------------------------------------
 # 2-epoch training on 1k sims runs
-# --------------------------------------------------------------------------
 
 def test_train_two_epochs_runs():
     theta, x = _fake_data(n=1000, seed=1)
@@ -109,9 +103,7 @@ def test_train_two_epochs_runs():
     assert s.shape == (10, len(PARAM_ORDER))
 
 
-# --------------------------------------------------------------------------
 # checkpoint save -> cold load -> sample roundtrip is deterministic
-# --------------------------------------------------------------------------
 
 def test_checkpoint_roundtrip_deterministic(tmp_path):
     theta, x = _fake_data(n=1000, seed=2)
@@ -141,9 +133,7 @@ def test_checkpoint_roundtrip_deterministic(tmp_path):
     assert torch.equal(s1, s2)
 
 
-# --------------------------------------------------------------------------
 # validation helpers: credible interval + coverage fraction
-# --------------------------------------------------------------------------
 
 def test_credible_interval_recovers_known_quantiles():
     # n_params=2; column 0 ~ U[0,1], column 1 ~ U[10,20]; large N so the

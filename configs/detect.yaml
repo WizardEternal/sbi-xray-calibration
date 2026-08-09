@@ -1,14 +1,14 @@
-# Phase-4 misspecification-detection benchmark config.
+# Misspecification-detection benchmark config.
 #
-# Drives scripts/run_detect_benchmark.py. The benchmark evaluates THREE detectors
-# (detect.py) against FOUR misspecification families (B1-B4, misspec.py) over a
+# Drives scripts/run_detect_benchmark.py. The benchmark evaluates three detectors
+# (detect.py) against four misspecification families (B1-B4, misspec.py) over a
 # strength grid x 3 count levels, building a ROC/AUC per
 # (family, strength, level, detector) cell.
 #
-# It operates on the PRODUCTION trained flows
+# It operates on the production trained flows
 # (outputs/models/train_npe_prod_{faint,medium,bright}/), which were trained on
 # Model A production = tbabs*(powerlaw+blackbody), 5 params. The prior, base model,
-# exposure and response are read FROM each checkpoint's arch.json; this config only
+# exposure and response are read from each checkpoint's arch.json; this config only
 # sets the misspecification grid, the per-cell sample sizes, the detector
 # hyperparameters, and the seeds.
 #
@@ -30,7 +30,7 @@ seed: 20260611
 
 # ---- per-cell test-set sizes ----------------------------------------------
 # Each (family, strength, level) cell draws n_misspec misspecified test spectra.
-# A SHARED pool of n_clean clean Model-A spectra per level serves as the common
+# A shared pool of n_clean clean Model-A spectra per level serves as the common
 # negative class for every family/strength ROC at that level (drawn once, reused).
 n_misspec: 100        # misspecified spectra per (family, strength, level) cell
 n_clean: 200          # shared clean spectra per level (the ROC negative class)
@@ -60,8 +60,8 @@ d3:                    # simplified C2ST
 # Base model + priors are read from the checkpoint, so families just need their
 # strength grids (thinned to <=5 points/family) and fixed params. The grids are
 # the production-model analogues of configs/misspec_modelA_dev.yaml, with the
-# first entry of each ordered grid being the (near-)CONTROL and the last the
-# STRONGEST misspecification. Strength 0 / gain 0 / f=1 / kT=10 are near-clean.
+# first entry of each ordered grid being the (near-)control and the last the
+# strongest misspecification. Strength 0 / gain 0 / f=1 / kT=10 are near-clean.
 #
 # For B1 the strength is the unmodeled Fe-K line norm (maps monotonically to
 # equivalent width; the EW per strength is reported by the consequence analysis).
@@ -74,7 +74,7 @@ families:
     strength_grid: [0.9, 0.7, 0.5, 0.3]                  # descending f: weak -> strong leak
   B3:                  # continuum swap powerlaw -> thermal bremsstrahlung; grid = kT [keV]
     fixed: {use_diskbb: false}
-    strength_grid: [10.0, 5.0, 3.0, 1.5]                 # high kT ~ PL-like; low kT strongly curved
+    strength_grid: [10.0, 5.0, 3.0, 1.5]                 # high kT ~ pl-like; low kT strongly curved
   B4:                  # detector gain shift; grid = gain percent (0 = nominal)
     fixed: {}
     strength_grid: [0.5, 1.0, 2.0, 3.0]                  # sub-percent -> few-percent gain

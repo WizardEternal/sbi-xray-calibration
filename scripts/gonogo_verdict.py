@@ -8,10 +8,10 @@ prints:
   * the detector spot-check rows (B1 / B4 D1 AUC vs expected), if present;
   * a recommendation line.
 
-Verdict rule (over the three FULL-RESEED variants seed101/202/303):
+Verdict rule (over the three full-reseed variants seed101/202/303):
   * ROBUST   -- every reseed shows raw coverage deviation > ROBUST_DEV (0.06):
                 the over-confidence reproduces across independent training runs.
-  * FRAGILE  -- ANY reseed is near-calibrated (raw deviation < FRAGILE_DEV 0.03):
+  * FRAGILE  -- any reseed is near-calibrated (raw deviation < FRAGILE_DEV 0.03):
                 the primary is at least partly a single-run artifact.
   * MIXED    -- neither (some reseeds clearly over-confident, none cleanly
                 near-calibrated, but not all above the ROBUST floor).
@@ -38,8 +38,8 @@ import json
 from pathlib import Path
 
 # ---- thresholds ------------------------------------
-ROBUST_DEV = 0.06      # reseed raw coverage deviation ABOVE this = over-confident
-FRAGILE_DEV = 0.03     # reseed raw coverage deviation BELOW this = near-calibrated
+ROBUST_DEV = 0.06      # reseed raw coverage deviation above this = over-confident
+FRAGILE_DEV = 0.03     # reseed raw coverage deviation below this = near-calibrated
 
 RESEED_VARIANTS = ("gonogo_seed101", "gonogo_seed202", "gonogo_seed303")
 UNCAPPED_VARIANT = "gonogo_uncapped"
@@ -69,7 +69,7 @@ def load_summary(path: Path) -> list[dict]:
 def classify(rows: list[dict],
              robust_dev: float = ROBUST_DEV,
              fragile_dev: float = FRAGILE_DEV) -> dict:
-    """Classify the primary result from summary rows. PURE (unit-tested).
+    """Classify the primary result from summary rows. Pure (unit-tested).
 
     Looks at the ``kind == "calibration"`` rows. Uses the three reseed variants'
     ``cov_dev_raw`` for the ROBUST/FRAGILE/MIXED verdict and the uncapped variant's

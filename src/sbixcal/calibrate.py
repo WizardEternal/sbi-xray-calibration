@@ -1,6 +1,6 @@
-"""Calibration-testing + recalibration suite for sbi-xray-calibration (Phase 3).
+"""Calibration-testing + recalibration suite for sbi-xray-calibration.
 
-Operates on ANY trained checkpoint directory (one flow per count level; see
+Operates on any trained checkpoint directory (one flow per count level; see
 ``train_npe.load_posterior``). Everything is config-driven, seeded, and writes
 artifacts with skip-if-exists so figures are regenerable.
 
@@ -8,7 +8,7 @@ What's here
 -----------
 1. **SBC** (Talts et al. 2018, arXiv:1804.06788) -- via sbi's built-in
    ``sbi.diagnostics.run_sbc`` + ``check_sbc``. N fresh simulations are drawn
-   from the SAME prior/simulator the flow was trained for (``simulate.py``), the
+   from the same prior/simulator the flow was trained for (``simulate.py``), the
    rank statistic per parameter is computed by sbi, and we record the uniformity
    diagnostics sbi returns: KS p-values (``ks_pvals``) and the C2ST-vs-uniform
    accuracy (``c2st_ranks``). Rank histograms are drawn with
@@ -16,7 +16,7 @@ What's here
 
 2. **Expected coverage / TARP** (Lemos et al. 2023, arXiv:2302.03026) -- via
    ``sbi.diagnostics.run_tarp`` + ``check_tarp``. The expected-coverage-vs-nominal
-   (ECP vs alpha) curve is saved as npz + figure, and we ALSO compute the simple
+   (ECP vs alpha) curve is saved as npz + figure, and we also compute the simple
    per-parameter empirical coverage of equal-tailed credible intervals vs nominal
    (a direct, interpretable per-parameter coverage curve) for the before/after
    recalibration comparison.
@@ -32,7 +32,7 @@ What's here
        where p_Poisson is the exact Poisson likelihood of the observed counts
        given the noiseless model counts (lambda) from ``simulate.py``, p(theta)
        is the (box-uniform) prior, and q_NPE is the flow's ``log_prob``. We
-       compute the effective sample size (ESS) and FLAG low-ESS cases: a low ESS
+       compute the effective sample size (ESS) and flag low-ESS cases: a low ESS
        is Paper III's own diagnostic that the NPE proposal is a poor match to the
        true posterior (the correction cannot rescue a badly-placed proposal).
    (b) **Conformal / quantile recalibration** of the 1-D marginals (Lemos et al.
@@ -69,9 +69,7 @@ from . import priors as _priors
 from . import train_npe as _tn
 
 
-# ==========================================================================
 # fresh test-set generation (same prior + simulator the flow was trained for)
-# ==========================================================================
 
 def make_fresh_test_set(
     base_model: str,
@@ -82,7 +80,7 @@ def make_fresh_test_set(
     response_name: str | None = None,
     simulate_fn: Callable | None = None,
 ):
-    """Draw ``n`` (theta, x_expected, x_poisson) triples from the SAME prior and
+    """Draw ``n`` (theta, x_expected, x_poisson) triples from the same prior and
     simulator the flow was trained for, at exposure ``exposure_s``.
 
     Returns ``(theta, x_poisson, x_expected, param_names)`` with theta and x as
@@ -109,7 +107,7 @@ def make_fresh_test_set(
         base_model, prior_cfg, obsconf, n, rng,
         apply_poisson=False, seed_for_fakeit=seed,
     )
-    # realize Poisson counts from the SAME expected counts (independent rng)
+    # realize Poisson counts from the same expected counts (independent rng)
     rng_p = np.random.default_rng(seed + 1)
     x_pois = rng_p.poisson(np.clip(x_exp, 0.0, None)).astype(np.float32)
     return (
@@ -120,9 +118,7 @@ def make_fresh_test_set(
     )
 
 
-# ==========================================================================
 # 1. SBC  (sbi.diagnostics.run_sbc / check_sbc; Talts et al. 2018)
-# ==========================================================================
 
 @dataclass
 class SBCResult:
@@ -205,9 +201,7 @@ def save_sbc_figure(sbc: SBCResult, out_path: Path, plot_type: str = "hist"):
     return out_path
 
 
-# ==========================================================================
 # 2. Expected coverage / TARP  (sbi.diagnostics.run_tarp / check_tarp; Lemos+23)
-# ==========================================================================
 
 @dataclass
 class TARPResult:
@@ -267,10 +261,8 @@ def save_tarp_npz_and_figure(tarp: TARPResult, npz_path: Path, fig_path: Path):
     return npz_path, fig_path
 
 
-# ==========================================================================
 # per-parameter empirical coverage of equal-tailed credible intervals
 # (direct, interpretable; used for the before/after recalibration comparison)
-# ==========================================================================
 
 def empirical_coverage_curve(
     samples_per_obs: list[np.ndarray],
@@ -302,10 +294,8 @@ def empirical_coverage_curve(
     return cov
 
 
-# ==========================================================================
 # 3a. Importance-sampling refinement with the exact Poisson likelihood
 #     (Barret & Dupourque Paper III, arXiv:2512.16709, Sec. 2-3)
-# ==========================================================================
 
 def poisson_loglik(counts: np.ndarray, model_counts: np.ndarray) -> np.ndarray:
     r"""Exact Poisson log-likelihood, summed over channels.
@@ -360,7 +350,7 @@ def importance_refine(
 
     **Low-ESS is Paper III's own NPE-failure diagnostic.** A small effective
     sample size means the NPE proposal q badly mismatches the true posterior, so
-    the reweighting is dominated by a few samples and CANNOT be trusted to repair
+    the reweighting is dominated by a few samples and cannot be trusted to repair
     the posterior -- the correct response is to flag it (and, in production,
     fall back to sequential NPE or nested sampling), not to report the IS result
     as if it were reliable.
@@ -455,7 +445,7 @@ def is_coverage_curve(
     with the exact Poisson likelihood, then form **weighted** equal-tailed central
     credible intervals at each nominal level and measure how often the truth falls
     inside. We return both the all-cases coverage and a coverage restricted to the
-    cases that PASS the low-ESS gate (Paper III's own failure flag), so the
+    cases that pass the low-ESS gate (Paper III's own failure flag), so the
     write-up can state plainly where IS refinement works and where it fails for
     lack of effective sample size.
 
@@ -511,10 +501,8 @@ def is_coverage_curve(
     }
 
 
-# ==========================================================================
 # 3b. Conformal / quantile recalibration of 1-D marginals
 #     (split-conformal / expected-coverage style; Vovk+05, Lemos+23)
-# ==========================================================================
 
 @dataclass
 class ConformalRecalibrator:
@@ -522,8 +510,8 @@ class ConformalRecalibrator:
 
     For each parameter we collect, on the calibration set, the posterior CDF value
     at the truth -- u_i = F_post,i(theta_true,i) -- which under perfect calibration
-    is Uniform(0,1). We store the EMPIRICAL CDF of these u-values, ``G``. To build a
-    recalibrated central interval of nominal level ``c`` for a NEW posterior, we map
+    is Uniform(0,1). We store the empirical CDF of these u-values, ``G``. To build a
+    recalibrated central interval of nominal level ``c`` for a new posterior, we map
     the nominal tail quantiles {(1-c)/2, (1+c)/2} through ``G^{-1}`` to the adjusted
     quantile levels that, on the calibration distribution, actually attain that
     coverage, and read those adjusted quantiles off the new posterior samples.
@@ -531,7 +519,7 @@ class ConformalRecalibrator:
     This is the 1-D-marginal, quantile-level form of split-conformal recalibration
     / the empirical-coverage remap (cf. Vovk et al. 2005; Angelopoulos & Bates
     2021; the expected-coverage diagnostic of Lemos et al. 2023). It is intentionally
-    simple: it only rescales marginal credible-interval WIDTHS to fix 1-D coverage;
+    simple: it only rescales marginal credible-interval widths to fix 1-D coverage;
     it does not touch the joint dependence structure.
     """
     param_names: list[str]
@@ -582,7 +570,7 @@ class ConformalRecalibrator:
         return lo, hi
 
     def coverage_curve(self, samples_per_obs, truths, nominal_levels):
-        """Empirical per-parameter coverage AFTER recalibration."""
+        """Empirical per-parameter coverage after recalibration."""
         truths = np.asarray(truths)
         n_obs = len(samples_per_obs)
         n_params = truths.shape[1]
@@ -600,9 +588,7 @@ class ConformalRecalibrator:
                 "u_sorted": [u.tolist() for u in self.u_sorted]}
 
 
-# ==========================================================================
 # before/after coverage comparison (npz + figure)
-# ==========================================================================
 
 def coverage_before_after(
     samples_cal, truths_cal,
@@ -666,9 +652,7 @@ def save_coverage_before_after(
     return npz_path, fig_path
 
 
-# ==========================================================================
 # orchestration: full suite on one checkpoint directory
-# ==========================================================================
 
 @dataclass
 class CalibrationConfig:

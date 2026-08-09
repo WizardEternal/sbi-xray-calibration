@@ -1,4 +1,4 @@
-"""Run the full Phase-3 calibration suite against a trained checkpoint dir.
+"""Run the full calibration suite against a trained checkpoint dir.
 
 Usage (repo venv):
     .venv\\Scripts\\python.exe scripts\\run_calibration.py --config configs\\calibration.yaml
@@ -18,7 +18,7 @@ The flow, prior, base model, exposure and response are all read from the
 checkpoint's arch.json -- the fresh test sims use exactly the prior/simulator the
 flow was trained for (the correct SBC setup).
 
-This script READS a checkpoint directory; it never writes into outputs/models.
+This script reads a checkpoint directory; it never writes into outputs/models.
 Set OMP_NUM_THREADS=2 when the machine is busy.
 """
 
@@ -97,9 +97,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
     print(f"\n=== calibrating {level}: {ckpt_dir.name} "
           f"(~{info['median_total_counts']:.0f} counts) ===")
 
-    # ====================================================================
-    # 1. SBC  (fresh sims from the SAME prior/simulator the flow was trained for)
-    # ====================================================================
+    # 1. SBC  (fresh sims from the same prior/simulator the flow was trained for)
     n_sbc = int(cfg.get("n_sbc", 1000))
     n_post = int(cfg.get("n_posterior_samples", 1000))
     theta_sbc, x_sbc, _, names = C.make_fresh_test_set(
@@ -118,9 +116,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
           f"C2ST(ranks) {np.round(sbc.c2st_ranks, 3).tolist()}  "
           f"[stat: {sbc.uniformity_stat}]")
 
-    # ====================================================================
     # 2. TARP expected coverage (joint)
-    # ====================================================================
     n_tarp = int(cfg.get("n_tarp", n_sbc))
     theta_tp, x_tp, _, _ = C.make_fresh_test_set(
         base_model, prior_cfg, exposure_s, n_tarp,
@@ -130,9 +126,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
     C.save_tarp_npz_and_figure(tarp, out_dir / "tarp.npz", out_dir / "tarp.png")
     print(f"  TARP: ATC={tarp.atc:+.4f}  KS p={tarp.ks_pval:.3f}")
 
-    # ====================================================================
     # 3b. conformal recalibration + before/after per-parameter coverage
-    # ====================================================================
     n_cal = int(cfg.get("n_cal", 400))
     n_test = int(cfg.get("n_test", 400))
     n_cps = int(cfg.get("coverage_posterior_samples", n_post))
@@ -160,9 +154,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
     print(f"  Coverage (mean |emp-nominal|): raw={raw_dev:.3f} -> "
           f"recalibrated={recal_dev:.3f}")
 
-    # ====================================================================
     # 3a. importance-sampling refinement (Paper III) -- ESS report
-    # ====================================================================
     n_is_cases = int(cfg.get("n_is_cases", 20))
     n_is = int(cfg.get("n_is_samples", 2000))
     low_ess_frac = float(cfg.get("low_ess_frac", 0.1))
@@ -172,7 +164,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
         base_model, prior_cfg, exposure_s, n_is_cases,
         seed=base_seed + 505, response_name=response)
 
-    # model_counts_fn for IS: fold proposal thetas through the SAME response to get
+    # model_counts_fn for IS: fold proposal thetas through the same response to get
     # noiseless model counts (lambda) for the exact Poisson likelihood.
     from sbixcal import responses as _responses
     from sbixcal import simulate as _sim
@@ -208,16 +200,14 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
           f"(frac {np.median(essfrac_arr):.3f}); "
           f"{n_low}/{n_is_cases} flagged low-ESS (<{low_ess_frac:.0%})")
 
-    # ====================================================================
-    # 3a-cov. IS-refinement BEFORE/AFTER coverage (the recalibration partner
+    # 3a-cov. IS-refinement before/after coverage (the recalibration partner
     #         of the conformal before/after above). Run on a held-out IS-coverage
     #         test set so raw, conformal and IS coverage are directly comparable.
-    # ====================================================================
     n_is_cov = int(cfg.get("n_is_cov", 150))
     th_isc, x_isc_pois, x_isc_exp, _ = C.make_fresh_test_set(
         base_model, prior_cfg, exposure_s, n_is_cov,
         seed=base_seed + 606, response_name=response)
-    # raw (un-refined) per-parameter coverage on the SAME observations:
+    # raw (un-refined) per-parameter coverage on the same observations:
     s_isc = C.sample_posterior_batch(post, x_isc_pois, n_cps,
                                      seed=base_seed + 61, device=device)
     cov_raw_isc = C.empirical_coverage_curve(s_isc, np.asarray(th_isc), nominal)
@@ -239,9 +229,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
           f"{is_cov['n_low_ess']}/{is_cov['n_cases']} low-ESS "
           f"(frac {is_cov['n_low_ess']/is_cov['n_cases']:.2f})")
 
-    # ====================================================================
     # summary
-    # ====================================================================
     out_summary = {
         "level": level,
         # repo-relative, forward-slash form: summary.json is a committed
@@ -264,7 +252,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
             # headline coverage (mean over parameters) at the standard nominal
             # levels, raw NPE vs the two recalibrations. The IS numbers come
             # from the separate IS-coverage test set (cov_raw_isc is raw NPE on
-            # the SAME observations, so raw_is and raw_conformal differ only by
+            # the same observations, so raw_is and raw_conformal differ only by
             # test-set sampling noise -- both report raw-NPE under-coverage).
             "at_levels": {
                 f"{int(round(t*100))}": {

@@ -1,5 +1,5 @@
 # Misspecification families B1-B4 on top of Model A (dev): tbabs*powerlaw.
-# Shares the base model, priors, response, seed and the EMPIRICALLY CALIBRATED
+# Shares the base model, priors, response, seed and the empirically calibrated
 # exposure levels with configs/sim_modelA_dev.yaml (so each misspecified set is
 # directly comparable to the clean set at the same count regime).
 #

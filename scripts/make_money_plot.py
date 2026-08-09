@@ -1,30 +1,30 @@
-"""The Phase-6 money plot: outputs/money_plot.png.
+"""The money plot: outputs/money_plot.png.
 
 Two panels, side by side, colorblind-safe (Okabe-Ito), dpi>=200:
 
-  panel (a)  CALIBRATION: empirical coverage vs nominal credibility, raw NPE
+  panel (a)  calibration: empirical coverage vs nominal credibility, raw NPE
              vs the better recalibration, across the three count regimes
              (faint ~100 / medium ~1000 / bright ~10000 counts). Below the
              diagonal = over-confident (under-covers). This is the
-             coverage_money_panel collapsed onto ONE axes (one raw + one recal
+             coverage_money_panel collapsed onto one axes (one raw + one recal
              curve per level) so the count-regime trend is read at a glance:
              faint/medium sit on the diagonal, bright sags below it and the
              recalibration pulls it back.
 
-  panel (b)  DETECTION: ROC curves at the MEDIUM (~1000-count) level, the best
+  panel (b)  detection: ROC curves at the medium (~1000-count) level, the best
              detector per misspecification family (B1 line, B2 partial-cover,
-             B3 brems-continuum, B4 gain-shift), each at its STRONGEST grid
+             B3 brems-continuum, B4 gain-shift), each at its strongest grid
              point, plus B4 which stays on the chance diagonal at every strength
              (the gain-shift negative result). Rebuilt from the per-spectrum
              scores in outputs/detect/scores.jsonl (the benchmark stays a pure
              data producer).
 
-Data sources (READ-only):
+Data sources (read-only):
   outputs/calibration/{faint,medium,bright}/coverage_before_after.npz + summary.json + is_coverage.npz
   outputs/detect/scores.jsonl  (+ results.jsonl for the AUC annotations)
   configs/detect.yaml          (family strength grids / labels)
 
-Writes ONLY:
+Writes only:
   outputs/money_plot.png
 
 The figure itself is committed. Regenerating it does no model loading and no
@@ -78,9 +78,7 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-# --------------------------------------------------------------------------
 # panel (a): calibration coverage curves
-# --------------------------------------------------------------------------
 def _calib_dir(level: str) -> Path:
     return _repo_root() / "outputs" / "calibration" / level
 
@@ -123,7 +121,7 @@ def choose_recal(d: dict):
 
 # GO/NO-GO robustness variants: the bright-level reseeds + the uncapped retrain.
 # Their raw coverage curves form the "near-the-diagonal" envelope that shows the
-# production-flow over-confidence is a SINGLE-FLOW training artifact, not the
+# production-flow over-confidence is a single-flow training artifact, not the
 # count regime. Loaded read-only from outputs/gonogo/<variant>/.
 GONOGO_VARIANTS = ["gonogo_seed101", "gonogo_seed202", "gonogo_seed303",
                    "gonogo_uncapped"]
@@ -151,7 +149,7 @@ def load_gonogo_raw_band():
             nominal_ref = nominal
         curves.append(raw)
         # report the deviation with the paper/gonogo per-param metric (mean over params
-        # AND levels of |per-param coverage - nominal|), not the mean-curve deviation.
+        # and levels of |per-param coverage - nominal|), not the mean-curve deviation.
         devs.append(float(np.mean(np.abs(cov_pp - nominal[:, None]))))
     if not curves:
         return None
@@ -165,7 +163,7 @@ def plot_calibration(ax):
             label="perfect calibration")
 
     # reseed/uncapped raw-coverage band (bright level): the "it's a single-flow
-    # artifact" evidence. Drawn UNDER the curves so it reads as context.
+    # artifact" evidence. Drawn under the curves so it reads as context.
     band = load_gonogo_raw_band()
     if band is not None:
         nb, lo, hi, devs = band
@@ -198,9 +196,7 @@ def plot_calibration(ax):
     return data
 
 
-# --------------------------------------------------------------------------
 # panel (b): detection ROC curves at the medium level
-# --------------------------------------------------------------------------
 def _read_jsonl(path: Path):
     rows = []
     with open(path) as f:
@@ -223,15 +219,15 @@ def best_cell_per_family(results, level):
     return best
 
 
-# Detector classes: D1/D2 are per-spectrum UNLABELED novelty scores
-# (deployable trust scores); D3 is a POPULATION SEPARABILITY statistic (supervised
-# two-sample), NOT a per-spectrum trust score, so it must not be plotted as a peer
+# Detector classes: D1/D2 are per-spectrum unlabeled novelty scores
+# (deployable trust scores); D3 is a population separability statistic (supervised
+# two-sample), not a per-spectrum trust score, so it must not be plotted as a peer
 # per-spectrum ROC curve. We segregate it into its own (dotted, greyed) overlay.
 PER_SPECTRUM = ("D1", "D2")
 
 
 def strongest_cell_per_family(results, level, cfg, detectors=None):
-    """For each family, the STRONGEST grid point and the detector that wins it.
+    """For each family, the strongest grid point and the detector that wins it.
 
     ``detectors`` (optional) restricts the winner search to a subset (e.g. the
     per-spectrum detectors D1/D2); if None, all detectors are eligible.
@@ -277,9 +273,9 @@ def plot_detection(ax, level="medium"):
     except Exception:
         pass
 
-    # Per-spectrum detectors only (D1/D2) win the SOLID ROC curves -- those are the
+    # Per-spectrum detectors only (D1/D2) win the solid ROC curves -- those are the
     # deployable, single-unlabeled-spectrum trust scores. D3 (population
-    # separability) is overlaid separately, greyed + dotted + flagged, so it is NOT
+    # separability) is overlaid separately, greyed + dotted + flagged, so it is not
     # read as a peer per-spectrum detector.
     cells = strongest_cell_per_family(results, level, cfg, detectors=PER_SPECTRUM)
     d3_cells = strongest_cell_per_family(results, level, cfg, detectors=("D3",))
@@ -300,7 +296,7 @@ def plot_detection(ax, level="medium"):
                 label=f"{st['label']} [{c['detector']}, AUC {auc:.2f}]")
 
     # (ii) D3 population-separability overlay (dotted grey) -- segregated, labelled
-    # once, NOT as a per-spectrum win. Show only where it is well above its ~0.5-AUC
+    # once, not as a per-spectrum win. Show only where it is well above its ~0.5-AUC
     # control floor (B2/B3) so the panel stays readable.
     d3_drawn = False
     for fam in order:

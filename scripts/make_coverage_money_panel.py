@@ -1,21 +1,21 @@
-"""Phase-3 money plot: the coverage-vs-nominal panel.
+"""Money plot: the coverage-vs-nominal panel.
 
-Reads the finished Phase-3 calibration artifacts in
+Reads the finished calibration artifacts in
 ``outputs/calibration/{faint,medium,bright}/`` and produces
 
     outputs/diagnostics/coverage_money_panel.png
 
 a single panel of coverage-vs-nominal curves, one count level per subplot, raw
-NPE vs the BETTER recalibration at that level, with the diagonal reference. The
+NPE vs the better recalibration at that level, with the diagonal reference. The
 "coverage" plotted is the mean over the 5 Model-A parameters of the per-parameter
 empirical equal-tailed credible-interval coverage (the same numbers the
-before/after npz stores), so a curve ON the diagonal = perfectly calibrated,
-BELOW = overconfident (under-covers), ABOVE = conservative.
+before/after npz stores), so a curve on the diagonal = perfectly calibrated,
+below = overconfident (under-covers), above = conservative.
 
 Which recalibration is plotted per level (chosen by smallest mean |emp-nominal|
 deviation, read from each level's summary.json and printed):
   * faint / medium -- already near-diagonal; conformal is a near-no-op and is the
-    better (or tied) recalibration, so conformal is drawn and LABELLED.
+    better (or tied) recalibration, so conformal is drawn and labelled.
   * bright -- strongly overconfident raw; conformal repairs it best (the IS
     refinement is starved by ~97% low-ESS at this count level),
     so conformal is drawn and labelled.
@@ -30,8 +30,8 @@ Regenerable, no config: ::
 
     .venv\\Scripts\\python.exe scripts\\make_coverage_money_panel.py
 
-It READS outputs/calibration/<level>/{coverage_before_after,is_coverage}.npz and
-summary.json and WRITES only outputs/diagnostics/coverage_money_panel.png. It
+It reads outputs/calibration/<level>/{coverage_before_after,is_coverage}.npz and
+summary.json and writes only outputs/diagnostics/coverage_money_panel.png. It
 never touches outputs/detect/ or outputs/models/.
 """
 

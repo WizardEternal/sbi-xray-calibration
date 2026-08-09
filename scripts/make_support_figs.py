@@ -1,18 +1,18 @@
-"""Supporting README figures for Phase 6 (read-only over committed artifacts).
+"""Supporting README figures (read-only over committed artifacts).
 
 Produces three figures into outputs/diagnostics/ :
 
   detector_auc_grid.png
       A heatmap of detection ROC AUC, 3 detectors (D1 PPC / D2 emb-OOD /
       D3 marginal-C2ST) x 4 families (B1 line / B2 partial-cover / B3 brems /
-      B4 gain), one panel per count level, each cell showing the BEST AUC
+      B4 gain), one panel per count level, each cell showing the best AUC
       across that family's strength grid for that (detector, family). Diverging
       colormap centred at 0.5 (chance); annotated with the numeric AUC. Reads
       outputs/detect/results.jsonl + configs/detect.yaml.
 
   dgamma_silent_failure.png
       The consequence figure: signed Gamma-bias (DeltaGamma) imposed by an
-      UNDETECTED / weakly-detected misspecification, as a function of strength,
+      undetected / weakly-detected misspecification, as a function of strength,
       one line per count level, for B1 (the unmodeled Fe-K line). Reads
       outputs/detect/consequence.jsonl. The point: the line silently biases the
       photon index, and the signed bias grows with counts even where the
@@ -20,14 +20,14 @@ Produces three figures into outputs/diagnostics/ :
 
   tarp_bright_curve.png
       The bright-level TARP expected-coverage (ECP-vs-alpha) curve, with the
-      |ECP-alpha| area shaded. The figure: the SIGNED area-to-curve
+      |ECP-alpha| area shaded. The figure: the signed area-to-curve
       (ATC ~ -0.002) cancels because the curve bows above the diagonal at
-      alpha<0.5 and below at alpha>0.5, hiding the over-confidence; the UNSIGNED
+      alpha<0.5 and below at alpha>0.5, hiding the over-confidence; the unsigned
       abs-area (0.053) and max|ECP-alpha| (0.102 at alpha~0.19) catch it. Reads
       outputs/calibration/bright/tarp.npz. The lesson is "read the curve / use
       abs-area or KS", not "TARP is insufficient".
 
-Writes ONLY outputs/diagnostics/. No model loading, no heavy compute.
+Writes only outputs/diagnostics/. No model loading, no heavy compute.
 
     .venv\\Scripts\\python.exe scripts\\make_support_figs.py
 """

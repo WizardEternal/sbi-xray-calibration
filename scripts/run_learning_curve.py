@@ -1,4 +1,4 @@
-"""Phase-2 learning curve: DEV model, middle (medium) count level.
+"""Learning curve: dev model, middle (medium) count level.
 
 Trains the dev flow at N in {10k, 25k, 50k} on the medium dev dataset (prefixes
 of the 50k training set -- deterministic seed order, so a prefix is a valid

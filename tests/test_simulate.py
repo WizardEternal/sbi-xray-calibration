@@ -1,10 +1,10 @@
-"""Phase 1 unit tests for the spectral simulator and misspecification generators.
+"""Unit tests for the spectral simulator and misspecification generators.
 
 Run with the repo venv:
     .venv\\Scripts\\python.exe -m pytest -q
 
 Tests are deliberately small (a few hundred spectra) so the suite runs in
-seconds. They check the scientific invariants for the Phase 1 simulator:
+seconds. They check the scientific invariants for the simulator:
   - counts scale linearly with exposure and with norm,
   - B1 adds counts localized near 6.4 keV,
   - B4 shifts spectral features,
@@ -23,9 +23,7 @@ from sbixcal import models, priors, responses, misspec
 from sbixcal import simulate as sim
 
 
-# --------------------------------------------------------------------------
 # fixtures
-# --------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
 def base_obs():
@@ -53,9 +51,7 @@ def _expected_counts(obsconf, params):
     )
 
 
-# --------------------------------------------------------------------------
 # counts scale linearly with exposure
-# --------------------------------------------------------------------------
 
 def test_counts_scale_linearly_with_exposure(base_obs):
     params = {
@@ -83,9 +79,7 @@ def test_counts_scale_linearly_with_norm(base_obs):
     assert c3 / c1 == pytest.approx(3.0, rel=1e-4)
 
 
-# --------------------------------------------------------------------------
 # B1 adds counts localized near 6.4 keV
-# --------------------------------------------------------------------------
 
 def test_b1_adds_localized_counts_near_fe_k(base_obs, channel_energy):
     obsconf = responses.scale_exposure(base_obs, 5000.0)
@@ -138,9 +132,7 @@ def test_b1_strength_monotone(base_obs, channel_energy):
     assert all(np.diff(totals) > 0)
 
 
-# --------------------------------------------------------------------------
 # B4 shifts spectral features
-# --------------------------------------------------------------------------
 
 def test_b4_shifts_feature(base_obs, channel_energy):
     obsconf = responses.scale_exposure(base_obs, 5000.0)
@@ -186,9 +178,7 @@ def test_b4_zero_percent_is_nominal(base_obs):
     np.testing.assert_allclose(a, b, rtol=1e-6)
 
 
-# --------------------------------------------------------------------------
 # identical seeds -> identical spectra
-# --------------------------------------------------------------------------
 
 def test_identical_seed_identical_spectra(base_obs):
     obsconf = responses.scale_exposure(base_obs, 2000.0)
@@ -219,9 +209,7 @@ def test_different_seed_different_spectra(base_obs):
     assert not np.array_equal(x_a, x_b)
 
 
-# --------------------------------------------------------------------------
 # prior samples respect bounds
-# --------------------------------------------------------------------------
 
 def test_prior_samples_respect_bounds():
     rng = np.random.default_rng(0)
@@ -244,9 +232,7 @@ def test_loguniform_is_log_uniform():
     assert np.mean(logs) == pytest.approx(-3.0, abs=0.05)
 
 
-# --------------------------------------------------------------------------
 # B2 / B3 sanity (generators produce finite, sensible spectra)
-# --------------------------------------------------------------------------
 
 def test_b2_covering_fraction_changes_counts(base_obs):
     obsconf = responses.scale_exposure(base_obs, 5000.0)

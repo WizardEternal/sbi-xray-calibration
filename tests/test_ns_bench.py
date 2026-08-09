@@ -1,18 +1,18 @@
-"""Phase-5 unit tests for the nested-sampling benchmark (ns_bench.py).
+"""Unit tests for the nested-sampling benchmark (ns_bench.py).
 
 Run with the repo venv:
     .venv\\Scripts\\python.exe -m pytest -q tests/test_ns_bench.py
 
-Seeded, reduced-live-point tests covering the Phase-5 contract:
+Seeded, reduced-live-point tests covering the nested-sampling-benchmark contract:
 
-  * NS on one BRIGHT spectrum recovers the truth inside the 95% credible interval.
-    The likelihood is the EXACT Poisson likelihood of the observed counts, so at
+  * NS on one bright spectrum recovers the truth inside the 95% credible interval.
+    The likelihood is the exact Poisson likelihood of the observed counts, so at
     high counts UltraNest must bracket the generating parameters -- a direct
     correctness check on the reused likelihood + box transform.
   * NS and the IS-refinement likelihood agree on logL at sampled theta to machine
-    precision (the EXACT-REUSE check: ns_bench.make_poisson_loglike is literally
+    precision (the exact-reuse check: ns_bench.make_poisson_loglike is literally
     calibrate.poisson_loglik(counts, fold_theta(theta)), the same function the
-    Phase-3 IS-refinement calls).
+    IS-refinement calls).
   * JSONL resume-skip logic: load_done_ids returns exactly the ids already
     written, so a resumed run skips them.
 
@@ -38,10 +38,8 @@ from sbixcal import responses as R
 from sbixcal import simulate as S
 
 
-# --------------------------------------------------------------------------
 # import the CLI runner module (scripts/run_ns_benchmark.py) for the
 # cross-spectrum --workers parallelism tests
-# --------------------------------------------------------------------------
 
 def _load_runner():
     """Import scripts/run_ns_benchmark.py as a module (it is not on the package
@@ -76,7 +74,7 @@ EXPOSURE = 6000.0
 
 @pytest.fixture(scope="module")
 def bright_spectrum():
-    """One BRIGHT dev-Model-A spectrum from a known truth, plus the clean
+    """One bright dev-Model-A spectrum from a known truth, plus the clean
     exposure-scaled obsconf and a model_counts_fn that folds theta through it."""
     warnings.filterwarnings("ignore")
     oc = R.scale_exposure(R.load_base_obsconf(), EXPOSURE)
@@ -172,17 +170,15 @@ def test_quantile_agreement_zero_for_identical(bright_spectrum):
     assert agree["mean_abs_norm"] == 0.0
 
 
-# ==========================================================================
 # cross-spectrum --workers parallelism (the harness contract)
 #
-# These build ONE tiny real checkpoint (2-epoch flow on cheap fake data) and run
+# These build one tiny real checkpoint (2-epoch flow on cheap fake data) and run
 # run_ns_benchmark.run_subsample on a 4-spectrum mini-grid with a 2-live-point /
 # few-eval NS config, asserting:
-#   * --workers 2 produces the SAME SET of row keys as serial (--workers 1),
+#   * --workers 2 produces the same set of row keys as serial (--workers 1),
 #   * resume-skip works after deleting one row,
-#   * an injected failing spectrum yields a keyed error row and does NOT abort.
-# The PARENT is the only writer in both paths; workers return row dicts.
-# ==========================================================================
+#   * an injected failing spectrum yields a keyed error row and does not abort.
+# The parent is the only writer in both paths; workers return row dicts.
 
 TRAIN_RUN = "ns_bench_test_run"
 TEST_LEVEL = "medium"
@@ -272,7 +268,7 @@ def _row_keys(results_path):
 
 
 def test_workers_match_serial_keyset(tiny_ckpt, tmp_path, monkeypatch):
-    """--workers 2 produces the SAME SET of spectrum_id keys as serial on the
+    """--workers 2 produces the same set of spectrum_id keys as serial on the
     4-spectrum mini-grid (parent-only writes; workers return rows)."""
     cfg = _mini_cfg()
 
@@ -324,7 +320,7 @@ def test_resume_skip_after_deleting_one_row(tiny_ckpt, tmp_path, monkeypatch):
 def test_injected_failure_yields_error_row_and_continues(tiny_ckpt, tmp_path,
                                                          monkeypatch):
     """A failing spectrum (its task points at a non-existent checkpoint, so the
-    worker's LevelNS build raises) yields a keyed ERROR ROW and does NOT abort the
+    worker's LevelNS build raises) yields a keyed error row and does not abort the
     run: the other 3 spectra still complete."""
     import json
     cfg = _mini_cfg()

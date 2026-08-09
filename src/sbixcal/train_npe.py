@@ -1,9 +1,9 @@
-"""NPE training for sbi-xray-calibration (Phase 2).
+"""NPE training for sbi-xray-calibration.
 
 Trains a Neural Posterior Estimator (NPE) with a Neural Spline Flow (NSF) and a
 small 1-D CNN embedding net over the binned EPIC-pn counts spectrum, on the
-Phase-1 simulated datasets (data/sim/*.npz). Config-driven; one trained flow
-PER count level (NOT amortized over exposure -- see the config headers and
+simulated datasets (data/sim/*.npz). Config-driven; one trained flow
+per count level (not amortized over exposure -- see the config headers and
 Note: amortizing over exposure is a confound for a calibration analysis,
 and fixed-exposure flows match Barret & Dupourque's setup).
 
@@ -17,7 +17,7 @@ Key design points
 * Flow: NSF via ``posterior_nn(model="nsf", embedding_net=cnn)``.
 * Prior: BoxUniform built from the YAML prior bounds (log-uniform params get
   *linear* box bounds -- the flow models theta in linear units, matching how the
-  npz stores theta; this is fine for a bounded NPE and matches Phase-1 storage).
+  npz stores theta; this is fine for a bounded NPE and matches how the simulator stores it).
 * Checkpoints are cold-loadable: ``load_posterior(<dir>)`` rebuilds the exact
   architecture from the saved config, loads the flow state_dict, and returns a
   ready-to-sample DirectPosterior. Loading needs no training data.
@@ -46,9 +46,7 @@ from . import models as _models
 from . import priors as _priors
 
 
-# ==========================================================================
 # paths
-# ==========================================================================
 
 def _repo_root() -> Path:
     # src/sbixcal/train_npe.py -> repo root is three parents up
@@ -68,9 +66,7 @@ def load_config(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-# ==========================================================================
 # embedding net: 1-D CNN over the counts spectrum
-# ==========================================================================
 
 class SpectrumCNN(nn.Module):
     """Small 1-D CNN embedding for a binned counts spectrum.
@@ -142,9 +138,7 @@ def build_embedding_net(cfg: dict, n_channels: int) -> SpectrumCNN:
     )
 
 
-# ==========================================================================
 # prior + dataset
-# ==========================================================================
 
 def build_prior(prior_cfg: dict, param_order, device: str = "cpu") -> BoxUniform:
     """A BoxUniform over the *linear* prior bounds, in ``param_order``.
@@ -161,7 +155,7 @@ def build_prior(prior_cfg: dict, param_order, device: str = "cpu") -> BoxUniform
 
 
 def load_dataset(name: str, max_n: int | None = None):
-    """Load a Phase-1 npz -> (theta, x, param_names, meta).
+    """Load a simulated npz -> (theta, x, param_names, meta).
 
     theta: (n, n_params) float32; x: (n, n_channels) float32 counts.
     If ``max_n`` is given, the first ``max_n`` rows are returned (the rows are
@@ -195,9 +189,7 @@ def load_dataset(name: str, max_n: int | None = None):
     )
 
 
-# ==========================================================================
 # flow builder
-# ==========================================================================
 
 def build_density_estimator(cfg: dict, n_channels: int):
     """Return a `posterior_nn` builder (NSF flow + CNN embedding) from config.
@@ -221,9 +213,7 @@ def build_density_estimator(cfg: dict, n_channels: int):
     )
 
 
-# ==========================================================================
 # training
-# ==========================================================================
 
 def train_one_flow(
     theta: torch.Tensor,
@@ -264,9 +254,7 @@ def train_one_flow(
     return de, inference, dict(inference.summary)
 
 
-# ==========================================================================
 # checkpoint save / load
-# ==========================================================================
 
 def save_checkpoint(
     out_dir: Path,
@@ -380,9 +368,7 @@ def load_posterior(model_dir: str | Path, device: str = "cpu"):
     return posterior, info
 
 
-# ==========================================================================
 # validation helpers (pure functions; used by scripts/run_validate_npe.py)
-# ==========================================================================
 
 def credible_interval(samples: np.ndarray, cred: float = 0.90):
     """Per-parameter equal-tailed credible interval from posterior samples.
@@ -403,15 +389,13 @@ def coverage_fraction(truth: np.ndarray, lo: np.ndarray, hi: np.ndarray):
 
     All arrays are ``(n_test, n_params)``. Returns ``(per_param, joint)`` where
     ``per_param`` is ``(n_params,)`` (marginal coverage) and ``joint`` is the
-    scalar fraction with the truth inside the interval for ALL parameters.
+    scalar fraction with the truth inside the interval for all parameters.
     """
     inside = (truth >= lo) & (truth <= hi)
     return inside.mean(axis=0), float(inside.all(axis=1).mean())
 
 
-# ==========================================================================
 # top-level run: one flow per count level
-# ==========================================================================
 
 def run_training(cfg: dict, config_src_path: str | None = None,
                  device: str | None = None, force: bool = False,

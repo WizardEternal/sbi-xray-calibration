@@ -12,9 +12,9 @@ unless --force or the stage's own re-run is requested):
   2. train      outputs/models/train_npe_prod_<level>/flow_state.pt
   3. calibrate  outputs/calibration/<level>/summary.json
   4. detect     outputs/detect/results.jsonl  (144 cells)  + analyze_detect tables
-  5. ns_bench   outputs/ns_bench/results.jsonl              -- OPT-IN ONLY (--with-ns),
+  5. ns_bench   outputs/ns_bench/results.jsonl              -- opt-in only (--with-ns),
                 because the NS run is multi-hour and is normally launched
-                separately in the background. Default run_all does NOT touch it.
+                separately in the background. Default run_all does not touch it.
   6. plots      money_plot + supporting figures (make_plots.py)
 
 Crash-safety: every stage delegates to a script that is itself append/skip
@@ -70,9 +70,7 @@ def _env_capped():
     return env
 
 
-# --------------------------------------------------------------------------
 # per-stage existence checks
-# --------------------------------------------------------------------------
 def _sim_done() -> bool:
     d = _repo_root() / "data" / "sim"
     if not d.exists():
@@ -107,9 +105,7 @@ def _ns_done() -> bool:
     return p.exists() and p.stat().st_size > 0
 
 
-# --------------------------------------------------------------------------
 # stages
-# --------------------------------------------------------------------------
 def stage_simulate(force, env):
     if _sim_done() and not force:
         print("[skip] simulate (training datasets present)")
@@ -142,7 +138,7 @@ def stage_calibrate(force, env):
     _run([py, "scripts/run_calibration.py", "--config",
           "configs/calibration.yaml"] + (["--force"] if force else []),
          env=env)
-    # the Phase-3 coverage panel is rebuilt in the plots stage too, harmless here
+    # the coverage panel is rebuilt in the plots stage too, harmless here
     _run([py, "scripts/make_coverage_money_panel.py"], env=env)
 
 

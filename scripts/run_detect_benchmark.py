@@ -1,4 +1,4 @@
-"""Phase-4 misspecification-detection ROC benchmark.
+"""Misspecification-detection ROC benchmark.
 
 Usage (repo venv; cap compute with OMP_NUM_THREADS):
     .venv\\Scripts\\python.exe scripts\\run_detect_benchmark.py --config configs\\detect.yaml
@@ -7,14 +7,14 @@ Usage (repo venv; cap compute with OMP_NUM_THREADS):
 
 Grid: 4 B-families x strength grid x 3 count levels x 3 detectors. For each
 (family, strength, level) cell we draw n_misspec misspecified test spectra and
-reuse a shared per-level pool of n_clean CLEAN Model-A spectra as the common
+reuse a shared per-level pool of n_clean clean Model-A spectra as the common
 negative class, then score every spectrum with each detector and compute the
 clean-vs-misspecified ROC AUC.
 
 Detectors (see src/sbixcal/detect.py):
   D1  PPC               -- per-spectrum (chi2 + KS sub-scores)
   D2  embedding OOD     -- per-spectrum (kNN primary, Mahalanobis secondary)
-  D3  marginal C2ST     -- per-CELL population two-sample test (CV accuracy +
+  D3  marginal C2ST     -- per-cell population two-sample test (CV accuracy +
                            out-of-fold per-spectrum probabilities for the ROC)
 
 Outputs (outputs/detect/, gitignored):
@@ -23,11 +23,11 @@ Outputs (outputs/detect/, gitignored):
   consequence.jsonl  per (B1 family, strength, level) NPE Gamma-bias vs clean truth
 
 Crash-resumability: every cell's results.jsonl row is keyed
-(family,strength,level,detector); on restart, cells already present are SKIPPED.
+(family,strength,level,detector); on restart, cells already present are skipped.
 scores.jsonl is appended in lock-step. Safe to kill and rerun. Figures are
 regenerated separately by scripts/analyze_detect.py.
 
-This script READS checkpoints in outputs/models/ and WRITES only to
+This script reads checkpoints in outputs/models/ and writes only to
 outputs/detect/. It never touches outputs/calibration/.
 """
 
@@ -72,9 +72,7 @@ def load_config(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-# --------------------------------------------------------------------------
 # JSONL helpers (crash-resumable: key -> skip if present)
-# --------------------------------------------------------------------------
 
 def _cell_key(family, strength, level, detector) -> str:
     return f"{family}|{float(strength):g}|{level}|{detector}"
@@ -82,7 +80,7 @@ def _cell_key(family, strength, level, detector) -> str:
 
 def _stable_cell_seed(seed: int, family: str, strength: float) -> int:
     """Deterministic per-(family,strength) misspec-draw seed (process-independent,
-    so crash-resume reproduces the SAME misspecified population)."""
+    so crash-resume reproduces the same misspecified population)."""
     h = hashlib.sha1(f"{family}|{float(strength):g}".encode()).hexdigest()
     return (int(seed) + int(h[:8], 16)) % (2**31 - 1)
 
@@ -110,9 +108,7 @@ def append_jsonl(path: Path, row: dict):
         f.write(json.dumps(row) + "\n")
 
 
-# --------------------------------------------------------------------------
 # per-level state: posterior + ctx + clean pool + D2 reference (built once)
-# --------------------------------------------------------------------------
 
 class LevelState:
     """Everything reused across all cells at one count level: the cold-loaded
@@ -124,7 +120,7 @@ class LevelState:
         self.level = level
         self.device = device
         self.posterior, self.info = _tn.load_posterior(ckpt_dir, device=device)
-        # Thread the config response through so clean_sim folds through the SAME
+        # Thread the config response through so clean_sim folds through the same
         # instrument the flow was trained on (else it defaults to XMM EXAMPLE_NAME
         # and produces 102-ch clean spectra that mismatch a 969-ch NICER embedding).
         self.ctx = D.context_from_checkpoint(ckpt_dir, response_name=cfg.get("response"))
@@ -167,9 +163,7 @@ class LevelState:
         return self._d2_clean
 
 
-# --------------------------------------------------------------------------
 # Gamma-bias consequence (B1 silent-failure cost)
-# --------------------------------------------------------------------------
 
 def posterior_median_gamma(state: LevelState, x: np.ndarray,
                            n_samples: int = 200, seed: int = 0) -> np.ndarray:
@@ -192,9 +186,7 @@ def posterior_median_gamma(state: LevelState, x: np.ndarray,
     return out
 
 
-# --------------------------------------------------------------------------
 # one cell
-# --------------------------------------------------------------------------
 
 def run_cell(state: LevelState, family: str, strength: float, fixed: dict,
              cfg: dict, n_misspec: int, detectors, scores_path: Path,
@@ -205,7 +197,7 @@ def run_cell(state: LevelState, family: str, strength: float, fixed: dict,
     seed = state.seed
 
     # families share the per-family/strength seed so misspec draws are reproducible.
-    # Use a DETERMINISTIC hash (Python's built-in hash() is salted per process via
+    # Use a deterministic hash (Python's built-in hash() is salted per process via
     # PYTHONHASHSEED, which would redraw a different misspec population on a
     # crash-resume and desync the per-spectrum scores already written for other
     # detectors of the same cell).
@@ -314,9 +306,7 @@ def run_cell(state: LevelState, family: str, strength: float, fixed: dict,
                   f"(|.|={np.mean(np.abs(bias)):.3f})")
 
 
-# --------------------------------------------------------------------------
 # driver
-# --------------------------------------------------------------------------
 
 def run_benchmark(cfg: dict, pilot: bool = False, only_level: str | None = None,
                   only_family: str | None = None, device: str = "cpu"):

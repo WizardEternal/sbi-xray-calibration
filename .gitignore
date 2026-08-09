@@ -9,12 +9,9 @@ build/
 dist/
 sbi-logs/
 
-# ----------------------------------------------------------------------------
-# Heavy / regenerable artifacts: checkpoints, datasets, raw benchmark dumps are
-# NEVER committed (all rebuildable from config+seed). The final README/RESULTS
-# FIGURES are the exception and ARE committed (negations at the bottom) so the
-# repo reads as a 90-second skim without running anything.
-# ----------------------------------------------------------------------------
+# Heavy / regenerable artifacts: checkpoints, datasets, and raw benchmark dumps
+# are not committed (all rebuildable from config + seed). Final README/RESULTS
+# figures are the exception and are committed below via negations.
 *.h5
 *.pt
 *.pkl
@@ -33,23 +30,19 @@ outputs/detect/
 outputs/ns_bench/
 
 # GO/NO-GO robustness pack: per-variant calibration dumps + figures -- regenerable
-# (the summary.jsonl record IS committed below, like the detect markdown tables)
+# (the summary.jsonl record is committed below, like the detect markdown tables)
 outputs/gonogo/
 
-# ----------------------------------------------------------------------------
-# FINAL FIGURES + tables to COMMIT (un-ignored). These are the README/RESULTS
-# artifacts; everything heavy above stays ignored. Each negation re-includes a
-# specific file from an otherwise-ignored directory (git can descend because the
-# directory itself is not match-pruned once we negate a path under it).
-# ----------------------------------------------------------------------------
+# Final figures and tables to commit (un-ignored); everything heavy above stays
+# ignored. Each negation re-includes one file from an otherwise-ignored
+# directory -- git can only descend into the directory once a path under it
+# has been negated, so the directory itself is re-included first.
 
 # the money plot (top-level outputs/, not under any ignored subdir)
 !outputs/money_plot.png
 
-# Phase-3 calibration figures + the per-level summary.json (the committed
-# record behind the calibration table). Re-include the directories so git can
-# descend, ignore ALL their contents, then re-include only the specific
-# committed PNGs and summary.json (npz stay ignored).
+# calibration figures + the per-level summary.json (the committed record
+# behind the calibration table); npz stay ignored
 !outputs/calibration/
 !outputs/calibration/*/
 outputs/calibration/*/*
@@ -58,9 +51,9 @@ outputs/calibration/*/*
 !outputs/calibration/*/coverage_before_after.png
 !outputs/calibration/*/summary.json
 
-# Phase-4 detection figures, the AUC / consequence tables, and the per-cell
-# results.jsonl (the verifiable record behind the README numbers; per-spectrum
-# scores stay out)
+# detection figures, the AUC / consequence tables, and the per-cell
+# results.jsonl (the verifiable record behind the README numbers); per-spectrum
+# scores stay out
 !outputs/detect/
 outputs/detect/*
 !outputs/detect/auc_table.md
@@ -68,10 +61,9 @@ outputs/detect/*
 !outputs/detect/consequence.md
 !outputs/detect/results.jsonl
 
-# GO/NO-GO robustness pack: the one-line-per-variant verdict record (cheap, the
-# verifiable evidence behind the ROBUST/FRAGILE/MIXED call) IS committed; the
-# per-variant calibration dumps/figures stay ignored. Re-include the dir so git
-# can descend, ignore its contents, then re-include only summary.jsonl.
+# GO/NO-GO robustness pack: the one-line-per-variant verdict record (the
+# evidence behind the ROBUST/FRAGILE/MIXED call) is committed; the per-variant
+# calibration dumps/figures stay ignored
 !outputs/gonogo/
 outputs/gonogo/*
 !outputs/gonogo/summary.jsonl
@@ -79,7 +71,7 @@ outputs/gonogo/*
 # NS-vs-NPE benchmark: commit the digested analysis (analysis.md +
 # analysis_summary.json), the count-controlled evidence summary, the paired
 # gain check, and the per-spectrum log-evidence (the evidence record behind the
-# paper's NS table); raw backups/probes/timing logs stay out.
+# paper's NS table); raw backups/probes/timing logs stay out
 !outputs/ns_bench/
 outputs/ns_bench/*
 !outputs/ns_bench/analysis.md
@@ -90,9 +82,9 @@ outputs/ns_bench/*
 
 # diagnostics figures + tables used in the README (money-panel, detector grid,
 # dGamma, recovery scatters, learning curve, de-risk checks, TARP curve, the
-# validation summary + learning-curve json). Re-include the directory so git can
-# descend, ignore ALL its contents (so stray dumps like a stdout log stay out),
-# then re-include ONLY the specific committed files.
+# validation summary + learning-curve json); re-include the directory, ignore
+# all its contents (so stray dumps like a stdout log stay out), then re-include
+# only the specific committed files
 !outputs/diagnostics/
 outputs/diagnostics/*
 !outputs/diagnostics/brems_check.png
@@ -108,9 +100,7 @@ outputs/diagnostics/*
 !outputs/diagnostics/tarp_bright_curve.png
 !outputs/diagnostics/validation_prod_summary.json
 
-# explicit belt-and-braces ignore for the verbose validation stdout dump (it
-# leaked an absolute home path on nearly every line; the numbers live in
-# validation_prod_summary.json)
+# ignored: contains absolute local paths
 outputs/diagnostics/validation_prod_stdout.txt
 
 # NICER benchmark outputs: commit the small evidence files behind the paper's

@@ -1,9 +1,9 @@
-"""Phase-2 device benchmark: NPE training with the 1-D CNN embedding net, CPU vs GPU.
+"""Device benchmark: NPE training with the 1-D CNN embedding net, CPU vs GPU.
 
-Phase-0 found that for a PLAIN NSF flow CPU ~ GPU. The question Phase 2 must
-answer is whether the CNN EMBEDDING net tips the balance to GPU. We train the
-real train_npe stack (NSF + SpectrumCNN) on a fixed dev dataset for a fixed
-number of epochs on each device and time it.
+An earlier prototype found that for a plain NSF flow CPU ~ GPU. The question
+this benchmark must answer is whether the CNN embedding net tips the balance
+to GPU. We train the real train_npe stack (NSF + SpectrumCNN) on a fixed dev
+dataset for a fixed number of epochs on each device and time it.
 
 Prints a table of the device benchmark.
 

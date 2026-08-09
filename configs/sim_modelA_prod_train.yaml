@@ -1,11 +1,11 @@
-# Training datasets for the PRODUCTION model (tbabs*(powerlaw+blackbody),
-# 5 params). Same base model, priors, response, seed and CALIBRATED exposures as
-# sim_modelA_prod.yaml; per-level size is 50k (the Phase-2 production training
+# Training datasets for the production model (tbabs*(powerlaw+blackbody),
+# 5 params). Same base model, priors, response, seed and calibrated exposures as
+# sim_modelA_prod.yaml; per-level size is 50k (the production training
 # size -- see the dev learning-curve verdict). One dataset per count level;
-# the production flows are trained one-per-level (NOT amortized over exposure).
+# the production flows are trained one-per-level (not amortized over exposure).
 #
 # Distinct dataset names (suffix _train) so they do not collide with the
-# Phase-1 sanity datasets.
+# sanity datasets.
 
 name: modelA_prod_train
 base_model: tbabs_powerlaw_bb

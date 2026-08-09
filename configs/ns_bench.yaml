@@ -1,16 +1,16 @@
-# Phase-5 nested-sampling benchmark config.
+# Nested-sampling benchmark config.
 #
-# Drives scripts/run_ns_benchmark.py: UltraNest vs amortized NPE on the SAME
-# Poisson likelihood (calibrate.poisson_loglik + simulate.fold_theta) and the SAME
+# Drives scripts/run_ns_benchmark.py: UltraNest vs amortized NPE on the same
+# Poisson likelihood (calibrate.poisson_loglik + simulate.fold_theta) and the same
 # box prior (read from each checkpoint's arch.json). For each spectrum in the
 # config-driven subsample we record NS quantiles/logZ/n_like_evals/wall-clock and
 # NPE quantiles/wall-clock, appended (resume-keyed by spectrum_id) to
 # outputs/ns_bench/results.jsonl.
 #
 # The subsample spans: clean Model-A at all 3 count levels + a few B1 (unmodeled
-# Fe-K line) and B4 (gain shift) MISSPECIFIED spectra at medium/bright -- so the
+# Fe-K line) and B4 (gain shift) misspecified spectra at medium/bright -- so the
 # analysis can ask whether the NS evidence / residual flags the misspecified cases
-# that the Phase-4 detectors flag.
+# that the misspecification detectors flag.
 
 name: ns_bench_modelA_prod
 
@@ -23,11 +23,11 @@ response: NGC7793_ULX4_PN
 seed: 20260611
 
 # ---- nested-sampling settings ---------------------------------------------
-# NOTE (pilot finding): the per-spectrum NS cost has LARGE variance because the
+# NOTE (pilot finding): the per-spectrum NS cost has large variance because the
 # log-uniform norm makes some draws (even at a "faint" exposure) high-count, which
 # gives a very tight Poisson posterior that UltraNest converges to only slowly. An
 # uncapped run can stall for tens of minutes on a single tail-case spectrum, so a
-# max_ncalls cap is REQUIRED for a practical 100-spectrum run; the cap is recorded
+# max_ncalls cap is required for a practical 100-spectrum run; the cap is recorded
 # per spectrum (ns.n_like_evals == cap flags a non-converged case in the analysis).
 ns:
   min_num_live_points: 400     # UltraNest default; the production run value.
@@ -43,7 +43,7 @@ npe:
 # clean Model-A (`family: clean`) or a misspecification family (B1/B4) at a fixed
 # `strength`. Spectra are drawn with simulate.simulate_spectra / misspec for the
 # clean / misspecified blocks respectively, seeded deterministically from the
-# global seed + block index so the SAME subsample is reproduced on resume.
+# global seed + block index so the same subsample is reproduced on resume.
 #
 # B1 strength = unmodeled Fe-K line norm; B4 strength = gain percent (matches
 # configs/detect.yaml grids). The clean blocks carry truth theta (for the

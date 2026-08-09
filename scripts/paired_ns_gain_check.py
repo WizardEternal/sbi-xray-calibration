@@ -3,7 +3,7 @@
 A level-matched mean(logZ_mis) - mean(logZ_clean) over unmatched spectra is
 confounded by total counts. This removes the confound by construction: the same
 parameter draw is folded through the clean response and the 3%-gain-shifted
-response, Poisson-realized with a MATCHED seed (so total counts are ~identical),
+response, Poisson-realized with a matched seed (so total counts are ~identical),
 and the clean (well-specified) model is fit to each by UltraNest. Paired
 Delta logZ = logZ(gain-shifted) - logZ(clean); ~0 means no evidence penalty from
 the gain shift.
@@ -40,7 +40,7 @@ def main():
     clean_oc = R.scale_exposure(base, EXPOSURE)
     gain_oc = R.gain_shift_obsconf(clean_oc, GAIN)
 
-    # well-specified model: fold through the NOMINAL (clean) response
+    # well-specified model: fold through the nominal (clean) response
     def model_counts_fn(theta_arr):
         return S.fold_theta(BASE_MODEL, param_order, theta_arr, clean_oc)
 

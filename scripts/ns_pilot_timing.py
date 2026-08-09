@@ -1,13 +1,13 @@
-r"""Phase-5 NS pilot TIMING probe (per-level wall-clock for the extrapolation).
+r"""NS pilot timing probe (per-level wall-clock for the extrapolation).
 
 A small, self-contained probe that measures NS wall-clock + n_like_evals at each
-count level on a couple of MEDIAN-brightness clean spectra, so the per-level
+count level on a couple of median-brightness clean spectra, so the per-level
 extrapolation to the full ~100-spectrum benchmark is honest without running the
 unbounded full pilot (whose per-spectrum cost has huge variance because the
 log-uniform norm makes some "faint"-level draws actually high-count -> very tight
 posterior -> slow NS).
 
-To keep the probe bounded we (a) pick clean draws whose total counts are CLOSE TO
+To keep the probe bounded we (a) pick clean draws whose total counts are close to
 the level median (so the timing is representative, not a tail case), and (b) pass
 a generous max_ncalls cap. Writes outputs/ns_bench/pilot_timing.json (separate from
 results.jsonl so it never races the main runner).

@@ -1,20 +1,20 @@
-# NPE training config -- DEV model (tbabs*powerlaw, 3 params).
+# NPE training config -- dev model (tbabs*powerlaw, 3 params).
 #
-# WHY ONE FLOW PER COUNT LEVEL (not amortized over exposure):
+# why one flow per count level (not amortized over exposure):
 #   Amortizing a single flow over all exposures would let the network trade
-#   information across count regimes, which is a CONFOUND for a calibration
+#   information across count regimes, which is a confound for a calibration
 #   analysis: coverage/misspecification behaviour is exposure-dependent and we
-#   want to measure it AT a fixed exposure. Training one fixed-exposure flow per
+#   want to measure it at a fixed exposure. Training one fixed-exposure flow per
 #   count level matches Barret & Dupourque (2024)'s setup and keeps each flow's
 #   calibration interpretable. (Amortized-over-exposure is left as an explicit
 #   extension, not the default.)
 #
-# This config drives BOTH:
+# This config drives both:
 #   * the single dev flow (per level), and
 #   * the learning curve (10k/25k/50k), which uses the `medium` level dataset
 #     and the n_train_grid below (prefixes of the 50k dataset).
 #
-# Device: chosen by the Phase-2 CNN-embedding benchmark. Plain
+# Device: chosen by the CNN-embedding benchmark. Plain
 # NSF flows train ~equally fast CPU/GPU, but with the 1-D CNN embedding net the
 # GPU is expected to win -- the benchmark picks; override with --device.
 

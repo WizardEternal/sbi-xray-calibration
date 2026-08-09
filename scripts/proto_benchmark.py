@@ -1,4 +1,4 @@
-"""Phase 0 prototypes 2 & 3: jaxspec fakeit throughput + NPE device micro-benchmark.
+"""Prototypes 2 & 3: jaxspec fakeit throughput + NPE device micro-benchmark.
 
 (2) Time vectorized fakeit for 10,000 tbabs*powerlaw spectra on CPU jax and
     extrapolate to 100k / 200k.

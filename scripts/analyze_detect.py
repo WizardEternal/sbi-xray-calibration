@@ -1,4 +1,4 @@
-"""Analyze the Phase-4 detection benchmark: AUC tables + ΔΓ-bias + figures.
+"""Analyze the detection benchmark: AUC tables + ΔΓ-bias + figures.
 
 Reads the JSONL artifacts written by scripts/run_detect_benchmark.py and
 regenerates everything derived (so the benchmark stays a pure data-producer and

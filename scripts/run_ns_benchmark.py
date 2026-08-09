@@ -1,4 +1,4 @@
-r"""Phase-5 nested-sampling benchmark runner: UltraNest vs amortized NPE.
+r"""Nested-sampling benchmark runner: UltraNest vs amortized NPE.
 
 Usage (repo venv; cap compute with OMP_NUM_THREADS):
     set OMP_NUM_THREADS=4
@@ -8,23 +8,23 @@ Usage (repo venv; cap compute with OMP_NUM_THREADS):
     .venv\Scripts\python.exe scripts\run_ns_benchmark.py --config configs\ns_bench.yaml --workers 10
 
 For each spectrum in the config subsample (clean Model-A at 3 count levels + a few
-B1/B4 misspecified) this runs UltraNest's ReactiveNestedSampler on the SAME Poisson
-likelihood the Phase-3 IS-refinement uses (calibrate.poisson_loglik of the observed
-counts vs simulate.fold_theta(theta)) and the SAME box prior, plus the amortized
+B1/B4 misspecified) this runs UltraNest's ReactiveNestedSampler on the same Poisson
+likelihood the IS-refinement uses (calibrate.poisson_loglik of the observed
+counts vs simulate.fold_theta(theta)) and the same box prior, plus the amortized
 NPE posterior, and appends one row per spectrum to outputs/ns_bench/results.jsonl
 keyed by spectrum_id (resume-skips ids already present).
 
-CRITICAL modelling note (B4): a B4 spectrum is GENERATED with a gain-shifted
-response, but BOTH inferences (NPE and NS) use the NOMINAL (clean) response and the
+critical modelling note (B4): a B4 spectrum is generated with a gain-shifted
+response, but both inferences (NPE and NS) use the nominal (clean) response and the
 well-specified Model A -- that mismatch is exactly the misspecification. So the
 likelihood's model_counts_fn always folds through the clean exposure-scaled obsconf.
 
---pilot N keeps only the FIRST N spectra of EACH block (the 6-spectrum pilot uses
+--pilot N keeps only the first N spectra of each block (the 6-spectrum pilot uses
 --pilot 2 with the clean-only blocks selected via --clean-only).
 
 Parallelism (--workers N, default 1 == exact serial behavior)
 -------------------------------------------------------------
-With --workers > 1 the per-spectrum NS+NPE work is fanned out ACROSS spectra with a
+With --workers > 1 the per-spectrum NS+NPE work is fanned out across spectra with a
 multiprocessing.Pool (Windows-safe spawn; the ``if __name__ == "__main__":`` guard
 below is required). Each worker rebuilds and caches its own ``LevelNS`` per count
 level (the NPE posterior and the model_counts_fn closure are not picklable, so we
@@ -32,14 +32,14 @@ pass only picklable args -- the checkpoint dir, response, counts/truth arrays --
 reconstruct per process), and pins OMP/MKL to a single thread to avoid oversubscribing
 the cores the cross-spectrum parallelism is already using.
 
-The PARENT process is the ONLY writer to results.jsonl: workers return completed row
+The parent process is the only writer to results.jsonl: workers return completed row
 dicts via ``Pool.imap_unordered``; the parent appends + flushes each row as it lands.
 Resume semantics are unchanged (ids already present at startup are skipped before any
-work is dispatched). A per-spectrum exception in a worker does NOT abort the run: the
-worker returns an ERROR ROW (keyed by spectrum_id, carrying the exception string) which
+work is dispatched). A per-spectrum exception in a worker does not abort the run: the
+worker returns an error row (keyed by spectrum_id, carrying the exception string) which
 the parent writes and counts; analyze_ns_bench.py skips error rows (with a count).
 
-Writes ONLY to outputs/ns_bench/. Reads checkpoints in outputs/models/. Never
+Writes only to outputs/ns_bench/. Reads checkpoints in outputs/models/. Never
 touches outputs/calibration/ or outputs/detect/.
 """
 
@@ -79,14 +79,12 @@ def load_config(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-# --------------------------------------------------------------------------
 # per-level state: cold-loaded flow + clean exposure-scaled obsconf + model_fn
-# --------------------------------------------------------------------------
 
 class LevelNS:
     """Everything reused across all spectra at one count level: the cold-loaded
     NPE posterior, the prior box, and the model_counts_fn that folds theta through
-    the NOMINAL (clean) exposure-scaled response (the inference model)."""
+    the nominal (clean) exposure-scaled response (the inference model)."""
 
     def __init__(self, ckpt_dir: Path, response: str | None, device: str = "cpu"):
         from sbixcal import responses as _responses
@@ -104,7 +102,7 @@ class LevelNS:
 
         resp = response or _responses.EXAMPLE_NAME
         base = _responses.load_base_obsconf(resp)
-        self.obsconf = _responses.scale_exposure(base, self.exposure_s)  # NOMINAL response
+        self.obsconf = _responses.scale_exposure(base, self.exposure_s)  # nominal response
         self.low, self.high = _priors.prior_bounds(self.prior_cfg, self.param_names)
 
         def model_counts_fn(theta_arr):
@@ -113,14 +111,12 @@ class LevelNS:
         self.model_counts_fn = model_counts_fn
 
 
-# --------------------------------------------------------------------------
 # drawing the subsample blocks (deterministic, reproducible on resume)
-# --------------------------------------------------------------------------
 
 def draw_block(block: dict, state: LevelNS, block_idx: int, seed: int):
     """Return ``(x (n,C) Poisson counts, theta_truth (n,P) or None, ids list)``
     for one subsample block. Clean blocks use simulate.simulate_spectra; B1/B4 use
-    misspec.simulate_misspec_population (B4 gain-shift on a COPY of the obsconf, the
+    misspec.simulate_misspec_population (B4 gain-shift on a copy of the obsconf, the
     inference still uses the nominal one in ``state``)."""
     from sbixcal import simulate as _sim
     from sbixcal import misspec as _MS
@@ -129,7 +125,7 @@ def draw_block(block: dict, state: LevelNS, block_idx: int, seed: int):
     family = block["family"]
     level = block["level"]
     n = int(block["n"])
-    # deterministic per-block seed so resume reproduces the SAME spectra
+    # deterministic per-block seed so resume reproduces the same spectra
     block_seed = (int(seed) + 1000 * (block_idx + 1)) % (2**31 - 1)
 
     if family == "clean":
@@ -157,9 +153,7 @@ def draw_block(block: dict, state: LevelNS, block_idx: int, seed: int):
     return x, theta_truth, ids, slabel
 
 
-# --------------------------------------------------------------------------
 # building the per-spectrum task list (parent side; picklable payloads only)
-# --------------------------------------------------------------------------
 
 def build_tasks(cfg: dict, pilot: int | None, clean_only: bool,
                 max_ncalls_override: int | None, device: str, done: set):
@@ -167,7 +161,7 @@ def build_tasks(cfg: dict, pilot: int | None, clean_only: bool,
     per-spectrum task dicts (those not already in ``done``), plus the set of count
     levels each task references (so workers know which checkpoints to load).
 
-    Each task carries ONLY picklable data: the spectrum_id, the observed counts
+    Each task carries only picklable data: the spectrum_id, the observed counts
     (list), truth (list or None), and the metadata needed to rebuild the row. The
     heavy ``LevelNS`` (NPE posterior + model_counts_fn) is reconstructed per process
     in the worker, keyed by ``level``."""
@@ -231,16 +225,14 @@ def build_tasks(cfg: dict, pilot: int | None, clean_only: bool,
     return tasks
 
 
-# --------------------------------------------------------------------------
 # the worker: rebuilds LevelNS per process (cached by level) and runs one spectrum
-# --------------------------------------------------------------------------
 
 # per-process LevelNS cache (one entry per count level seen in this worker)
 _WORKER_STATES: dict[str, LevelNS] = {}
 
 
 def _worker_init():
-    """Pin BLAS/OpenMP to a single thread in each worker: the parallelism is ACROSS
+    """Pin BLAS/OpenMP to a single thread in each worker: the parallelism is across
     spectra, so per-spectrum thread pools would oversubscribe the cores."""
     for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS",
                 "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
@@ -285,9 +277,9 @@ def _row_from_results(task: dict, state: LevelNS, ns, npe, agree) -> dict:
 
 
 def run_one_task(task: dict) -> dict:
-    """Run NS + NPE for ONE spectrum and return a completed row dict.
+    """Run NS + NPE for one spectrum and return a completed row dict.
 
-    A per-spectrum failure is caught and returned as an ERROR ROW (keyed by
+    A per-spectrum failure is caught and returned as an error row (keyed by
     spectrum_id, carrying the exception string) so one bad spectrum cannot abort the
     whole run; the parent writes it and the analysis skips it with a count. This is
     the single unit of work dispatched to the Pool (and also called directly in the
@@ -316,9 +308,7 @@ def run_one_task(task: dict) -> dict:
         }
 
 
-# --------------------------------------------------------------------------
 # driver
-# --------------------------------------------------------------------------
 
 def run_subsample(cfg: dict, pilot: int | None = None, clean_only: bool = False,
                   max_ncalls_override: int | None = None, device: str = "cpu",

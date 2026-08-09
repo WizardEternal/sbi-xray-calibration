@@ -1,4 +1,4 @@
-# Phase-6 figure-build config, consumed by scripts/make_plots.py.
+# Figure-build config, consumed by scripts/make_plots.py.
 #
 # make_plots.py is a thin, config-driven orchestrator: it (re)builds every README
 # / summary figure from the benchmark artifacts (calibration npz + detect JSONL),
@@ -15,7 +15,7 @@
 #   analyze_detect.py             -> outputs/detect/{auc_table.md,auc_heatmap.png,consequence.md}
 #
 # Seeds are irrelevant for these (they only read finished artifacts), but the
-# underlying benchmarks that PRODUCED the artifacts are themselves seeded (see
+# underlying benchmarks that produced the artifacts are themselves seeded (see
 # each run-config). This file exists so `make_plots.py --config configs/make_plots.yaml`
 # is the single documented entry point for "rebuild all the figures".
 

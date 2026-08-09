@@ -1,10 +1,10 @@
-"""Phase-5 nested-sampling benchmark: UltraNest vs amortized NPE on the SAME
+"""Nested-sampling benchmark: UltraNest vs amortized NPE on the same
 Poisson likelihood (the speed-vs-trust comparison).
 
 Goal: for a config-driven subsample of spectra, run
-UltraNest's ``ReactiveNestedSampler`` on the EXACT SAME Poisson likelihood the
-Phase-3 IS-refinement uses (``calibrate.poisson_loglik`` of the observed counts
-given the model counts ``fold_theta(theta)``), with the SAME box-uniform prior as
+UltraNest's ``ReactiveNestedSampler`` on the exact same Poisson likelihood the
+IS-refinement uses (``calibrate.poisson_loglik`` of the observed counts
+given the model counts ``fold_theta(theta)``), with the same box-uniform prior as
 the flow, and compare its posterior to the amortized NPE posterior. Per spectrum
 we record NS quantiles / logZ / n_like_evals / wall-clock and NPE quantiles /
 sampling wall-clock.
@@ -49,18 +49,16 @@ from . import calibrate as _cal
 from . import priors as _priors
 
 
-# ==========================================================================
-# the reused Poisson likelihood + box prior (NO duplication)
-# ==========================================================================
+# the reused Poisson likelihood + box prior (no duplication)
 
 def make_poisson_loglike(counts: np.ndarray, model_counts_fn: Callable):
     r"""Return a *vectorized* UltraNest log-likelihood for one observed spectrum.
 
     ``model_counts_fn(theta) -> (M, n_channels)`` folds an ``(M, n_params)`` block
-    of parameter vectors through the SAME response used everywhere else
+    of parameter vectors through the same response used everywhere else
     (``simulate.fold_theta``); the per-θ log-likelihood is exactly
     ``calibrate.poisson_loglik(counts, model_counts)``, the identical function the
-    Phase-3 IS-refinement calls. UltraNest passes a 2-D block when
+    IS-refinement calls. UltraNest passes a 2-D block when
     ``vectorized=True``; we also accept a single 1-D vector (for the test's
     exact-reuse check).
     """
@@ -78,7 +76,7 @@ def make_poisson_loglike(counts: np.ndarray, model_counts_fn: Callable):
 
 
 def make_box_transform(prior_cfg: dict, param_names: list[str]):
-    """Return a unit-cube → box transform for the SAME box-uniform prior the flow
+    """Return a unit-cube → box transform for the same box-uniform prior the flow
     uses (linear bounds from ``priors.prior_bounds``). Vectorized over rows."""
     low, high = _priors.prior_bounds(prior_cfg, param_names)
     low = np.asarray(low, dtype=np.float64)
@@ -93,9 +91,7 @@ def make_box_transform(prior_cfg: dict, param_names: list[str]):
     return transform
 
 
-# ==========================================================================
 # NS run on one spectrum
-# ==========================================================================
 
 # the quantile levels recorded per parameter (median + the 50/68/90 brackets)
 QUANTILES = (0.05, 0.16, 0.25, 0.5, 0.75, 0.84, 0.95)
@@ -173,9 +169,7 @@ def run_ns_one(
     )
 
 
-# ==========================================================================
-# NPE quantiles + wall-clock on the SAME spectrum
-# ==========================================================================
+# NPE quantiles + wall-clock on the same spectrum
 
 @dataclass
 class NPEResult:
@@ -193,11 +187,11 @@ def run_npe_one(
     seed: int = 0,
     device: str = "cpu",
 ) -> NPEResult:
-    """Sample the amortized NPE posterior for one spectrum and record the SAME
+    """Sample the amortized NPE posterior for one spectrum and record the same
     quantiles as NS plus the sampling wall-clock (the ms/spectrum amortized cost).
 
     Rejection sampling against the prior box can stall indefinitely when a
-    MISSPECIFIED spectrum pushes the flow's mass outside the prior (observed:
+    misspecified spectrum pushes the flow's mass outside the prior (observed:
     ~1% acceptance on B4-bright). We bound it at 120 s; on timeout we fall back
     to raw flow samples (reject_outside_prior=False) and flag the row; the
     leak itself is a trust signal."""
@@ -224,9 +218,7 @@ def run_npe_one(
                      n_samples=int(n_samples))
 
 
-# ==========================================================================
 # quantile-agreement metric (NS vs NPE)
-# ==========================================================================
 
 def quantile_agreement(ns_q: dict, npe_q: dict, param_names, low, high):
     """Per-parameter |NS − NPE| quantile difference, normalized by prior width.
@@ -257,9 +249,7 @@ def quantile_agreement(ns_q: dict, npe_q: dict, param_names, low, high):
     }
 
 
-# ==========================================================================
 # JSONL resume helpers
-# ==========================================================================
 
 def load_done_ids(results_path: Path) -> set[str]:
     """Set of ``spectrum_id`` already present in results.jsonl (resume-skip)."""

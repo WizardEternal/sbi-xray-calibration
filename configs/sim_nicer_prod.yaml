@@ -1,12 +1,12 @@
-# Model A (production) on the SECOND INSTRUMENT: NICER XTI.
+# Model A (production) on the second instrument: NICER XTI.
 # Identical model + priors + count targets as sim_modelA_prod.yaml; only the
 # response changes (response: NICER -> real NICER on-axis ARF+RMF in data/nicer/,
 # loaded as a 0.3-10 keV mock obsconf, 969 folded channels). This is the article
 # extension: show the XMM EPIC-pn findings replicate on a second real response.
 #
-# Effective-area note (CORRECTED vs the XMM config comment): NICER XTI peaks at
+# Effective-area note (corrected vs the XMM config comment): NICER XTI peaks at
 # ~1860 cm^2 (this ARF) and XMM EPIC-pn at ~1000-1500 cm^2, so the two are within
-# ~1.3x, NOT 10x. The XMM config's "~10x larger EPIC-pn" rationale was wrong; the
+# ~1.3x, not 10x. The XMM config's "~10x larger EPIC-pn" rationale was wrong; the
 # count regime is set empirically by --calibrate-exposure regardless, so the
 # shifted-down B&D24 normalization windows are kept here for a direct comparison.
 
