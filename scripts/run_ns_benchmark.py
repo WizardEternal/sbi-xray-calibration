@@ -275,7 +275,7 @@ def _row_from_results(task: dict, state: LevelNS, ns, npe, agree) -> dict:
         },
         "npe": {
             "quantiles": npe.quantiles, "sample_wall_s": npe.sample_wall_s,
-            "n_samples": npe.n_samples,
+            "n_samples": npe.n_samples, "rejection_timeout": npe.rejection_timeout,
         },
         "agreement": agree,
     }

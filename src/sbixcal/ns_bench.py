@@ -215,7 +215,7 @@ def run_npe_one(
         qs = np.quantile(s[:, j], QUANTILES)
         quantiles[name] = {f"{q:g}": float(v) for q, v in zip(QUANTILES, qs)}
     return NPEResult(quantiles=quantiles, sample_wall_s=float(wall),
-                     n_samples=int(n_samples))
+                     n_samples=int(s.shape[0]), rejection_timeout=rejection_timeout)
 
 
 # quantile-agreement metric (NS vs NPE)

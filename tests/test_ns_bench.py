@@ -24,11 +24,13 @@ from __future__ import annotations
 
 import importlib
 import sys
+import types
 import warnings
 from pathlib import Path
 
 import numpy as np
 import pytest
+import torch
 
 from sbixcal import ns_bench as NB
 from sbixcal import calibrate as C
@@ -168,6 +170,95 @@ def test_quantile_agreement_zero_for_identical(bright_spectrum):
     low, high = P.prior_bounds(PRIOR_CFG, PARAM_NAMES)
     agree = NB.quantile_agreement(q, q, PARAM_NAMES, low, high)
     assert agree["mean_abs_norm"] == 0.0
+
+
+# NPE rejection-timeout flag (README "0 rows tripped the timeout" trust signal)
+#
+# A fake posterior stands in for the real DirectPosterior: on the
+# reject_outside_prior=True call it returns fewer draws than requested
+# (simulating a stalled rejection sampler at the 120 s bound); on the raw
+# reject_outside_prior=False fallback call it returns the full block. Exercises
+# run_npe_one's timeout path without a real flow or the wall-clock bound.
+
+class _StubPosterior:
+    def __init__(self, n_params, short_n, seed=0):
+        self.n_params = n_params
+        self.short_n = short_n
+        self._rng = np.random.default_rng(seed)
+        self.calls = []  # records the reject_outside_prior flag of each call
+
+    def sample(self, shape, x=None, reject_outside_prior=True, **kw):
+        self.calls.append(reject_outside_prior)
+        n_out = self.short_n if reject_outside_prior else shape[0]
+        s = self._rng.uniform(0.0, 1.0, size=(n_out, self.n_params))
+        return torch.as_tensor(s, dtype=torch.float32)
+
+
+def test_run_npe_one_flags_rejection_timeout():
+    """A short (but not tiny) partial block under reject_outside_prior=True trips
+    NPEResult.rejection_timeout, and since it clears the max(200, n_samples//10)
+    floor the raw fallback is never called, so n_samples reports the actual
+    (partial) count that went into the quantiles."""
+    n_samples = 1000
+    short_n = 250  # >= max(200, n_samples // 10) == 200 -> no raw fallback
+    post = _StubPosterior(n_params=len(PARAM_NAMES), short_n=short_n, seed=3)
+    res = NB.run_npe_one(post, np.zeros(10), PARAM_NAMES, n_samples=n_samples, seed=0)
+    assert res.rejection_timeout is True
+    assert res.n_samples == short_n
+    assert post.calls == [True]
+    for name in PARAM_NAMES:
+        assert set(res.quantiles[name]) == {f"{q:g}" for q in NB.QUANTILES}
+
+
+def test_run_npe_one_severe_stall_falls_back_to_raw():
+    """A near-empty partial block under reject_outside_prior=True (below the
+    max(200, n_samples // 10) floor) still trips rejection_timeout, but
+    run_npe_one falls back to a raw draw for the actual quantiles, so n_samples
+    reports the full fallback count."""
+    n_samples = 1000
+    short_n = 5  # well below max(200, n_samples // 10) == 200
+    post = _StubPosterior(n_params=len(PARAM_NAMES), short_n=short_n, seed=4)
+    res = NB.run_npe_one(post, np.zeros(10), PARAM_NAMES, n_samples=n_samples, seed=0)
+    assert res.rejection_timeout is True
+    assert res.n_samples == n_samples
+    assert post.calls == [True, False]
+
+
+def test_run_npe_one_no_timeout_flag_clear():
+    """A full-size block on the first call (no stall) leaves rejection_timeout
+    False, matching the committed benchmark's dominant case."""
+    n_samples = 200
+    post = _StubPosterior(n_params=len(PARAM_NAMES), short_n=n_samples, seed=5)
+    res = NB.run_npe_one(post, np.zeros(10), PARAM_NAMES, n_samples=n_samples, seed=0)
+    assert res.rejection_timeout is False
+    assert res.n_samples == n_samples
+    assert post.calls == [True]
+
+
+def test_row_serializes_rejection_timeout():
+    """run_ns_benchmark._row_from_results carries NPEResult.rejection_timeout
+    into the serialized row's npe dict under the same key (the wiring this
+    chunk fixes: the flag must not silently default to False on the way to
+    disk)."""
+    npe = NB.NPEResult(quantiles={n: {"0.5": 0.0} for n in PARAM_NAMES},
+                       sample_wall_s=0.01, n_samples=250, rejection_timeout=True)
+    ns = types.SimpleNamespace(
+        quantiles={n: {"0.5": 0.0} for n in PARAM_NAMES}, logz=-1.0, logzerr=0.1,
+        n_like_evals=10, niter=5, ess=4.0, wall_s=0.5, n_live=2)
+    state = types.SimpleNamespace(param_names=PARAM_NAMES)
+    task = {"spectrum_id": "clean|medium|clean|0|0", "family": "clean",
+            "level": "medium", "strength_label": "clean",
+            "counts": np.array([1.0, 2.0]), "truth": [0.2, 1.6, 3e-3]}
+    row = RUNNER._row_from_results(task, state, ns, npe, {"mean_abs_norm": 0.0})
+    assert row["npe"]["rejection_timeout"] is True
+    assert row["npe"]["n_samples"] == 250
+
+    # False must round-trip too (not just truthy default-False masking a bug).
+    npe_clean = NB.NPEResult(quantiles=npe.quantiles, sample_wall_s=0.01,
+                             n_samples=200, rejection_timeout=False)
+    row_clean = RUNNER._row_from_results(task, state, ns, npe_clean,
+                                         {"mean_abs_norm": 0.0})
+    assert row_clean["npe"]["rejection_timeout"] is False
 
 
 # cross-spectrum --workers parallelism (the harness contract)
