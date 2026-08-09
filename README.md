@@ -382,7 +382,7 @@ $env:OMP_NUM_THREADS = 4
 
 # individual stages
 .venv\Scripts\python.exe scripts\run_train_npe.py     --config configs\train_npe_prod.yaml
-.venv\Scripts\python.exe scripts\run_calibration.py   --config configs\calibration.yaml
+.venv\Scripts\python.exe scripts\run_calibration.py   --config configs\calibration_prod.yaml
 .venv\Scripts\python.exe scripts\run_detect_benchmark.py --config configs\detect.yaml
 .venv\Scripts\python.exe scripts\analyze_detect.py    --config configs\detect.yaml
 

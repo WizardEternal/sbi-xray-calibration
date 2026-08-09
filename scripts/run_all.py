@@ -144,7 +144,7 @@ def stage_calibrate(force, env):
         return
     py = _py()
     _run([py, "scripts/run_calibration.py", "--config",
-          "configs/calibration.yaml"] + (["--force"] if force else []),
+          "configs/calibration_prod.yaml"] + (["--force"] if force else []),
          env=env)
     # the coverage panel is rebuilt in the plots stage too, harmless here
     _run([py, "scripts/make_coverage_money_panel.py"], env=env)

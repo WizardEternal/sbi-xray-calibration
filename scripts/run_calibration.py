@@ -1,9 +1,9 @@
 """Run the full calibration suite against a trained checkpoint dir.
 
 Usage (repo venv):
-    .venv\\Scripts\\python.exe scripts\\run_calibration.py --config configs\\calibration.yaml
-    .venv\\Scripts\\python.exe scripts\\run_calibration.py --config configs\\calibration.yaml --level medium
-    .venv\\Scripts\\python.exe scripts\\run_calibration.py --config configs\\calibration.yaml --checkpoint outputs\\models\\train_npe_prod_faint --level faint
+    .venv\\Scripts\\python.exe scripts\\run_calibration.py --config configs\\calibration_dev.yaml
+    .venv\\Scripts\\python.exe scripts\\run_calibration.py --config configs\\calibration_dev.yaml --level medium
+    .venv\\Scripts\\python.exe scripts\\run_calibration.py --config configs\\calibration_prod.yaml --checkpoint outputs\\models\\train_npe_prod_faint --level faint
 
 For each evaluated count level the suite produces, in outputs/calibration/<level>/:
     sbc_ranks.png                 SBC rank histograms (sbi.analysis.sbc_rank_plot)
@@ -44,11 +44,18 @@ def _cov_at(nominal, cov, target):
     """Coverage (mean over parameters) at the nominal level closest to ``target``.
 
     ``cov`` is (n_levels, n_params); returns a float (mean over params at the
-    nearest available nominal level) plus the per-param vector."""
+    nearest available nominal level) plus the per-param vector. Raises if the
+    nearest available level is more than 0.005 from ``target``, instead of
+    silently filing that level's coverage under the requested target."""
     nominal = np.asarray(nominal)
     j = int(np.argmin(np.abs(nominal - target)))
+    nearest = float(nominal[j])
+    if abs(nearest - target) > 0.005:
+        raise ValueError(
+            f"requested nominal level {target} has no match within 0.005 in "
+            f"nominal_levels (nearest is {nearest}); nominal_levels={nominal.tolist()}")
     per_param = np.asarray(cov)[j]
-    return float(np.mean(per_param)), per_param.tolist(), float(nominal[j])
+    return float(np.mean(per_param)), per_param.tolist(), nearest
 
 
 def _calib_dir(level: str) -> Path:
@@ -74,8 +81,21 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
     out_dir = _calib_dir(level)
     out_dir.mkdir(parents=True, exist_ok=True)
     summary_path = out_dir / "summary.json"
-    if summary_path.exists() and not force:
-        print(f"[skip] {level}: {summary_path} exists (use --force to redo)")
+    # Gate on every per-level artifact this function writes, not summary.json
+    # alone: summary.json is small enough to end up committed on its own, and
+    # gating on it alone would report the level done on a fresh clone with
+    # none of the npz intermediates actually regenerated.
+    _per_level_products = [
+        summary_path,
+        out_dir / "sbc.npz",
+        out_dir / "tarp.npz",
+        out_dir / "coverage_before_after.npz",
+        out_dir / "is_refinement.npz",
+        out_dir / "is_coverage.npz",
+    ]
+    if all(p.exists() for p in _per_level_products) and not force:
+        print(f"[skip] {level}: all per-level artifacts present in {out_dir} "
+              f"(use --force to redo)")
         with open(summary_path) as f:
             return json.load(f)
 

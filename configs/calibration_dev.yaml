@@ -19,7 +19,8 @@
 name: calibration_modelA_dev
 
 # the trained run to evaluate (matches the `name:` in a train_npe_*.yaml config).
-# Production usage: point this at train_npe_prod once those flows finish training.
+# This is the cheap dev chain, paired with train_npe_dev; production runs use
+# configs/calibration_prod.yaml (paired with train_npe_prod) instead.
 train_run: train_npe_dev
 response: NGC7793_ULX4_PN
 
@@ -46,4 +47,4 @@ n_is_samples: 2000           # NPE proposal draws per case.
 low_ess_frac: 0.1            # ESS/n below this flags NPE failure (Paper III diag).
 
 # nominal credibility levels for the empirical-coverage curves.
-nominal_levels: [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
+nominal_levels: [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.68, 0.7, 0.8, 0.9, 0.95]

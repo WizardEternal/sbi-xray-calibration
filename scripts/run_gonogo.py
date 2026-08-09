@@ -186,10 +186,19 @@ def ensure_checkpoint(cfg: dict, dataset_name: str) -> Path:
 # stage 3: GO/NO-GO calibration suite (SBC N=500 + coverage @ {50,68,90})
 
 def _cov_at(nominal, cov, target):
-    """Mean-over-params coverage at the nominal level nearest ``target``."""
+    """Mean-over-params coverage at the nominal level nearest ``target``.
+
+    Raises if the nearest available level is more than 0.005 from ``target``,
+    instead of silently filing that level's coverage under the requested
+    target."""
     nominal = np.asarray(nominal)
     j = int(np.argmin(np.abs(nominal - target)))
-    return float(np.mean(np.asarray(cov)[j])), float(nominal[j])
+    nearest = float(nominal[j])
+    if abs(nearest - target) > 0.005:
+        raise ValueError(
+            f"requested nominal level {target} has no match within 0.005 in "
+            f"nominal_levels (nearest is {nearest}); nominal_levels={nominal.tolist()}")
+    return float(np.mean(np.asarray(cov)[j])), nearest
 
 
 def run_calibration(cfg: dict, ckpt_dir: Path, force: bool = False) -> dict:
