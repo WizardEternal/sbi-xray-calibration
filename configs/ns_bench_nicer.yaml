@@ -6,6 +6,9 @@
 name: ns_bench_modelA_nicer
 train_run: train_npe_nicer
 response: NICER
+# separate output dir so this doesn't collide with the XMM spectrum ids in
+# outputs/ns_bench/
+out_dir: outputs/ns_bench_nicer
 seed: 20260611
 ns:
   min_num_live_points: 400

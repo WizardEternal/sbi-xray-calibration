@@ -1,6 +1,9 @@
 """Cross-instrument SBC figure: per-parameter rank-uniformity KS p-value at each
 count level, EPIC-pn vs NICER. The bright (10000-count) flow fails on both
 responses, while faint/medium mostly pass -- the count-regime miscalibration.
+
+Usage (repo venv; requires both calibration suites already run):
+    .venv\\Scripts\\python.exe scripts\\make_nicer_sbc_fig.py
 """
 from pathlib import Path
 import numpy as np
@@ -15,6 +18,8 @@ FIGDIR = REPO / "outputs" / "diagnostics"
 PARAMS = [r"$N_{\rm H}$", r"$\Gamma$", r"$N_{\rm pl}$", r"$kT$", r"$N_{\rm bb}$"]
 LEVELS = ["faint", "medium", "bright"]
 COL = {"faint": "C0", "medium": "C2", "bright": "C3"}
+INSTRUMENTS = [("XMM EPIC-pn", "outputs/calibration"),
+               ("NICER XTI", "outputs/calibration_nicer")]
 
 
 def ksp(npz):
@@ -25,29 +30,49 @@ def ksp(npz):
             for j in range(r.shape[1])]
 
 
-fig, axes = plt.subplots(1, 2, figsize=(7.4, 3.0), sharey=True)
-x = np.arange(5)
-for ax, (inst, base) in zip(axes, [("XMM EPIC-pn", "outputs/calibration"),
-                                   ("NICER XTI", "outputs/calibration_nicer")]):
-    for lvl in LEVELS:
-        p = np.array(ksp(REPO / base / lvl / "sbc.npz"))
-        p = np.clip(p, 1e-14, 1)
-        ax.plot(x, p, "o-", color=COL[lvl], ms=5, label=lvl)
-    ax.axhline(0.05, ls=":", color="k", lw=1)
-    ax.set_yscale("log"); ax.set_ylim(1e-14, 3)
-    ax.set_xticks(x); ax.set_xticklabels(PARAMS, fontsize=8)
-    ax.set_xlabel("Parameter")
-    ax.set_title(inst, fontsize=9)
-axes[0].set_ylabel("SBC Rank-Uniformity KS $p$")
-fig.tight_layout(rect=[0, 0, 1, 0.9])
-handles = [Line2D([0], [0], color=COL[l], marker="o", ms=5, label=l) for l in LEVELS]
-handles.append(Line2D([0], [0], ls=":", color="k", lw=1, label=r"$p = 0.05$ threshold"))
-fig.legend(handles=handles, loc="upper center", ncol=4, fontsize=8, frameon=False,
-           bbox_to_anchor=(0.5, 1.0))
-out = FIGDIR / "nicer_sbc.png"
-fig.savefig(out, dpi=220, bbox_inches="tight")
-print("saved", out)
-for inst, base in [("XMM", "outputs/calibration"), ("NICER", "outputs/calibration_nicer")]:
-    for lvl in LEVELS:
-        p = ksp(REPO / base / lvl / "sbc.npz")
-        print(inst, lvl, [f"{v:.1e}" for v in p], "fails:", sum(v < 0.05 for v in p))
+def main(argv=None):
+    missing = [(inst, base, lvl, REPO / base / lvl / "sbc.npz")
+               for inst, base in INSTRUMENTS for lvl in LEVELS
+               if not (REPO / base / lvl / "sbc.npz").exists()]
+    if missing:
+        print("[error] missing sbc.npz for:")
+        for inst, base, lvl, p in missing:
+            print(f"  {inst} {lvl}: {p}")
+        print("Produce it first, one run per instrument (each level runs "
+              "in the same pass):")
+        print("  .venv\\Scripts\\python.exe scripts\\run_calibration.py "
+              "--config configs\\calibration_prod.yaml")
+        print("  .venv\\Scripts\\python.exe scripts\\run_calibration.py "
+              "--config configs\\calibration_nicer.yaml")
+        return 1
+
+    fig, axes = plt.subplots(1, 2, figsize=(7.4, 3.0), sharey=True)
+    x = np.arange(5)
+    for ax, (inst, base) in zip(axes, INSTRUMENTS):
+        for lvl in LEVELS:
+            p = np.array(ksp(REPO / base / lvl / "sbc.npz"))
+            p = np.clip(p, 1e-14, 1)
+            ax.plot(x, p, "o-", color=COL[lvl], ms=5, label=lvl)
+        ax.axhline(0.05, ls=":", color="k", lw=1)
+        ax.set_yscale("log"); ax.set_ylim(1e-14, 3)
+        ax.set_xticks(x); ax.set_xticklabels(PARAMS, fontsize=8)
+        ax.set_xlabel("Parameter")
+        ax.set_title(inst, fontsize=9)
+    axes[0].set_ylabel("SBC Rank-Uniformity KS $p$")
+    fig.tight_layout(rect=[0, 0, 1, 0.9])
+    handles = [Line2D([0], [0], color=COL[l], marker="o", ms=5, label=l) for l in LEVELS]
+    handles.append(Line2D([0], [0], ls=":", color="k", lw=1, label=r"$p = 0.05$ threshold"))
+    fig.legend(handles=handles, loc="upper center", ncol=4, fontsize=8, frameon=False,
+               bbox_to_anchor=(0.5, 1.0))
+    out = FIGDIR / "nicer_sbc.png"
+    fig.savefig(out, dpi=220, bbox_inches="tight")
+    print("saved", out)
+    for inst, base in [("XMM", "outputs/calibration"), ("NICER", "outputs/calibration_nicer")]:
+        for lvl in LEVELS:
+            p = ksp(REPO / base / lvl / "sbc.npz")
+            print(inst, lvl, [f"{v:.1e}" for v in p], "fails:", sum(v < 0.05 for v in p))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

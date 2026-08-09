@@ -3,6 +3,9 @@
 name: calibration_modelA_nicer
 train_run: train_npe_nicer
 response: NICER
+# separate output root so this doesn't collide with / silently skip-if-exists
+# onto the committed XMM records in outputs/calibration/
+out_dir: outputs/calibration_nicer
 levels: [faint, medium, bright]
 seed: 20260611
 n_sbc: 1000

@@ -13,6 +13,11 @@
 #   make_support_figs.py          -> outputs/diagnostics/detector_auc_grid.png
 #                                    outputs/diagnostics/dgamma_silent_failure.png
 #   analyze_detect.py             -> outputs/detect/{auc_table.md,auc_heatmap.png,consequence.md}
+#   make_nicer_fig.py             -> outputs/diagnostics/nicer_replication.png
+#                                    (requires data/nicer/nicer.arf and the
+#                                    outputs/detect{,_nicer}/results.jsonl already built)
+#   make_nicer_sbc_fig.py         -> outputs/diagnostics/nicer_sbc.png
+#                                    (requires outputs/calibration{,_nicer}/*/sbc.npz already built)
 #
 # Seeds are irrelevant for these (they only read finished artifacts), but the
 # underlying benchmarks that produced the artifacts are themselves seeded (see
@@ -43,3 +48,9 @@ figures:
       - outputs/detect/auc_table.md
       - outputs/detect/auc_heatmap.png
       - outputs/detect/consequence.md
+
+  - builder: nicer_replication
+    outputs: [outputs/diagnostics/nicer_replication.png]
+
+  - builder: nicer_sbc
+    outputs: [outputs/diagnostics/nicer_sbc.png]

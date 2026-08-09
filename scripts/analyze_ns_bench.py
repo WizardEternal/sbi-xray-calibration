@@ -54,6 +54,15 @@ def load_config(path: str) -> dict:
         return yaml.safe_load(f)
 
 
+def _out_dir(cfg: dict) -> Path:
+    """Resolve the ns_bench output dir from the config's optional out_dir key.
+    Default (out_dir absent) is exactly outputs/ns_bench, matching
+    run_ns_benchmark.py's default."""
+    out_dir = cfg.get("out_dir", "outputs/ns_bench")
+    p = Path(out_dir)
+    return p if p.is_absolute() else _repo_root() / p
+
+
 def _read_jsonl(path: Path):
     rows = []
     if not Path(path).exists():
@@ -233,9 +242,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="Phase-5 NS-vs-NPE benchmark analysis")
     ap.add_argument("--config", required=True)
     args = ap.parse_args(argv)
-    _ = load_config(args.config)  # reserved for future use; analysis is self-contained
+    cfg = load_config(args.config)
 
-    out = _repo_root() / "outputs" / "ns_bench"
+    out = _out_dir(cfg)
     all_rows = _read_jsonl(out / "results.jsonl")
     # error rows (a worker caught a per-spectrum exception and wrote a keyed error
     # row instead of a result) carry an "error" key and no ns/npe payload; skip them

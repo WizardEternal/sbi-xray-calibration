@@ -1,4 +1,4 @@
-"""Rebuild all README figures (config-driven).
+"""Rebuild the README figures that derive from finished benchmark artifacts (config-driven).
 
 The figures themselves are committed. This is the single documented entry point
 for regenerating them by `python scripts/make_plots.py --config ...` from a fixed
@@ -11,6 +11,8 @@ the benchmarks). It then dispatches to the per-figure builders:
     coverage_money_panel -> make_coverage_money_panel.main()  (the calibration panel)
     support_figs         -> make_support_figs.main()          (AUC grid + dGamma)
     detect_tables        -> analyze_detect.main()             (AUC md/heatmap + consequence)
+    nicer_replication    -> make_nicer_fig.main()             (NICER-vs-EPIC-pn detection figure)
+    nicer_sbc            -> make_nicer_sbc_fig.main()         (cross-instrument SBC figure)
 
 Each figure is skip-if-exists (per its declared output paths in the config)
 unless --force is passed.
@@ -58,6 +60,12 @@ def _run_builder(builder: str, detect_config: str):
     if builder == "detect_tables":
         mod = importlib.import_module("analyze_detect")
         return mod.main(["--config", detect_config])
+    if builder == "nicer_replication":
+        mod = importlib.import_module("make_nicer_fig")
+        return mod.main()
+    if builder == "nicer_sbc":
+        mod = importlib.import_module("make_nicer_sbc_fig")
+        return mod.main()
     raise ValueError(f"unknown builder: {builder!r}")
 
 

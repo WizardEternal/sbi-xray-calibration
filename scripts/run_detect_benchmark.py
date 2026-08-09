@@ -53,12 +53,14 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-def _out_dir() -> Path:
-    # Namespaced output dir so a second response (e.g. NICER) does not collide
-    # with / silently skip on the XMM cells. Set SBIXCAL_DETECT_OUT to redirect.
-    import os
-    base = os.environ.get("SBIXCAL_DETECT_OUT")
-    d = Path(base) if base else _repo_root() / "outputs" / "detect"
+def _out_dir(cfg: dict) -> Path:
+    """Resolve the detect output dir from the config's optional out_dir key,
+    so a second response (e.g. NICER) does not collide with / silently skip
+    on the XMM cells. Default (out_dir absent) is exactly outputs/detect, so
+    XMM runs are byte-identical to before this key existed."""
+    out_dir = cfg.get("out_dir", "outputs/detect")
+    p = Path(out_dir)
+    d = p if p.is_absolute() else _repo_root() / p
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -310,7 +312,7 @@ def run_cell(state: LevelState, family: str, strength: float, fixed: dict,
 
 def run_benchmark(cfg: dict, pilot: bool = False, only_level: str | None = None,
                   only_family: str | None = None, device: str = "cpu"):
-    out = _out_dir()
+    out = _out_dir(cfg)
     suffix = "_pilot" if pilot else ""
     scores_path = out / f"scores{suffix}.jsonl"
     results_path = out / f"results{suffix}.jsonl"

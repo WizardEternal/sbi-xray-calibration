@@ -4,6 +4,9 @@
 name: detect_modelA_nicer
 train_run: train_npe_nicer
 response: NICER
+# separate output dir so this doesn't collide with the XMM cells in
+# outputs/detect/ (the (family,strength,level,detector) keys are identical)
+out_dir: outputs/detect_nicer
 levels: [faint, medium, bright]
 seed: 20260611
 n_misspec: 100

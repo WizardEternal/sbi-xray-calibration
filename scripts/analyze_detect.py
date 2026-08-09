@@ -31,8 +31,13 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-def _out_dir() -> Path:
-    return _repo_root() / "outputs" / "detect"
+def _out_dir(cfg: dict) -> Path:
+    """Resolve the detect output dir from the config's optional out_dir key.
+    Default (out_dir absent) is exactly outputs/detect, matching
+    run_detect_benchmark.py's default."""
+    out_dir = cfg.get("out_dir", "outputs/detect")
+    p = Path(out_dir)
+    return p if p.is_absolute() else _repo_root() / p
 
 
 def _read_jsonl(path: Path):
@@ -142,7 +147,7 @@ def main(argv=None):
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
     suffix = "_pilot" if args.pilot else ""
-    out = _out_dir()
+    out = _out_dir(cfg)
 
     results_path = out / f"results{suffix}.jsonl"
     cons_path = out / f"consequence{suffix}.jsonl"

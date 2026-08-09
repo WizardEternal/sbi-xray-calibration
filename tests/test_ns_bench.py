@@ -259,7 +259,7 @@ def _patch_runner(monkeypatch, ckpt_dir, out_dir):
                         lambda train_run, level: Path(ckpt_dir))
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    monkeypatch.setattr(RUNNER, "_out_dir", lambda: out_dir)
+    monkeypatch.setattr(RUNNER, "_out_dir", lambda cfg: out_dir)
     return out_dir / "results.jsonl"
 
 

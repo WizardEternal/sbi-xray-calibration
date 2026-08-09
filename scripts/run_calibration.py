@@ -58,13 +58,19 @@ def _cov_at(nominal, cov, target):
     return float(np.mean(per_param)), per_param.tolist(), nearest
 
 
-def _calib_dir(level: str) -> Path:
-    # Namespaced output root so a second response (e.g. NICER) does not collide
-    # with / silently skip on the XMM outputs. Set SBIXCAL_CALIB_OUT to redirect.
-    import os
-    base = os.environ.get("SBIXCAL_CALIB_OUT")
-    root = Path(base) if base else _repo_root() / "outputs" / "calibration"
-    return root / level
+def _out_root(cfg: dict) -> Path:
+    """Resolve the calibration output root from the config's optional out_dir
+    key, so a second response (e.g. NICER) does not collide with / silently
+    skip on the XMM outputs. Default (out_dir absent) is exactly
+    outputs/calibration, so XMM runs are byte-identical to before this key
+    existed. A relative out_dir is resolved against the repo root."""
+    out_dir = cfg.get("out_dir", "outputs/calibration")
+    p = Path(out_dir)
+    return p if p.is_absolute() else _repo_root() / p
+
+
+def _calib_dir(cfg: dict, level: str) -> Path:
+    return _out_root(cfg) / level
 
 
 def _checkpoint_for_level(train_run: str, level: str) -> Path:
@@ -78,7 +84,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
         print(f"[skip] {level}: no checkpoint at {ckpt_dir}")
         return None
 
-    out_dir = _calib_dir(level)
+    out_dir = _calib_dir(cfg, level)
     out_dir.mkdir(parents=True, exist_ok=True)
     summary_path = out_dir / "summary.json"
     # Gate on every per-level artifact this function writes, not summary.json

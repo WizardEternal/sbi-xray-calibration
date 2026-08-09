@@ -101,6 +101,8 @@ outputs/diagnostics/*
 !outputs/diagnostics/npe_recovery_medium.png
 !outputs/diagnostics/tarp_bright_curve.png
 !outputs/diagnostics/validation_prod_summary.json
+!outputs/diagnostics/nicer_replication.png
+!outputs/diagnostics/nicer_sbc.png
 
 # ignored: contains absolute local paths
 outputs/diagnostics/validation_prod_stdout.txt

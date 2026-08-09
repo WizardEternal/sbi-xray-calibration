@@ -64,8 +64,13 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-def _out_dir() -> Path:
-    d = _repo_root() / "outputs" / "ns_bench"
+def _out_dir(cfg: dict) -> Path:
+    """Resolve the ns_bench output dir from the config's optional out_dir key.
+    Default (out_dir absent) is exactly outputs/ns_bench, so XMM runs are
+    byte-identical to before this key existed."""
+    out_dir = cfg.get("out_dir", "outputs/ns_bench")
+    p = Path(out_dir)
+    d = p if p.is_absolute() else _repo_root() / p
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -313,7 +318,7 @@ def run_one_task(task: dict) -> dict:
 def run_subsample(cfg: dict, pilot: int | None = None, clean_only: bool = False,
                   max_ncalls_override: int | None = None, device: str = "cpu",
                   workers: int = 1):
-    out = _out_dir()
+    out = _out_dir(cfg)
     results_path = out / "results.jsonl"
     done = NB.load_done_ids(results_path)
 
