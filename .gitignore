@@ -41,8 +41,20 @@ outputs/gonogo/
 # the money plot (top-level outputs/, not under any ignored subdir)
 !outputs/money_plot.png
 
+# trained-flow metadata: the three production flows' summary.json (the
+# committed record behind the README's train/val-loss-gap and epoch-cap
+# numbers) is small and committed too; every other model directory (gonogo
+# variants, NICER flows) and the production checkpoints/losses/configs stay out
+!outputs/models/
+outputs/models/*
+!outputs/models/train_npe_prod_*/
+outputs/models/train_npe_prod_*/*
+!outputs/models/train_npe_prod_*/summary.json
+
 # calibration figures + the per-level summary.json (the committed record
-# behind the calibration table); npz stay ignored
+# behind the calibration table); the tarp.npz (the record behind the README's
+# TARP abs-area / ATC / max|ECP-alpha| numbers) is small and committed too;
+# the rest of the npz stay ignored
 !outputs/calibration/
 !outputs/calibration/*/
 outputs/calibration/*/*
@@ -50,6 +62,7 @@ outputs/calibration/*/*
 !outputs/calibration/*/tarp.png
 !outputs/calibration/*/coverage_before_after.png
 !outputs/calibration/*/summary.json
+!outputs/calibration/*/tarp.npz
 
 # detection figures, the AUC / consequence tables, and the per-cell
 # results.jsonl (the verifiable record behind the README numbers); per-spectrum
@@ -64,11 +77,16 @@ outputs/detect/*
 !outputs/detect/consequence.jsonl
 
 # GO/NO-GO robustness pack: the one-line-per-variant verdict record (the
-# evidence behind the ROBUST/FRAGILE/MIXED call) is committed; the per-variant
-# calibration dumps/figures stay ignored
+# evidence behind the ROBUST/FRAGILE/MIXED call) is committed; each variant's
+# sbc.npz (the record behind the README's per-param SBC fail counts) is small
+# and committed too; the rest of the per-variant calibration dumps/figures
+# stay ignored
 !outputs/gonogo/
 outputs/gonogo/*
 !outputs/gonogo/summary.jsonl
+!outputs/gonogo/*/
+outputs/gonogo/*/*
+!outputs/gonogo/*/sbc.npz
 
 # NS-vs-NPE benchmark: commit the digested analysis (analysis.md +
 # analysis_summary.json), the count-controlled evidence summary, the paired

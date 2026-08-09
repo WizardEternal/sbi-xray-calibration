@@ -191,10 +191,11 @@ def run_npe_one(
     quantiles as NS plus the sampling wall-clock (the ms/spectrum amortized cost).
 
     Rejection sampling against the prior box can stall indefinitely when a
-    misspecified spectrum pushes the flow's mass outside the prior (observed:
-    ~1% acceptance on B4-bright). We bound it at 120 s; on timeout we fall back
-    to raw flow samples (reject_outside_prior=False) and flag the row; the
-    leak itself is a trust signal."""
+    misspecified spectrum pushes the flow's mass outside the prior (the
+    slowest committed cases are B1-bright at the strongest line). We bound it
+    at 120 s; on timeout we fall back to raw flow samples
+    (reject_outside_prior=False) and flag the row; the leak itself is a trust
+    signal."""
     torch.manual_seed(seed)
     x_t = torch.as_tensor(np.asarray(counts, dtype=np.float32), device=device)
     rejection_timeout = False

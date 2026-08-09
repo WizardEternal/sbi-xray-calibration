@@ -2,7 +2,8 @@
 (a) best per-spectrum ROC AUC vs counts for B1 (Fe-K line) and B4 (3% gain shift),
     EPIC-pn vs NICER: B4 flat at chance on both, B1 rises but is weaker on NICER.
 (b) effective area vs energy for both responses, with the Fe-K line marked, which
-    explains the weaker NICER line detection (its area at 6.4 keV is ~6x its peak).
+    explains the weaker NICER line detection (its peak area is ~5.7x its area at
+    6.4 keV).
 
 Usage (repo venv; requires the NICER response fetched and the detect benchmarks
 already run):

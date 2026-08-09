@@ -1,0 +1,20 @@
+{
+  "epochs_trained": [
+    60
+  ],
+  "best_validation_loss": [
+    -10.077259985351562
+  ],
+  "final_training_loss": -10.188972664388022,
+  "final_validation_loss": -10.034979663085938,
+  "n_train": 50000,
+  "exposure_s": 35.3,
+  "median_total_counts": 98.0,
+  "param_names": [
+    "tbabs_1_nh",
+    "powerlaw_1_alpha",
+    "powerlaw_1_norm",
+    "blackbodyrad_1_kT",
+    "blackbodyrad_1_norm"
+  ]
+}

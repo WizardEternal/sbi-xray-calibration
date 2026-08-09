@@ -31,7 +31,7 @@ calibration, so every deployed flow needs SBC and a coverage check (see
 [Calibration](#calibration)). The detection results hold across seeds and are
 independent of this. An unmodeled 6.4 keV Fe-K line is caught by the
 posterior-predictive check with AUC 0.97 at and above ~1000 counts (line norm
-above ~8×10⁻⁵); where it slips through it pulls the photon index softer by +0.20
+3×10⁻⁴); where it slips through it pulls the photon index softer by +0.20
 on average at bright counts (median +0.26; at faint the shift is scatter-dominated
 and slightly negative, −0.07). A detector gain shift of up to 3% gets past all
 three per-spectrum trust scores at every count level (AUC ≈ 0.50) while distorting
@@ -117,7 +117,14 @@ scripts/
   make_money_plot.py  make_support_figs.py  make_coverage_money_panel.py
   make_plots.py  --config configs/make_plots.yaml   (rebuild the README figures from finished benchmark artifacts)
   run_all.py     simulate -> train -> calibrate -> detect -> [ns_bench] -> plots
-tests/  test_simulate / test_train_npe / test_calibrate / test_detect / test_ns_bench
+  run_gonogo.py  gonogo_verdict.py   GO/NO-GO reseed/uncapped robustness pack + its ROBUST/FRAGILE/MIXED verdict
+  run_validate_npe.py   recovery + coverage-proxy sanity check on a trained flow (not the full SBC suite)
+  run_learning_curve.py   dev-model learning curve at N in {10k, 25k, 50k}
+  make_nicer_fig.py  make_nicer_sbc_fig.py   NICER-vs-EPIC-pn detection/effective-area figure; cross-instrument SBC figure
+  paired_ns_gain_check.py   paired clean-vs-gain-shifted NS evidence check at matched counts
+  fetch_nicer_response.py   downloads the public NICER XTI ARF+RMF into data/nicer/
+tests/  test_simulate / test_train_npe / test_calibrate / test_detect / test_gonogo /
+  test_ns_bench / test_analyze_detect / test_run_calibration   (72 tests)
 notebooks/walkthrough.ipynb   load checkpoints + artifacts, end to end
 ```
 
@@ -235,7 +242,7 @@ class-1 probability of that supervised classifier, measuring how separable the t
 populations are. Its control-cell floor is ~0.66 CV-accuracy on cells with no real
 misspecification (e.g. the weakest B1 line, norm 5e-6, a negligible
 perturbation): there D3 reports cv-accuracy ≈ 0.66 while its ROC AUC sits at ≈
-0.43–0.54 (at/below chance). Every D3 number should be read against that ~0.66
+0.33–0.54 (at/below chance). Every D3 number should be read against that ~0.66
 cv-accuracy / ~0.5-AUC null, not against 0.5. D3's value is the population
 question; it does not transfer to deciding whether a single unlabeled spectrum is
 trustworthy.
@@ -266,7 +273,7 @@ labeled clean-vs-misspec embedding populations, whose per-spectrum number is the
 classifier's out-of-fold class-1 probability. Because it is supervised on
 population labels it has a control-cell floor of ~0.66 cv-accuracy even where there
 is no real misspecification (e.g. a negligible 5e-6 line) while its AUC there ≈
-0.43–0.54; that is its null, and every D3 number must be read against it. It is not
+0.33–0.54; that is its null, and every D3 number must be read against it. It is not
 the per-spectrum conditional C2ST: that variant was found pathological against the
 over-confident NPE posteriors (a tight replicate cluster is trivially separable from
 the broad clean cloud for clean and misspecified spectra alike, so its AUC carried
@@ -355,8 +362,8 @@ records). The two central results reproduce.
   the same at-chance behaviour as EPIC-pn.
 - **The line is caught, with an instrument-dependence.** The posterior-predictive AUC
   reaches 0.96 at ~10 000 counts, but the line is weaker at lower counts than on
-  EPIC-pn (0.76 vs 0.97 at ~1000 counts). NICER's effective area at 6.4 keV is ~6×
-  below its 1.5 keV peak and below EPIC-pn's at that energy (panel b), so at matched
+  EPIC-pn (0.76 vs 0.97 at ~1000 counts). NICER's effective area at 6.4 keV is ~5.7×
+  below its ~1.55 keV peak and below EPIC-pn's at that energy (panel b), so at matched
   total counts fewer photons land near the line. Line detectability tracks the
   effective area at the line energy; the gain-shift invisibility does not.
 
@@ -398,10 +405,12 @@ $env:OMP_NUM_THREADS = 4
 .venv\Scripts\python.exe -m pytest -q
 ```
 
-Everything is reproducible from config + a fixed global seed (`20260611`).
-Expensive artifacts are checkpointed with skip-if-exists; `data/` is empty and
-rebuildable; no data or checkpoints are committed. Python 3.12, native Windows;
-`sbi` (NPE+NSF), `jaxspec` (CPU JAX), `ultranest`, `arviz`.
+Everything is reproducible from config + a fixed global seed (`20260611`); the
+count-controlled evidence bootstrap in `analyze_ns_bench.py` draws on a second
+fixed seed (`20260630`). Expensive artifacts are checkpointed with
+skip-if-exists; `data/` is empty and rebuildable; no data or checkpoints are
+committed. Python 3.12, native Windows; `sbi` (NPE+NSF), `jaxspec` (CPU JAX),
+`ultranest`, `arviz`.
 
 ## Author
 
