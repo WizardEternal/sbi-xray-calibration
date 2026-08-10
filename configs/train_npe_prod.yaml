@@ -6,13 +6,13 @@
 # Barret & Dupourque (2024). See train_npe_dev.yaml header for the full rationale.
 #
 # Training size (50000) follows the dev learning-curve verdict.
-# Device chosen by the CNN-embedding benchmark; override
-# with --device.
+# Device: cpu, the device used for all three committed production flows;
+# override with --device.
 
 name: train_npe_prod
 base_model: tbabs_powerlaw_bb
 seed: 20260611
-device: cpu        # overridden per the CNN benchmark / --device flag
+device: cpu        # used for the committed production flows; override with --device flag
 
 priors:
   tbabs_1_nh:         {dist: uniform,    low: 0.15,   high: 0.35}
