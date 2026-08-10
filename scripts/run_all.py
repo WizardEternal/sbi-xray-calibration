@@ -93,11 +93,13 @@ def _calib_done() -> bool:
 
 def _detect_done() -> bool:
     p = _repo_root() / "outputs" / "detect" / "results.jsonl"
-    cons = _repo_root() / "outputs" / "detect" / "consequence.jsonl"
-    # consequence.jsonl is gitignored, so a fresh clone has results.jsonl
-    # (committed, 144 rows) but no consequence.jsonl; require both so the
-    # stage is re-run rather than reported done with the B1 evidence missing.
-    if not p.exists() or not cons.exists() or cons.stat().st_size == 0:
+    scores = _repo_root() / "outputs" / "detect" / "scores.jsonl"
+    # Gate on an actual intermediate (scores.jsonl), not just results.jsonl --
+    # results.jsonl and consequence.jsonl both ship in the repo (committed),
+    # so checking either alone would report the stage done on a fresh clone
+    # where the per-spectrum scores have never been computed. scores.jsonl is
+    # genuinely gitignored, so require both it and results.jsonl.
+    if not p.exists() or not scores.exists() or scores.stat().st_size == 0:
         return False
     # 144-cell full grid
     with open(p) as f:
@@ -153,7 +155,7 @@ def stage_detect(force, env):
         _run([py, "scripts/run_detect_benchmark.py", "--config",
               "configs/detect.yaml"], env=env)
     else:
-        print("[skip] detect benchmark (144 cells + consequence.jsonl present)")
+        print("[skip] detect benchmark (144 cells + scores.jsonl present)")
     # always (cheaply) regenerate the derived tables/heatmap from the JSONL
     _run([py, "scripts/analyze_detect.py", "--config", "configs/detect.yaml"],
          env=env)

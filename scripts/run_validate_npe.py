@@ -241,10 +241,10 @@ def main(argv=None):
 
         import json
         summary = {
-            "what": "Phase-2 sanity validation of the production flows "
+            "what": "Sanity validation of the production flows "
                     "(scripts/run_validate_npe.py, deterministic per-level seed). Recovery "
                     "Pearson r, 90% credible-interval coverage, median 90%-CI width as a "
-                    "fraction of the prior width. NOT the rigorous SBC/TARP pass (Phase 3).",
+                    "fraction of the prior width. NOT the rigorous SBC/TARP pass.",
             "config": args.config, "base_model": cfg["base_model"],
             "n_test": args.n_test, "cred": CRED, "param_names": pn,
             "levels": {r["level"]: {

@@ -1,7 +1,7 @@
 """Helpers shared across scripts/ and the sbixcal package.
 
 Pulled out of ~14-15 near-identical copies scattered over scripts/ and
-src/sbixcal/ (C9a cleanup pass). Every function here reproduces exactly what
+src/sbixcal/. Every function here reproduces exactly what
 its call sites' own local copy did before -- this is a pure extraction, not a
 behavior change. Copies whose behavior actually differed between call sites
 (different return shape, different JSONDecodeError handling, ...) were left

@@ -12,7 +12,7 @@
 #   make_coverage_money_panel.py  -> outputs/diagnostics/coverage_money_panel.png
 #   make_support_figs.py          -> outputs/diagnostics/detector_auc_grid.png
 #                                    outputs/diagnostics/dgamma_silent_failure.png
-#   analyze_detect.py             -> outputs/detect/{auc_table.md,auc_heatmap.png,consequence.md}
+#   analyze_detect.py             -> outputs/detect/{auc_table.md,consequence.md}
 #   make_nicer_fig.py             -> outputs/diagnostics/nicer_replication.png
 #                                    (requires data/nicer/nicer.arf and the
 #                                    outputs/detect{,_nicer}/results.jsonl already built)

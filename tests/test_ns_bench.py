@@ -238,7 +238,7 @@ def test_run_npe_one_no_timeout_flag_clear():
 def test_row_serializes_rejection_timeout():
     """run_ns_benchmark._row_from_results carries NPEResult.rejection_timeout
     into the serialized row's npe dict under the same key (the wiring this
-    chunk fixes: the flag must not silently default to False on the way to
+    test guards: the flag must not silently default to False on the way to
     disk)."""
     npe = NB.NPEResult(quantiles={n: {"0.5": 0.0} for n in PARAM_NAMES},
                        sample_wall_s=0.01, n_samples=250, rejection_timeout=True)

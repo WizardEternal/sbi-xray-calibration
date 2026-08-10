@@ -24,7 +24,7 @@ response: NGC7793_ULX4_PN
 # and the flow training init -- a genuine full reseed.
 seed: 101
 
-device: cpu        # per the CNN-embedding CPU benchmark
+device: cpu        # matches the production device (train_npe_prod.yaml)
 
 # prior = exact production prior (sim_modelA_prod_train.yaml / train_npe_prod.yaml).
 priors:

@@ -72,7 +72,7 @@ families:
     strength_grid: [0.9, 0.7, 0.5, 0.3]                  # descending f: weak -> strong leak
   B3:                  # continuum swap powerlaw -> thermal bremsstrahlung; grid = kT [keV]
     fixed: {use_diskbb: false}
-    strength_grid: [10.0, 5.0, 3.0, 1.5]                 # high kT ~ pl-like; low kT strongly curved
+    strength_grid: [10.0, 5.0, 3.0, 1.5]                 # high kT ~ PL-like; low kT strongly curved
   B4:                  # detector gain shift; grid = gain percent (0 = nominal)
     fixed: {}
     strength_grid: [0.5, 1.0, 2.0, 3.0]                  # sub-percent -> few-percent gain

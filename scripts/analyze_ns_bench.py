@@ -44,7 +44,7 @@ Reads outputs/ns_bench/results.jsonl (written by run_ns_benchmark.py) and prints
      per-spectrum breakdown. A real model error sits below the clean trend
      (negative residual); a count artifact sits on it. This is the canonical
      count-controlled analysis (the numbers the README quotes) -- ported from the
-     former standalone analyze_ns_bench_countctl.py, merged in here (C9b).
+     former standalone analyze_ns_bench_countctl.py, merged in here.
 
   *** Detector cross-check status ***  The detector benchmark
   (outputs/detect/results.jsonl) may still be running (the full 144-cell grid).
@@ -124,7 +124,7 @@ def speed_agreement_table(rows):
 # 3. the count-controlled evidence analysis they both draw on
 #
 # fit_clean_trend / cell_residual are ported verbatim from the former standalone
-# scripts/analyze_ns_bench_countctl.py (C9b merge). ns_flag_table's markdown/AUC
+# scripts/analyze_ns_bench_countctl.py. ns_flag_table's markdown/AUC
 # cross-check and count_controlled_report's outputs/ns_bench/count_controlled.json
 # both call them, so the count-controlled numbers are the same computation
 # everywhere they are reported, not two implementations that can drift apart.

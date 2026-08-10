@@ -1,5 +1,5 @@
 {
-  "what": "Phase-2 sanity validation of the production flows (scripts/run_validate_npe.py, deterministic per-level seed). Recovery Pearson r, 90% credible-interval coverage, median 90%-CI width as a fraction of the prior width. NOT the rigorous SBC/TARP pass (Phase 3).",
+  "what": "Sanity validation of the production flows (scripts/run_validate_npe.py, deterministic per-level seed). Recovery Pearson r, 90% credible-interval coverage, median 90%-CI width as a fraction of the prior width. NOT the rigorous SBC/TARP pass.",
   "config": "configs/train_npe_prod.yaml",
   "base_model": "tbabs_powerlaw_bb",
   "n_test": 200,
