@@ -26,7 +26,7 @@ seed: 20260611
 
 # ---- suite sample sizes ----------------------------------------------------
 # SBC: N fresh sims from the same prior/simulator the flow was trained for.
-n_sbc: 1000                  # Talts+18 recommend O(100s-1000); brief default 1000.
+n_sbc: 1000                  # Talts+18 recommend O(100s-1000); default 1000.
 n_tarp: 1000                 # TARP expected-coverage test sample size.
 n_posterior_samples: 1000    # posterior draws per SBC/TARP observation.
 

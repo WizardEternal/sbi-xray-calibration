@@ -4,7 +4,7 @@ Run with the repo venv:
     .venv\\Scripts\\python.exe -m pytest -q tests/test_train_npe.py
 
 These are deliberately small (1k sims, 2 epochs) so the suite runs in seconds.
-They check the training contract from the task brief:
+They check the training contract:
   - the 1-D CNN embedding net forward produces the configured embed_dim,
   - a short training run on 1k sims completes and yields finite loss curves,
   - a checkpoint round-trips: save -> cold load_posterior -> sample, and

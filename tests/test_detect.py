@@ -9,7 +9,7 @@ CPU). The flow is small but well-trained at a high count level, so an obvious
 misspecification (a strong 6.4 keV Fe-K line that several-folds the counts) is
 cleanly separated from clean Model-A spectra by all three detectors (AUC > 0.9).
 
-Contract exercised (brief deliverable 4):
+Contract exercised:
   * D1, D2, D3 each separate an obvious strong Fe-K line from clean, AUC > 0.9.
   * scores are deterministic given the seed.
   * D1 returns both sub-scores (chi2 + KS-on-cumulative).

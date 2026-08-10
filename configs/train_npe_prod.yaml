@@ -1,6 +1,6 @@
 # NPE training config -- production model (tbabs*(powerlaw+blackbody), 5 params).
 #
-# one flow per count level (3 flows: faint/medium/bright). Amortizing over
+# One flow per count level (3 flows: faint/medium/bright). Amortizing over
 # exposure is deliberately avoided: it is a confound for the calibration
 # analysis (coverage is exposure-dependent) and fixed-exposure flows match
 # Barret & Dupourque (2024). See train_npe_dev.yaml header for the full rationale.
@@ -44,7 +44,7 @@ train:
   max_num_epochs: 150
   show_progress: false
 
-# one flow per count level, each on its 50k training dataset.
+# One flow per count level, each on its 50k training dataset.
 levels:
   - {name: faint,  dataset: modelA_prod_train_faint,  n_train: 50000, seed_offset: 1}
   - {name: medium, dataset: modelA_prod_train_medium, n_train: 50000, seed_offset: 2}

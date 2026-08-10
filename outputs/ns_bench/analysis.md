@@ -20,7 +20,7 @@ Spectra analyzed: 76 (56 clean, 20 misspecified). Detector cross-check: **READY*
 
 ## 3. NS misspecification flags vs detector AUC
 
-logZ scales with total counts, so each cell's flag is the count-controlled residual: mean logZ minus the clean logZ-vs-log10(counts) trend (95% CI). Below the trend => the well-specified Model A fits the misspecified spectra worse => flagged; on the trend => no penalty. Detector AUCs are read read-only from outputs/detect/results.jsonl; cells the detector grid has not produced yet show as pending.
+logZ scales with total counts, so each cell's flag is the count-controlled residual: mean logZ minus the clean logZ-vs-log10(counts) trend (95% CI). Below the trend => the well-specified Model A fits the misspecified spectra worse => flagged; on the trend => no penalty. Detector AUCs are read-only from outputs/detect/results.jsonl; cells the detector grid has not produced yet show as pending.
 
 | family | strength | level | n | d-logZ count-controlled [95% CI] | D1 AUC | D2 AUC | D3 AUC | detector status |
 |---|---|---|---|---|---|---|---|---|

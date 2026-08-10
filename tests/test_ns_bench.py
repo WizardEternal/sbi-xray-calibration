@@ -172,7 +172,7 @@ def test_quantile_agreement_zero_for_identical(bright_spectrum):
     assert agree["mean_abs_norm"] == 0.0
 
 
-# NPE rejection-timeout flag (README "0 rows tripped the timeout" trust signal)
+# NPE rejection-timeout flag (README "Speed vs trust", rejection-sampling fallback)
 #
 # A fake posterior stands in for the real DirectPosterior: on the
 # reject_outside_prior=True call it returns fewer draws than requested

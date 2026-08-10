@@ -171,9 +171,9 @@ def cell_residual(sel, coef, boot, fam, level, rng):
         idx = rng.integers(0, n, n)
         bmeans.append((gz[idx] - predb[idx]).mean())
     lo, hi = np.percentile(bmeans, [2.5, 97.5])
-    # significance from the cell's own residual scatter (honest per-cell
-    # t-statistic); dividing by the clean-trend SD understates the noise badly for
-    # high-count cells, where the per-spectrum penalty varies by hundreds of nats.
+    # significance from the cell's own residual scatter (per-cell t-statistic);
+    # dividing by the clean-trend SD understates the noise badly for high-count
+    # cells, where the per-spectrum penalty varies by hundreds of nats.
     # The bootstrap CI above is the robust statement and the one reported.
     cell_sd = res.std(ddof=1)
     sig = res.mean() / (cell_sd / np.sqrt(n)) if n > 1 and cell_sd > 0 else float("nan")
@@ -361,7 +361,7 @@ def _run_full(config_path: str) -> int:
               "controlled residual: mean logZ minus the clean logZ-vs-log10(counts) "
               "trend (95% CI). Below the trend => the well-specified Model A fits the "
               "misspecified spectra worse => flagged; on the trend => no penalty. "
-              "Detector AUCs are read read-only from outputs/detect/results.jsonl; "
+              "Detector AUCs are read-only from outputs/detect/results.jsonl; "
               "cells the detector grid has not produced yet show as pending.\n")
     md.append(flag_tbl + "\n")
 

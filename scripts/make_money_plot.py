@@ -1,4 +1,4 @@
-"""The money plot: outputs/money_plot.png.
+"""The README summary figure: outputs/money_plot.png.
 
 Two panels, side by side, colorblind-safe (Okabe-Ito), dpi>=200:
 

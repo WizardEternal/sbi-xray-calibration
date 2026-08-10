@@ -2,14 +2,14 @@
 
 When you fit an X-ray spectrum with simulation-based inference instead of nested
 sampling, you get a posterior in milliseconds instead of the minutes nested
-sampling needs. What you give up is the two things nested sampling provides
-automatically: a calibration guarantee and a goodness-of-fit. This repo asks, on
+sampling needs. You give up the two things nested sampling provides
+automatically, a calibration guarantee and a goodness-of-fit. This repo asks, on
 one real instrument response, three questions that gap raises: when can you trust
 an SBI posterior for an X-ray spectrum, how do you detect when you can't, and how
 much can recalibration repair? It is the first systematic misspecification-detection
 benchmark for X-ray spectral SBI. The detector ideas are borrowed from the general
-SBI literature; what is new here is running them as a controlled benchmark on X-ray
-spectra, with the answer including a family of model errors that none of them catch.
+SBI literature. Running them as a controlled benchmark on X-ray spectra is new, and
+the answer includes a family of model errors that none of them catch.
 
 It overlaps deliberately with Barret & Dupourqué's NPE-for-X-ray series
 (Papers I–III) and with the general SBI-misspecification literature. The
@@ -55,26 +55,25 @@ detector (D1/D2) per misspecification family at its strongest grid point; B4 (ga
 shift) sits on the chance diagonal. This is one grid cell per family, so it can
 differ from the [Detection](#detection) table below, which reports the best AUC
 over the whole strength grid per family (see B3, B4 at medium: different detector,
-different number). Both are correct, they just answer different questions, one
-grid point here vs. the best anywhere on the grid there. D3 (dotted, colored by
-family) is overlaid as a population-separability statistic, a supervised
-two-sample test separate from the per-spectrum trust scores (see the D3 footnote
-in [Detection](#detection)). Colorblind-safe Okabe–Ito palette, dpi 220.
+different number). Both are correct. One is a single grid point, the other is the
+best cell anywhere on the grid. D3 (dotted, colored by family) is overlaid as a
+population-separability statistic, a supervised two-sample test separate from the
+per-spectrum trust scores (see the D3 footnote in [Detection](#detection)).
+Colorblind-safe Okabe–Ito palette, dpi 220.
 
-Nested sampling (UltraNest) on the exact same Poisson likelihood is ~8 800–13 000×
-slower per spectrum than the amortized NPE but agrees with it to 0.04–0.10 of the
-prior width on clean spectra. Its Bayesian evidence catches the Fe-K line strongly
-(ΔlogZ ≈ −890 at bright), but does not separate the 3% gain shift from clean data
-once counts are controlled, so the gain shift gets past the evidence check too. Full
-table and the evidence-vs-detector cross-check in
-[Speed vs trust](#speed-vs-trust).
+Nested sampling (UltraNest) on the exact same Poisson likelihood is ~10⁴× slower
+per spectrum and posterior-equivalent on clean spectra (full table in
+[Speed vs trust](#speed-vs-trust)). Its Bayesian evidence catches the Fe-K line
+strongly (ΔlogZ ≈ −890 at bright), but does not separate the 3% gain shift from
+clean data once counts are controlled, so the gain shift gets past the evidence
+check too.
 
 ## Prior work
 
-This builds on three literatures. The X-ray-specific contribution is the
-misspecification-detection benchmark (no X-ray-specific prior work found through
-June 2026); the general-SBI detector ideas below predate it, and the X-ray
-application and the benchmark structure are what is new.
+The X-ray-specific contribution is the misspecification-detection benchmark (no
+X-ray-specific prior work found through June 2026); the general-SBI detector ideas
+below predate it, and the X-ray application and the benchmark structure are what is
+new.
 
 **X-ray spectral SBI (the direct lineage).**
 - **Barret & Dupourqué 2024**, A&A 686, A133 ([arXiv:2401.06061](https://arxiv.org/abs/2401.06061)), Paper I, NPE for X-ray spectra down into the Poisson regime. Our priors (N_H, Γ, kT ranges) follow their Table 1.
@@ -161,25 +160,24 @@ recovery-quality check (mean Pearson r 0.84, all five posteriors shrinking
 monotonically with counts): it under-covered badly, and only the calibration
 toolkit caught it. That flow had hit its 150-epoch training cap with a train/val
 gap (−14.91 / −13.36), so its posteriors narrowed faster than they stayed
-accurate, and its rank histograms went ∪-shaped (truth in the tails too often),
-the textbook over-confidence signature:
+accurate, and its rank histograms went ∪-shaped (truth in the tails too often):
 
 | level  | ~counts | raw mean‖dev‖ | SBC KS p (N_H, Γ, normPL, kT, normBB) | coverage @ 50/68/90 (raw) |
 |--------|---------|---------------|----------------------------------------|----------------------------|
-| faint  | 98      | 0.014         | 0.66, 0.03, 0.11, 0.93, 0.98 (pass)    | 0.49 / 0.66 / 0.88         |
+| faint  | 98      | 0.014         | 0.66, 0.03, 0.11, 0.93, 0.98 (1/5 marginal: Γ at p = 0.03) | 0.49 / 0.66 / 0.88 |
 | medium | 986     | 0.018         | 0.86, 0.19, 0.32, 0.86, 0.45 (pass)    | 0.48 / 0.65 / 0.89         |
 | bright (this flow) | 9982 | **0.114** | **0, 1e−21, 0, 2e−14, 6e−40 (fail 5/5)** | **0.36 / 0.51 / 0.76** |
 
-SBC and the coverage test flagged the flow; split-conformal recalibration is the
-effective fix (0.36/0.51/0.76 → 0.46/0.64/0.88; deviation 0.114 → 0.031); and the
+SBC and the coverage test flagged the flow. Split-conformal recalibration is the
+effective fix (0.36/0.51/0.76 → 0.46/0.64/0.88; deviation 0.114 → 0.031), and the
 IS-refinement low-ESS flag fired on it (~97% of cases trip it, median ESS ≈ 18 of
 2000 draws), because a sharp, slightly-misplaced single-round proposal gives
-importance weights dominated by a handful of samples. That is the flag working:
-Paper III avoids the regime with sequential rounds (200k–400k likelihood
-evaluations per spectrum to keep the proposal near the posterior); our 2000-draw
-single-round budget is consistent with their IS framework but in the opposite
-regime, so the ESS collapse is expected. For a flow in this state, conformal
-recalibration (or a fall back to NS) restores coverage.
+importance weights dominated by a handful of samples. Paper III avoids the regime
+with sequential rounds (200k–400k likelihood evaluations per spectrum to keep the
+proposal near the posterior). Our 2000-draw single-round budget is consistent with
+their IS framework but in the opposite regime, so the ESS collapse is expected. For
+a flow in this state, conformal recalibration (or a fall back to NS) restores
+coverage.
 
 A robustness pass shows this is a single-flow artifact. Reseeding the bright
 training under three new seeds, and retraining one variant on the same data with
@@ -195,43 +193,41 @@ the count regime:
 | reseed 101 / 202 / 303 | 83 / 151 / 116 | 0.033 / 0.031 / 0.022 | 0.084 / 1e−8 / 0.016 (202: 4/5, 303: 2/5 fail) |
 | **uncapped** | 162 / 400 (converged) | **0.014** | 0.028 (1/5 fail) |
 
-The operational point: a flow can pass recovery checks and still be miscalibrated,
-so SBC and a coverage test should be run on every flow before deployment. For
-context, Barret & Dupourqué I (arXiv:2401.06061 §3.2–3.3) recover excellently at
-10⁴–10⁵ counts with a deliberately restricted prior and never run a rank-based SBC
-test; the rank-based calibration test is what this repo adds.
+A flow can pass every recovery check and still be miscalibrated, so SBC and a
+coverage test belong on every flow before deployment. For context, Barret &
+Dupourqué I (arXiv:2401.06061 §3.2–3.3) recover excellently at 10⁴–10⁵ counts with
+a deliberately restricted prior and never run a rank-based SBC test; the rank-based
+calibration test is what this repo adds.
 
 **TARP: the ATC summary hides the over-confidence; read the curve.** A common
 shortcut is to read TARP's single area-to-curve (ATC) number. At bright that
 number is misleadingly benign: ATC ≈ −0.002 (recomputed from
-`outputs/calibration/bright/tarp.npz`), apparently fine. The reason is
-mechanical: the `sbi` implementation integrates ECP−α over α ≥ 0.5 only, and
-the bright curve's over-confidence lobe sits almost entirely below that cut.
-The curve bows above the diagonal out to α ≈ 0.73 (max|ECP−α| = 0.102 at α ≈
-0.19; mean ECP−α = +0.080 over α < 0.5) and is nearly flat where the ATC
-actually integrates (mean −0.004 over α > 0.5), so the deviation is invisible
-to the statistic by construction. The unsigned whole-curve summary tells the
-truth: the bright ECP curve's abs-area is 0.053, versus 0.005 / 0.012 at
-faint / medium. TARP does catch the over-confidence if you read the curve (or
-use abs-area / a KS statistic over the full α range); the ATC number alone
-hides it. The committed bright ECP curve makes this visible:
+`outputs/calibration/bright/tarp.npz`), apparently fine. The `sbi` implementation
+integrates ECP−α over α ≥ 0.5 only, and the bright curve's over-confidence lobe
+sits almost entirely below that cut. The curve bows above the diagonal out to
+α ≈ 0.73 (max|ECP−α| = 0.102 at α ≈ 0.19; mean ECP−α = +0.080 over α < 0.5) and is
+nearly flat where the ATC actually integrates (mean −0.004 over α > 0.5), so the
+deviation is invisible to the statistic by construction. The unsigned whole-curve
+summary tells the truth: the bright ECP curve's abs-area is 0.053, versus
+0.005 / 0.012 at faint / medium. TARP does catch the over-confidence if you read
+the curve (or use abs-area / a KS statistic over the full α range); the ATC number
+alone hides it. The committed bright ECP curve makes this visible:
 `outputs/diagnostics/tarp_bright_curve.png`.
 
 SBC rank histograms: `outputs/calibration/{faint,medium,bright}/sbc_ranks.png`.
 Coverage panel: `outputs/diagnostics/coverage_money_panel.png`. Recovery scatters:
-`outputs/diagnostics/npe_recovery_*.png`. Bright TARP ECP curve (the
-read-the-curve figure): `outputs/diagnostics/tarp_bright_curve.png`.
+`outputs/diagnostics/npe_recovery_*.png`. Bright TARP ECP curve:
+`outputs/diagnostics/tarp_bright_curve.png`.
 
 ## Detection
 
 A 144-cell ROC grid (4 families × 4-strength grids × 3 count levels × 3
-detectors). Two of the three detectors answer different questions and must not be
-read on the same axis (see the D3 footnote below): D1/D2 are per-spectrum
-unlabeled novelty scores (given one spectrum, how suspicious is it?), while
-D3/marginal-C2ST is a population separability statistic (given two labeled
-populations, clean vs misspecified, how distinguishable are their embeddings?). D3
-is therefore tabulated in a separate column group and is not treated as a
-per-spectrum result.
+detectors). The three detectors do not all answer the same question, so they must
+not be read on one axis: D1/D2 are per-spectrum unlabeled novelty scores (given one
+spectrum, how suspicious is it?), while D3/marginal-C2ST is a population
+separability statistic (given two labeled populations, clean vs misspecified, how
+distinguishable are their embeddings?). D3 is therefore tabulated in a separate
+column group and is not treated as a per-spectrum result.
 
 Best ROC AUC per (level, family) among the per-spectrum detectors (D1/D2), and
 separately the D3 population-separability AUC:
@@ -277,15 +273,13 @@ log-uniform brightness axis and washes out the signal). **D3 is the simplified
 marginal C2ST**, a population-separability (supervised two-sample) statistic and
 not a per-spectrum trust score: a per-cell CV classifier supervised on the cell's
 labeled clean-vs-misspec embedding populations, whose per-spectrum number is the
-classifier's out-of-fold class-1 probability. Because it is supervised on
-population labels it has a control-cell floor of ~0.66 cv-accuracy even where there
-is no real misspecification (e.g. a negligible 5e-6 line) while its AUC there ≈
-0.33–0.54; that is its null, and every D3 number must be read against it. It is not
-the per-spectrum conditional C2ST: that variant was found pathological against the
-over-confident NPE posteriors (a tight replicate cluster is trivially separable from
-the broad clean cloud for clean and misspecified spectra alike, so its AUC carried
-no signal). The simplified marginal version is what is implemented here, and it is
-labeled as such everywhere it appears.
+classifier's out-of-fold class-1 probability, read against its control-cell null
+(see the D3 footnote above). It is not the per-spectrum conditional C2ST: that
+variant was found pathological against the over-confident NPE posteriors (a tight
+replicate cluster is trivially separable from the broad clean cloud for clean and
+misspecified spectra alike, so its AUC carried no signal). The simplified marginal
+version is what is implemented here, and it is labeled as such everywhere it
+appears.
 
 ## Speed vs trust
 
@@ -293,9 +287,9 @@ The NS benchmark runs UltraNest on the exact same Poisson likelihood the
 IS-refinement uses (a unit test asserts they agree on logL to 1e-9), recording
 per-spectrum NS quantiles / logZ / wall-clock vs the amortized NPE on a 76-spectrum
 subsample (56 clean Model-A across the three count levels + B1 line and B4 gain
-spectra at medium/bright). Two questions: how much do you pay for the trust NS
-gives you, and does NS's Bayesian evidence catch the misspecifications the
-per-spectrum trust scores miss?
+spectra at medium/bright). How much do you pay for the trust NS gives you, and does
+NS's Bayesian evidence catch the misspecifications the per-spectrum trust scores
+miss?
 
 **Speed vs agreement (clean Model-A spine).** NS is ~8 800–13 000× slower per
 spectrum than the amortized NPE, and where the NPE is calibrated its quantiles
@@ -309,7 +303,7 @@ posterior-equivalent to NS at ~10⁴× lower cost.
 | bright | 7910 | 15 | 1751.4 | 95 386 | 177 |  9 882× | 0.100 |
 
 NS 90% intervals contain the truth on 0.85–0.91 of params per level (a sanity
-coverage proxy). Caps and trust signals, accounted:
+coverage proxy). Caps and trust signals:
 - **Non-converged (capped) rows:** the live run uses `--max-ncalls 120000` (a CLI override of the config's 400 000) to bound the heavy-tailed high-count tail: the log-uniform `norm` prior makes some draws unexpectedly high-count, giving a very tight Poisson posterior that UltraNest is slow to localize. **12 of 76 rows hit that cap** (`n_like_evals ≥ 120 000`): 11 clean (2 faint, 2 medium, 7 bright) + 1 B4-bright. A capped row's `logZ` is a lower bound, never compared against a converged `logZ`; the speed/agreement numbers above still stand (quantiles from a near-cap run are indicative).
 - **NPE rejection-sampling fallback (a trust signal in its own right):** sampling the flow with `reject_outside_prior=True` can stall when a misspecified spectrum pushes flow mass outside the prior box. The harness bounds this at 120 s and falls back to raw flow samples, flagging the row (`rejection_timeout`, recorded per row). Flow mass leaking outside the prior on a misspecified spectrum is itself evidence the model is wrong, so it is surfaced. The committed rows predate the flag, so whether the fallback fired there is not recorded. What they do show is the sampling wall time: 74 of 76 spectra sample in under 6.3 s, and the two slowest are both B1-bright at the strongest line (47.5 s and 436.4 s), so the 120 s bound is soft (the sampler checks it between batches and can overshoot) and the hardest sampling cases are B1-bright.
 
@@ -340,9 +334,10 @@ posterior-only novelty score (asking only whether a draw is far from the clean c
 cannot. A 6.4 keV line cannot be explained by any continuum parameters, so logZ drops;
 a gain shift, on a near-scale-invariant continuum, is absorbed into Γ and the
 normalizations, so logZ holds. This is Buchner+14's BXA evidence-comparison
-methodology and the model-discovery framing of Buchner & Boorman 2023: nested sampling
-earns its cost on the line and on the coverage guarantee, and an evidence-based check
-(NS / BXA) in the loop still catches the misspecifications that have spectral shape.
+methodology and the model-discovery framing of Buchner & Boorman 2023: an
+evidence-based check (NS / BXA) in the loop still catches the misspecifications that
+have spectral shape, which is where NS pays for itself alongside the coverage
+guarantee.
 
 The per-spectrum dumps and the count-controlled analysis are regenerated by
 `scripts/analyze_ns_bench.py --config configs/ns_bench.yaml` from
@@ -400,7 +395,7 @@ check, not a controlled replication.
 2. **Single-round amortized NPE.** No sequential rounds (Paper III's regime). This is why the IS-refinement is ESS-starved at high counts. A deliberate scope choice; it means the ESS behaviour reflects the amortization setup, and is not a property of the IS method.
 3. **B3 brems is Gaunt-free analytic.** The B3 continuum is `K·E⁻¹·exp(−E/kT)` with the slowly-varying Gaunt factor dropped. Adequate as a wrong-continuum-family template, and not a calibrated plasma model. A real apec/bremss comparison would need PyXspec on the VM.
 4. **D3 is the simplified marginal C2ST**, not the conditional per-spectrum C2ST (which was pathological here; see above). It is a population-level test, separate from the per-spectrum detectors.
-5. **Gain shifts are undetectable by these three detectors. This is an open problem.** B4 is at chance for D1/D2/D3 at all levels. The scope matters: D2 uses the flow's near-sufficient posterior-trained embedding, and Schmitt et al.'s Eq. 12–13 show that a misspecification which preserves the summary distribution is provably invisible to any test in that summary space, which is exactly what a gain shift does once the NPE folds it into the continuum parameters. The natural next attempt is an MMD-regularized, deliberately overcomplete summary network (Schmitt+23/24) trained to make such shifts detectable, or a detector that explicitly models the response energy-scale calibration.
+5. **Gain shifts are undetectable by these three detectors. This is an open problem.** B4 is at chance for D1/D2/D3 at all levels. D2 uses the flow's near-sufficient posterior-trained embedding, which a gain shift slides past for the reason given under Schmitt et al. in [Prior work](#prior-work). The natural next attempt is their MMD-regularized overcomplete summary, or a detector that models the energy-scale calibration directly.
 6. **Counts are controlled via the prior + exposure**, with a heavy-tailed log-uniform norm; the median count is the calibrated, stable target. Per-spectrum counts vary widely within a "level".
 
 ## Reproduce

@@ -3,9 +3,9 @@
 # Tests the "epoch-cap / undertraining" mechanism for the bright over-confidence.
 # In production the bright flow hit its 150-epoch cap with a train/val gap
 # (outputs/models/train_npe_prod_bright/summary.json: final train -14.91 vs
-# final val -13.36) -- so a live
-# question is whether the over-confidence is just the flow being cut off early,
-# or a structural property that persists when it trains to convergence.
+# final val -13.36), so a live question is whether the over-confidence is just the
+# flow being cut off early, or a structural property that persists when it trains
+# to convergence.
 #
 # This variant therefore changes only the epoch budget: it reuses the production
 # seed lineage (seed 20260611, bright seed_offset 3) for both the simulation draw
@@ -58,8 +58,8 @@ flow:
   num_transforms: 5
   num_bins: 10
 
-# training budget: the only change vs production. Cap raised to 400 (>=400 per the
-# brief); patience unchanged at 20 so proper early stopping decides convergence.
+# training budget: the only change vs production. Cap raised to 400; patience
+# unchanged at 20 so proper early stopping decides convergence.
 train:
   batch_size: 200
   learning_rate: 5.0e-4

@@ -1,4 +1,4 @@
-"""Money plot: the coverage-vs-nominal panel.
+"""The coverage-vs-nominal panel: outputs/diagnostics/coverage_money_panel.png.
 
 Reads the finished calibration artifacts in
 ``outputs/calibration/{faint,medium,bright}/`` and produces
