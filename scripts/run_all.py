@@ -41,11 +41,8 @@ import argparse
 import os
 import subprocess
 import sys
-from pathlib import Path
 
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+from sbixcal._shared import _repo_root
 
 
 PY = None  # resolved in main()

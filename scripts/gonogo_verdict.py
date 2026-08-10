@@ -34,8 +34,9 @@ Usage (repo venv):
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
+
+from sbixcal._shared import _repo_root, _read_jsonl
 
 # ---- thresholds ------------------------------------
 ROBUST_DEV = 0.06      # reseed raw coverage deviation above this = over-confident
@@ -45,25 +46,12 @@ RESEED_VARIANTS = ("gonogo_seed101", "gonogo_seed202", "gonogo_seed303")
 UNCAPPED_VARIANT = "gonogo_uncapped"
 
 
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
-
-
 def load_summary(path: Path) -> list[dict]:
-    """Load summary.jsonl -> list of row dicts (skips blank/garbled lines)."""
-    rows = []
-    if not Path(path).exists():
-        return rows
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                rows.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue
-    return rows
+    """Load summary.jsonl -> list of row dicts (skips blank/garbled lines).
+
+    Thin name-preserving wrapper around sbixcal._shared._read_jsonl (same
+    behavior: [] for a missing file, malformed lines skipped)."""
+    return _read_jsonl(path)
 
 
 def classify(rows: list[dict],

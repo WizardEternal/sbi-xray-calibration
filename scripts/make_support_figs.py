@@ -44,6 +44,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 
+from sbixcal._shared import _repo_root
+
 
 LEVELS = ["faint", "medium", "bright"]
 FAMILIES = ["B1", "B2", "B3", "B4"]
@@ -61,10 +63,9 @@ LEVEL_COLOR = {"faint": "#56B4E9", "medium": "#009E73", "bright": "#D55E00"}
 LEVEL_MARKER = {"faint": "o", "medium": "s", "bright": "^"}
 
 
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
-
-
+# kept local: unlike sbixcal._shared._read_jsonl this does not tolerate a
+# missing file or skip malformed lines (crashes instead) -- unifying it would
+# change behavior at this call site.
 def _read_jsonl(path: Path):
     rows = []
     with open(path) as f:

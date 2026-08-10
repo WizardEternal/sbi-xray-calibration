@@ -46,33 +46,31 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_curve, roc_auc_score
+from sklearn.metrics import roc_curve
+
+from sbixcal import detect as D
+from sbixcal._shared import _repo_root, _mean_abs_dev, OKABE_ITO
 
 
 LEVELS = ["faint", "medium", "bright"]
 
-# Okabe-Ito colorblind-safe palette
-C_DIAG = "#444444"     # neutral gray
+C_DIAG = OKABE_ITO["diag_gray"]
 
 # per-level styling for panel (a): distinct color + marker + linestyle so the
 # three regimes are separable without color.
 LEVEL_STYLE = {
-    "faint":  dict(color="#56B4E9", marker="o", ls="-"),    # sky blue
-    "medium": dict(color="#009E73", marker="s", ls="-"),    # bluish green
-    "bright": dict(color="#D55E00", marker="^", ls="-"),    # vermilion
+    "faint":  dict(color=OKABE_ITO["sky_blue"], marker="o", ls="-"),
+    "medium": dict(color=OKABE_ITO["bluish_green"], marker="s", ls="-"),
+    "bright": dict(color=OKABE_ITO["vermilion"], marker="^", ls="-"),
 }
 
 # per-family styling for panel (b)
 FAMILY_STYLE = {
-    "B1": dict(color="#0072B2", ls="-",  label="B1 Fe-K line"),
-    "B2": dict(color="#009E73", ls="-",  label="B2 partial-covering"),
-    "B3": dict(color="#CC79A7", ls="-",  label="B3 wrong continuum (brems)"),
-    "B4": dict(color="#999999", ls="--", label="B4 gain shift"),
+    "B1": dict(color=OKABE_ITO["blue"], ls="-",  label="B1 Fe-K line"),
+    "B2": dict(color=OKABE_ITO["bluish_green"], ls="-",  label="B2 partial-covering"),
+    "B3": dict(color=OKABE_ITO["reddish_purple"], ls="-",  label="B3 wrong continuum (brems)"),
+    "B4": dict(color=OKABE_ITO["gray"], ls="--", label="B4 gain shift"),
 }
-
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
 
 
 # panel (a): calibration coverage curves
@@ -80,10 +78,10 @@ def _calib_dir(level: str) -> Path:
     return _repo_root() / "outputs" / "calibration" / level
 
 
-def _mean_abs_dev(nominal, cov_mean) -> float:
-    return float(np.mean(np.abs(np.asarray(cov_mean) - np.asarray(nominal))))
-
-
+# load_calibration/choose_recal below look like scripts/make_coverage_money_panel.py's
+# load_level/choose_recal, but they are not byte-identical (this one sorts by
+# nominal and returns a 3-tuple from choose_recal vs a 4-tuple there), so each
+# file keeps its own local copy rather than being forced together.
 def load_calibration(level: str):
     cdir = _calib_dir(level)
     cov = np.load(cdir / "coverage_before_after.npz", allow_pickle=True)
@@ -194,6 +192,9 @@ def plot_calibration(ax):
 
 
 # panel (b): detection ROC curves at the medium level
+# kept local: unlike sbixcal._shared._read_jsonl this does not tolerate a
+# missing file or skip malformed lines (crashes instead) -- unifying it would
+# change behavior at this call site.
 def _read_jsonl(path: Path):
     rows = []
     with open(path) as f:
@@ -239,8 +240,10 @@ def roc_for_cell(scores, level, family, strength, detector):
             and r["detector"] == detector]
     y = np.array([1 if r["kind"] == "misspec" else 0 for r in rows])
     s = np.array([r["score"] for r in rows], dtype=float)
-    fpr, tpr, _ = roc_curve(y, s)
-    auc = roc_auc_score(y, s)
+    fpr, tpr, _ = roc_curve(y, s)  # sklearn stays: curve shape only
+    clean_s = np.array([r["score"] for r in rows if r["kind"] != "misspec"], dtype=float)
+    mis_s = np.array([r["score"] for r in rows if r["kind"] == "misspec"], dtype=float)
+    _, _, auc = D.roc_auc(clean_s, mis_s)  # the tested AUC implementation, not sklearn
     return fpr, tpr, auc
 
 

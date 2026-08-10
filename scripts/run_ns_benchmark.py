@@ -53,15 +53,11 @@ import warnings
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 from sbixcal import ns_bench as NB
 from sbixcal import train_npe as _tn
 from sbixcal import priors as _priors
-
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+from sbixcal._shared import _repo_root, load_config
 
 
 def _out_dir(cfg: dict) -> Path:
@@ -77,11 +73,6 @@ def _out_dir(cfg: dict) -> Path:
 
 def _checkpoint_for_level(train_run: str, level: str) -> Path:
     return _repo_root() / "outputs" / "models" / f"{train_run}_{level}"
-
-
-def load_config(path: str) -> dict:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
 
 
 # per-level state: cold-loaded flow + clean exposure-scaled obsconf + model_fn

@@ -36,22 +36,21 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-import yaml
-
 from sbi.inference import NPE
 from sbi.neural_nets import posterior_nn
 from sbi.utils import BoxUniform
 
 from . import models as _models
 from . import priors as _priors
+from . import _shared
+from ._shared import _repo_root
+
+# re-exported: scripts/run_calibration.py, run_learning_curve.py,
+# run_train_npe.py and run_validate_npe.py all call tn.load_config(...).
+load_config = _shared.load_config
 
 
 # paths
-
-def _repo_root() -> Path:
-    # src/sbixcal/train_npe.py -> repo root is three parents up
-    return Path(__file__).resolve().parents[2]
-
 
 def _sim_path(name: str) -> Path:
     return _repo_root() / "data" / "sim" / f"{name}.npz"
@@ -59,11 +58,6 @@ def _sim_path(name: str) -> Path:
 
 def _models_dir() -> Path:
     return _repo_root() / "outputs" / "models"
-
-
-def load_config(path: str) -> dict:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
 
 
 # embedding net: 1-D CNN over the counts spectrum

@@ -19,16 +19,13 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
 from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
 import yaml
 
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+from sbixcal._shared import _repo_root, _read_jsonl
 
 
 def _out_dir(cfg: dict) -> Path:
@@ -38,21 +35,6 @@ def _out_dir(cfg: dict) -> Path:
     out_dir = cfg.get("out_dir", "outputs/detect")
     p = Path(out_dir)
     return p if p.is_absolute() else _repo_root() / p
-
-
-def _read_jsonl(path: Path):
-    rows = []
-    if not path.exists():
-        return rows
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                try:
-                    rows.append(json.loads(line))
-                except json.JSONDecodeError:
-                    pass
-    return rows
 
 
 def build_auc_table(results):

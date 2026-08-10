@@ -33,10 +33,7 @@ import numpy as np
 
 from sbixcal import calibrate as C
 from sbixcal import train_npe as _tn
-
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+from sbixcal._shared import _repo_root, _cov_at_full
 
 
 def _cov_at(nominal, cov, target):
@@ -45,16 +42,14 @@ def _cov_at(nominal, cov, target):
     ``cov`` is (n_levels, n_params); returns a float (mean over params at the
     nearest available nominal level) plus the per-param vector. Raises if the
     nearest available level is more than 0.005 from ``target``, instead of
-    silently filing that level's coverage under the requested target."""
-    nominal = np.asarray(nominal)
-    j = int(np.argmin(np.abs(nominal - target)))
-    nearest = float(nominal[j])
-    if abs(nearest - target) > 0.005:
-        raise ValueError(
-            f"requested nominal level {target} has no match within 0.005 in "
-            f"nominal_levels (nearest is {nearest}); nominal_levels={nominal.tolist()}")
-    per_param = np.asarray(cov)[j]
-    return float(np.mean(per_param)), per_param.tolist(), nearest
+    silently filing that level's coverage under the requested target.
+
+    Thin wrapper around the shared lookup (sbixcal._shared._cov_at_full):
+    this file's copy returns the per-param vector as a list, unlike
+    scripts/run_gonogo.py's ``_cov_at`` which drops it -- kept as two local
+    wrappers with their own original return shapes."""
+    mean, per_param, nearest = _cov_at_full(nominal, cov, target)
+    return mean, per_param.tolist(), nearest
 
 
 def _out_root(cfg: dict) -> Path:

@@ -46,27 +46,25 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from sbixcal._shared import _repo_root, _mean_abs_dev, OKABE_ITO
+
 
 LEVELS = ["faint", "medium", "bright"]
 
-# Okabe-Ito colorblind-safe palette
-C_RAW = "#0072B2"      # blue
-C_RECAL = "#D55E00"    # vermilion
-C_DIAG = "#444444"     # neutral gray
-
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+C_RAW = OKABE_ITO["blue"]
+C_RECAL = OKABE_ITO["vermilion"]
+C_DIAG = OKABE_ITO["diag_gray"]
 
 
 def _calib_dir(level: str) -> Path:
     return _repo_root() / "outputs" / "calibration" / level
 
 
-def _mean_abs_dev(nominal: np.ndarray, cov_mean: np.ndarray) -> float:
-    return float(np.mean(np.abs(cov_mean - nominal)))
-
-
+# load_level/choose_recal below look like scripts/make_money_plot.py's
+# load_calibration/choose_recal, but they are not byte-identical (this one
+# does not sort by nominal and carries an extra low_ess_frac field, and
+# choose_recal here returns a 4-tuple vs a 3-tuple there), so each file keeps
+# its own local copy rather than being forced together.
 def load_level(level: str):
     """Return a dict with nominal levels and the mean-over-params coverage curves
     (raw, conformal, IS-all, IS-okess) for one count level, plus the coverage

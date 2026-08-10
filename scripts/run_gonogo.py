@@ -34,20 +34,18 @@ import time
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 from sbixcal import calibrate as C
 from sbixcal import detect as D
 from sbixcal import misspec as MS
 from sbixcal import simulate as _sim
 from sbixcal import train_npe as _tn
+from sbixcal._shared import (
+    _repo_root, load_config, _cov_at_full, _stable_cell_seed,
+)
 
 
 # paths
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
-
 
 def _sim_dir() -> Path:
     d = _repo_root() / "data" / "sim"
@@ -67,11 +65,6 @@ def _gonogo_dir() -> Path:
 
 def _summary_path() -> Path:
     return _gonogo_dir() / "summary.jsonl"
-
-
-def load_config(path: str) -> dict:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
 
 
 # stage 1: bright training dataset (skip-if-exists)
@@ -189,15 +182,14 @@ def _cov_at(nominal, cov, target):
 
     Raises if the nearest available level is more than 0.005 from ``target``,
     instead of silently filing that level's coverage under the requested
-    target."""
-    nominal = np.asarray(nominal)
-    j = int(np.argmin(np.abs(nominal - target)))
-    nearest = float(nominal[j])
-    if abs(nearest - target) > 0.005:
-        raise ValueError(
-            f"requested nominal level {target} has no match within 0.005 in "
-            f"nominal_levels (nearest is {nearest}); nominal_levels={nominal.tolist()}")
-    return float(np.mean(np.asarray(cov)[j])), nearest
+    target.
+
+    Thin wrapper around the shared lookup (sbixcal._shared._cov_at_full):
+    this file's copy drops the per-param vector, unlike
+    scripts/run_calibration.py's ``_cov_at`` which returns it -- kept as two
+    local wrappers with their own original return shapes."""
+    mean, _, nearest = _cov_at_full(nominal, cov, target)
+    return mean, nearest
 
 
 def run_calibration(cfg: dict, ckpt_dir: Path, force: bool = False) -> dict:
@@ -410,9 +402,7 @@ def run_detect_spot(spot_ckpt: Path, n_per_class: int = 100,
         # reuses the benchmark's hash-based per-(family,strength) seed scheme, but
         # seeds from this variant's own seed (101), not the benchmark's 20260611, so
         # it draws a different misspec population than the full-grid run.
-        import hashlib
-        h = hashlib.sha1(f"{family}|{float(strength):g}".encode()).hexdigest()
-        cell_seed = (int(seed) + int(h[:8], 16)) % (2**31 - 1)
+        cell_seed = _stable_cell_seed(seed, family, strength)
         x_mis, _, _ = MS.simulate_misspec_population(
             ctx.base_model, ctx.prior_cfg, ctx.obsconf,
             family, strength, n_per_class, seed=cell_seed, fixed=fixed)

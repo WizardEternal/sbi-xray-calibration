@@ -16,25 +16,13 @@ import argparse
 from pathlib import Path
 
 import numpy as np
-import yaml
 
 from jaxspec.data.util import fakeit_for_multiple_parameters
 
 from . import models as _models
 from . import priors as _priors
 from . import responses as _responses
-
-
-# config IO
-
-def load_config(path: str) -> dict:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
-
-
-def _repo_root() -> Path:
-    # src/sbixcal/simulate.py -> repo root is three parents up
-    return Path(__file__).resolve().parents[2]
+from ._shared import _repo_root, load_config
 
 
 def _resolve_data_path(name: str) -> Path:

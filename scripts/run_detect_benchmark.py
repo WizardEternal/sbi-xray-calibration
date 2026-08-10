@@ -34,7 +34,6 @@ outputs/detect/. It never touches outputs/calibration/.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import time
 import warnings
@@ -42,15 +41,13 @@ from pathlib import Path
 
 import numpy as np
 import torch
-import yaml
 
 from sbixcal import detect as D
 from sbixcal import misspec as MS
 from sbixcal import train_npe as _tn
-
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+from sbixcal._shared import (
+    _repo_root, load_config, append_jsonl, _stable_cell_seed,
+)
 
 
 def _out_dir(cfg: dict) -> Path:
@@ -69,22 +66,10 @@ def _checkpoint_for_level(train_run: str, level: str) -> Path:
     return _repo_root() / "outputs" / "models" / f"{train_run}_{level}"
 
 
-def load_config(path: str) -> dict:
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
-
-
 # JSONL helpers (crash-resumable: key -> skip if present)
 
 def _cell_key(family, strength, level, detector) -> str:
     return f"{family}|{float(strength):g}|{level}|{detector}"
-
-
-def _stable_cell_seed(seed: int, family: str, strength: float) -> int:
-    """Deterministic per-(family,strength) misspec-draw seed (process-independent,
-    so crash-resume reproduces the same misspecified population)."""
-    h = hashlib.sha1(f"{family}|{float(strength):g}".encode()).hexdigest()
-    return (int(seed) + int(h[:8], 16)) % (2**31 - 1)
 
 
 def load_done_cells(results_path: Path) -> set[str]:
@@ -103,11 +88,6 @@ def load_done_cells(results_path: Path) -> set[str]:
                 continue
             done.add(_cell_key(r["family"], r["strength"], r["level"], r["detector"]))
     return done
-
-
-def append_jsonl(path: Path, row: dict):
-    with open(path, "a") as f:
-        f.write(json.dumps(row) + "\n")
 
 
 # per-level state: posterior + ctx + clean pool + D2 reference (built once)

@@ -47,6 +47,11 @@ import torch
 
 from . import calibrate as _cal
 from . import priors as _priors
+from . import _shared
+
+# re-exported: scripts/run_ns_benchmark.py and tests/test_ns_bench.py call
+# NB.append_jsonl(...).
+append_jsonl = _shared.append_jsonl
 
 
 # the reused Poisson likelihood + box prior (no duplication)
@@ -271,8 +276,3 @@ def load_done_ids(results_path: Path) -> set[str]:
             if sid is not None:
                 done.add(str(sid))
     return done
-
-
-def append_jsonl(path: Path, row: dict):
-    with open(path, "a") as f:
-        f.write(json.dumps(row) + "\n")

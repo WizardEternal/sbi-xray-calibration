@@ -32,9 +32,7 @@ from pathlib import Path
 
 import yaml
 
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[1]
+from sbixcal._shared import _repo_root
 
 
 # ensure sibling scripts are importable
