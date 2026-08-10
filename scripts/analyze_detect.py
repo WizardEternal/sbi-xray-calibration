@@ -55,7 +55,7 @@ def _read_jsonl(path: Path):
     return rows
 
 
-def build_auc_table(results, levels, families, detectors):
+def build_auc_table(results):
     """(level, family, strength, detector) -> auc nested dict."""
     table = defaultdict(dict)
     for r in results:
@@ -162,7 +162,7 @@ def main(argv=None):
     families = list(cfg["families"].keys())
     detectors = cfg.get("detectors", ["D1", "D2", "D3"])
 
-    table = build_auc_table(results, levels, families, detectors)
+    table = build_auc_table(results)
     p1 = write_auc_markdown(table, levels, families, detectors,
                             out / f"auc_table{suffix}.md")
     cons_ok = write_consequence_markdown(cons, cons_md_path)

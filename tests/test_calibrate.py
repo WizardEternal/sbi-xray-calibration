@@ -234,6 +234,28 @@ def test_is_low_ess_flag_fires_for_pathological_proposal():
     assert is_res.ess_frac < 0.1
 
 
+def test_is_refinement_reports_zero_ess_on_total_underflow():
+    """A proposal placed entirely outside the prior box gives every draw zero
+    prior support, so every importance weight underflows together (not just a
+    low-but-nonzero ESS). This total failure must report ess=0 and low_ess=True,
+    not the old ess=n_samples fallback (a perfect-looking ESS)."""
+    rng = np.random.default_rng(0)
+    x_obs = rng.poisson(_TOY_A_TRUE * _TOY_TEMPLATE).astype(np.float64)
+    # far outside [_TOY_A_LOW, _TOY_A_HIGH] and narrow -> every draw has
+    # log_prior = -inf, so log_w is -inf for the whole batch.
+    prop = _GaussProposal(mu=50.0, sd=0.01, seed=7)
+    prior_logp = C._prior_box_log_prob(
+        {"a": {"dist": "uniform", "low": _TOY_A_LOW, "high": _TOY_A_HIGH}}, ["a"])
+    is_res = C.importance_refine(prop, x_obs, _toy_model_counts, prior_logp,
+                                 n_samples=50, seed=0, low_ess_frac=0.1)
+    assert is_res.ess == 0.0
+    assert is_res.ess_frac == 0.0
+    assert is_res.low_ess is True
+    # uniform fallback weights still normalize to 1 (a usable, if untrustworthy,
+    # point estimate remains available downstream).
+    assert np.isclose(is_res.weights.sum(), 1.0, atol=1e-8)
+
+
 def test_poisson_loglik_matches_scipy():
     from scipy.stats import poisson as sp_poisson
     counts = np.array([3.0, 5.0, 0.0, 12.0])

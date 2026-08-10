@@ -34,7 +34,6 @@ import time
 from pathlib import Path
 
 import numpy as np
-import torch
 import yaml
 
 from sbixcal import calibrate as C
@@ -408,8 +407,9 @@ def run_detect_spot(spot_ckpt: Path, n_per_class: int = 100,
 
     rows = []
     for family, strength, fixed, expect in SPOT_CELLS:
-        # reuse the benchmark's deterministic per-(family,strength) misspec seed so
-        # the spot population matches the full-grid convention.
+        # reuses the benchmark's hash-based per-(family,strength) seed scheme, but
+        # seeds from this variant's own seed (101), not the benchmark's 20260611, so
+        # it draws a different misspec population than the full-grid run.
         import hashlib
         h = hashlib.sha1(f"{family}|{float(strength):g}".encode()).hexdigest()
         cell_seed = (int(seed) + int(h[:8], 16)) % (2**31 - 1)

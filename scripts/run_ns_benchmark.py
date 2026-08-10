@@ -125,7 +125,6 @@ def draw_block(block: dict, state: LevelNS, block_idx: int, seed: int):
     inference still uses the nominal one in ``state``)."""
     from sbixcal import simulate as _sim
     from sbixcal import misspec as _MS
-    from sbixcal import responses as _responses
 
     family = block["family"]
     level = block["level"]
@@ -376,7 +375,7 @@ def run_subsample(cfg: dict, pilot: int | None = None, clean_only: bool = False,
 
 def main(argv=None):
     warnings.filterwarnings("ignore")
-    ap = argparse.ArgumentParser(description="Phase-5 NS-vs-NPE benchmark runner")
+    ap = argparse.ArgumentParser(description="Nested-sampling vs amortized NPE benchmark runner")
     ap.add_argument("--config", required=True)
     ap.add_argument("--pilot", type=int, default=None,
                     help="keep only the first N spectra of each block (pilot)")

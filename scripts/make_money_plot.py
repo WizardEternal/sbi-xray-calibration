@@ -38,7 +38,6 @@ outputs must be present locally:
 from __future__ import annotations
 
 import json
-from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -53,8 +52,6 @@ from sklearn.metrics import roc_curve, roc_auc_score
 LEVELS = ["faint", "medium", "bright"]
 
 # Okabe-Ito colorblind-safe palette
-C_RAW = "#0072B2"      # blue
-C_RECAL = "#D55E00"    # vermilion
 C_DIAG = "#444444"     # neutral gray
 
 # per-level styling for panel (a): distinct color + marker + linestyle so the
@@ -205,18 +202,6 @@ def _read_jsonl(path: Path):
             if line:
                 rows.append(json.loads(line))
     return rows
-
-
-def best_cell_per_family(results, level):
-    """For each family, the (strength, detector) with the max AUC at `level`."""
-    best = {}
-    for r in results:
-        if r["level"] != level:
-            continue
-        fam = r["family"]
-        if fam not in best or r["auc"] > best[fam]["auc"]:
-            best[fam] = r
-    return best
 
 
 # Detector classes: D1/D2 are per-spectrum unlabeled novelty scores

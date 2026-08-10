@@ -52,15 +52,13 @@ d2:                    # embedding-space OOD (Schmitt+23/24)
   knn_k: 5             # k for the kNN-distance variant
   reg: 1.0e-3          # covariance ridge for Mahalanobis
 d3:                    # simplified C2ST
-  n_ref: 500           # clean reference embeddings (per level, reused)
-  k_rep: 200           # posterior-predictive replicate embeddings per spectrum
   kind: logreg         # logreg | mlp
 
 # ---- misspecification families + strength grids ----------------------------
 # Base model + priors are read from the checkpoint, so families just need their
-# strength grids (thinned to <=5 points/family) and fixed params. The grids are
-# the production-model analogues of configs/misspec_modelA_dev.yaml, with the
-# first entry of each ordered grid being the (near-)control and the last the
+# strength grids (thinned to <=5 points/family) and fixed params, carried over
+# from the dev-model grids used to validate misspec.py's per-family generators.
+# The first entry of each ordered grid is the (near-)control and the last is the
 # strongest misspecification. Strength 0 / gain 0 / f=1 / kT=10 are near-clean.
 #
 # For B1 the strength is the unmodeled Fe-K line norm (maps monotonically to

@@ -122,15 +122,15 @@ def test_d1_ppc_separates_strong_line(setup):
 
 def test_d2_embedding_separates_strong_line(setup):
     post, ctx, x_clean, x_b1, _, ref = setup
-    sc = np.array([D.detect_d2_embedding(x, post, ctx, ref) for x in x_clean])
-    sm = np.array([D.detect_d2_embedding(x, post, ctx, ref) for x in x_b1])
+    sc = np.array([D.detect_d2_embedding(x, post, ref) for x in x_clean])
+    sm = np.array([D.detect_d2_embedding(x, post, ref) for x in x_b1])
     _, _, auc = D.roc_auc(sc, sm)
     assert auc > 0.9, f"D2 AUC={auc:.3f} on an obvious strong Fe-K line"
 
 
 def test_d3_marginal_c2st_separates_strong_line(setup):
     post, ctx, x_clean, x_b1, _, _ = setup
-    res = D.detect_d3_c2st_cell(post, ctx, x_clean, x_b1, seed=13)
+    res = D.detect_d3_c2st_cell(post, x_clean, x_b1, seed=13)
     _, _, auc = D.roc_auc(res.clean_proba, res.mis_proba)
     assert auc > 0.9, f"D3 AUC={auc:.3f} on an obvious strong Fe-K line"
     # CV accuracy is a sane C2ST statistic (>0.5, the misspec IS distinguishable)
@@ -150,15 +150,15 @@ def test_d1_deterministic(setup):
 
 def test_d2_deterministic(setup):
     post, ctx, x_clean, _, _, ref = setup
-    a = D.detect_d2_embedding(x_clean[1], post, ctx, ref)
-    b = D.detect_d2_embedding(x_clean[1], post, ctx, ref)
+    a = D.detect_d2_embedding(x_clean[1], post, ref)
+    b = D.detect_d2_embedding(x_clean[1], post, ref)
     assert a == b
 
 
 def test_d3_deterministic(setup):
     post, ctx, x_clean, x_b1, _, _ = setup
-    r1 = D.detect_d3_c2st_cell(post, ctx, x_clean, x_b1, seed=13)
-    r2 = D.detect_d3_c2st_cell(post, ctx, x_clean, x_b1, seed=13)
+    r1 = D.detect_d3_c2st_cell(post, x_clean, x_b1, seed=13)
+    r2 = D.detect_d3_c2st_cell(post, x_clean, x_b1, seed=13)
     assert r1.cv_accuracy == r2.cv_accuracy
     assert np.array_equal(r1.mis_proba, r2.mis_proba)
 
@@ -197,7 +197,7 @@ def test_d2_reference_cache_roundtrip(setup):
 
 def test_d2_returns_knn_and_mahalanobis(setup):
     post, ctx, x_clean, _, _, ref = setup
-    score, parts = D.detect_d2_embedding(x_clean[0], post, ctx, ref,
+    score, parts = D.detect_d2_embedding(x_clean[0], post, ref,
                                          return_parts=True)
     assert "d2_knn" in parts and "d2_mahalanobis" in parts
     # primary score is the kNN distance
@@ -212,8 +212,8 @@ def test_d2_returns_knn_and_mahalanobis(setup):
 def test_detectors_run_on_gain_shift(setup):
     post, ctx, x_clean, _, x_b4, ref = setup
     s1 = D.detect_d1_ppc(x_b4[0], post, ctx, k=60, seed=5)
-    s2 = D.detect_d2_embedding(x_b4[0], post, ctx, ref)
-    res = D.detect_d3_c2st_cell(post, ctx, x_clean, x_b4, seed=6)
+    s2 = D.detect_d2_embedding(x_b4[0], post, ref)
+    res = D.detect_d3_c2st_cell(post, x_clean, x_b4, seed=6)
     assert np.isfinite(s1) and np.isfinite(s2) and np.isfinite(res.cv_accuracy)
     # deterministic
     assert s1 == D.detect_d1_ppc(x_b4[0], post, ctx, k=60, seed=5)

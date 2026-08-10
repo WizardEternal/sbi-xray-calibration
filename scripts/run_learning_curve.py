@@ -48,7 +48,7 @@ def make_test_set(cfg, level_exposure_s, n_test=200, seed=999):
             torch.as_tensor(x, dtype=torch.float32), names)
 
 
-def posterior_quality(de, prior, cfg, theta_test, x_test, n_samples=150, seed=0):
+def posterior_quality(de, prior, theta_test, x_test, n_samples=150, seed=0):
     """Mean per-parameter Pearson r between true theta and posterior median."""
     from sbi.inference import NPE
     inf = NPE(prior=prior, density_estimator="nsf", device="cpu", show_progress_bars=False)
@@ -100,7 +100,7 @@ def main(argv=None):
         vl = summary["validation_loss"]
         best_val = float(np.min(vl))
         final_val = float(vl[-1])
-        rs, mean_r = posterior_quality(de, prior, cfg, theta_test, x_test)
+        rs, mean_r = posterior_quality(de, prior, theta_test, x_test)
         rows.append({"n": n, "best_val": best_val, "final_val": final_val,
                      "rs": rs, "mean_r": mean_r, "epochs": summary["epochs_trained"],
                      "wall_s": dt})

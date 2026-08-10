@@ -15,7 +15,6 @@ They check the training contract from the task brief:
 from __future__ import annotations
 
 import numpy as np
-import pytest
 import torch
 
 from sbixcal import train_npe as tn

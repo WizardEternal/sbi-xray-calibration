@@ -239,7 +239,7 @@ def truth_recovery(rows):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Phase-5 NS-vs-NPE benchmark analysis")
+    ap = argparse.ArgumentParser(description="NS-vs-NPE benchmark analysis")
     ap.add_argument("--config", required=True)
     args = ap.parse_args(argv)
     cfg = load_config(args.config)

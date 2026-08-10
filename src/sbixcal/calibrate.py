@@ -52,8 +52,7 @@ Pure, importable functions only -- the CLI lives in
 
 from __future__ import annotations
 
-import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
@@ -66,7 +65,6 @@ from sbi.diagnostics import run_sbc, check_sbc, run_tarp, check_tarp
 from sbi.analysis import sbc_rank_plot
 
 from . import priors as _priors
-from . import train_npe as _tn
 
 
 # fresh test-set generation (same prior + simulator the flow was trained for)
@@ -78,7 +76,6 @@ def make_fresh_test_set(
     n: int,
     seed: int,
     response_name: str | None = None,
-    simulate_fn: Callable | None = None,
 ):
     """Draw ``n`` (theta, x_expected, x_poisson) triples from the same prior and
     simulator the flow was trained for, at exposure ``exposure_s``.
@@ -88,13 +85,9 @@ def make_fresh_test_set(
     (lambda) needed for the exact Poisson likelihood in IS-refinement;
     ``x_poisson`` is the realized integer counts (the "observed data").
 
-    ``simulate_fn`` is injectable for tests (a toy simulator); by default the real
-    jaxspec-backed ``simulate.simulate_spectra`` is used (imported lazily so this
-    module imports without jaxspec for unit tests).
+    Uses the real jaxspec-backed ``simulate.simulate_spectra`` (imported lazily so
+    this module imports without jaxspec for unit tests).
     """
-    if simulate_fn is not None:
-        return simulate_fn(base_model, prior_cfg, exposure_s, n, seed)
-
     # lazy import: keep calibrate.py importable without jaxspec (toy tests)
     from . import simulate as _sim
     from . import responses as _responses
@@ -375,10 +368,13 @@ def importance_refine(
     log_w = log_like + log_prior - log_q
     log_w_finite = np.where(np.isfinite(log_w), log_w, -np.inf)
     m = np.max(log_w_finite)
-    if not np.isfinite(m):
-        # everything underflowed: degenerate, uniform fallback weights
+    total_underflow = not np.isfinite(m)
+    if total_underflow:
+        # everything underflowed: the IS weights are totally degenerate, so the
+        # uniform fallback below is not a real reweighting -- report ess=0 (not
+        # n_samples), so a total failure cannot masquerade as a perfect ESS.
         weights = np.full(n_samples, 1.0 / n_samples)
-        ess = float(n_samples)
+        ess = 0.0
     else:
         w = np.exp(log_w_finite - m)
         s = w.sum()
@@ -393,7 +389,7 @@ def importance_refine(
         weights=weights,
         ess=ess,
         ess_frac=ess_frac,
-        low_ess=bool(ess_frac < low_ess_frac),
+        low_ess=total_underflow or bool(ess_frac < low_ess_frac),
         n_samples=n_samples,
     )
 
@@ -653,21 +649,6 @@ def save_coverage_before_after(
 
 
 # orchestration: full suite on one checkpoint directory
-
-@dataclass
-class CalibrationConfig:
-    n_sbc: int = 1000
-    n_tarp: int = 1000
-    n_cal: int = 400          # calibration set size for conformal fit
-    n_test: int = 400         # held-out test set for before/after coverage
-    n_posterior_samples: int = 1000
-    n_is_samples: int = 2000
-    n_is_cases: int = 20      # how many observations to IS-refine (for the ESS report)
-    low_ess_frac: float = 0.1
-    seed: int = 20260611
-    nominal_levels: list = field(default_factory=lambda: list(np.round(
-        np.linspace(0.05, 0.95, 19), 4)))
-
 
 def _prior_box_log_prob(prior_cfg, param_names):
     """Return a callable theta(M,n)->logp(M,) for the box-uniform prior."""

@@ -153,7 +153,7 @@ class LevelState:
         ])
         knn_k = int(d2.get("knn_k", 5))
         self._d2_clean = np.array([
-            D.detect_d2_embedding(x, self.posterior, self.ctx, self.d2_ref,
+            D.detect_d2_embedding(x, self.posterior, self.d2_ref,
                                   knn_k=knn_k, device=device)
             for x in self.x_clean
         ])
@@ -231,12 +231,12 @@ def run_cell(state: LevelState, family: str, strength: float, fixed: dict,
         elif det == "D2":
             clean = state.d2_clean()
             mis = np.array([
-                D.detect_d2_embedding(x, state.posterior, state.ctx, state.d2_ref,
+                D.detect_d2_embedding(x, state.posterior, state.d2_ref,
                                       knn_k=knn_k, device=device) for x in x_mis
             ])
         elif det == "D3":
             res = D.detect_d3_c2st_cell(
-                state.posterior, state.ctx, state.x_clean, x_mis,
+                state.posterior, state.x_clean, x_mis,
                 kind=d3cfg.get("kind", "logreg"),
                 n_splits=int(d3cfg.get("n_splits", 5)), seed=seed + 4,
                 device=device,
@@ -365,7 +365,7 @@ def run_benchmark(cfg: dict, pilot: bool = False, only_level: str | None = None,
 
 def main(argv=None):
     warnings.filterwarnings("ignore")
-    ap = argparse.ArgumentParser(description="Phase-4 misspec-detection ROC benchmark")
+    ap = argparse.ArgumentParser(description="Misspecification-detection ROC benchmark")
     ap.add_argument("--config", required=True)
     ap.add_argument("--pilot", action="store_true",
                     help="small pilot: 1 strength/family, pilot sample sizes")

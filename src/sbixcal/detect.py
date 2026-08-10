@@ -74,12 +74,9 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable
 
 import numpy as np
 import torch
-
-from . import train_npe as _tn
 
 
 # simulator context: everything a detector needs to (re)simulate
@@ -118,7 +115,6 @@ class SimulatorContext:
         """Draw ``n`` clean Model-A (theta, Poisson-counts) from the training
         prior at this count level. Returns ``(theta (n,P), x (n,C))`` float arrays.
         """
-        from . import simulate as _sim
         from . import priors as _priors
         rng = np.random.default_rng(seed)
         samples = _priors.sample_prior(self.prior_cfg, self.param_names, n, rng)
@@ -409,7 +405,6 @@ def build_embedding_reference(
 def detect_d2_embedding(
     x_obs: np.ndarray,
     posterior,
-    ctx: SimulatorContext,
     reference: EmbeddingReference,
     knn_k: int = 5,
     device: str = "cpu",
@@ -547,7 +542,6 @@ def marginal_c2st(
 
 def detect_d3_c2st_cell(
     posterior,
-    ctx: SimulatorContext,
     x_clean: np.ndarray,
     x_mis: np.ndarray,
     kind: str = "logreg",
@@ -576,7 +570,6 @@ def score(
     detector: str,
     *,
     reference: EmbeddingReference | None = None,
-    reference_embed: np.ndarray | None = None,
     cfg: dict | None = None,
     seed: int = 0,
     device: str = "cpu",
@@ -612,14 +605,14 @@ def score(
                 reg=float(d2.get("reg", 1e-3)), device=device,
             )
         return detect_d2_embedding(
-            spectrum, posterior, simulator_ctx, reference,
+            spectrum, posterior, reference,
             knn_k=int(d2.get("knn_k", 5)), device=device,
             return_parts=return_parts,
         )
     if detector == "D3":
         raise ValueError(
             "D3 is the simplified MARGINAL C2ST (a population two-sample test); it "
-            "has no single-spectrum score. Use detect_d3_c2st_cell(posterior, ctx, "
+            "has no single-spectrum score. Use detect_d3_c2st_cell(posterior, "
             "x_clean, x_mis) per benchmark cell."
         )
     raise ValueError(f"unknown detector '{detector}'. known: {DETECTORS}")

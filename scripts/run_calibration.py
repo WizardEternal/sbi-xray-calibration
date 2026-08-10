@@ -30,7 +30,6 @@ import os
 from pathlib import Path
 
 import numpy as np
-import torch
 
 from sbixcal import calibrate as C
 from sbixcal import train_npe as _tn
@@ -318,7 +317,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Phase-3 calibration suite")
+    ap = argparse.ArgumentParser(description="Calibration suite (SBC, TARP, conformal, IS-refinement)")
     ap.add_argument("--config", required=True)
     ap.add_argument("--checkpoint", default=None,
                     help="evaluate exactly this checkpoint dir (level from --level "

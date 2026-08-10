@@ -313,7 +313,6 @@ def tiny_ckpt(tmp_path_factory):
     checkpoint dir."""
     warnings.filterwarnings("ignore")
     from sbixcal import train_npe as tn
-    import torch
 
     oc = R.scale_exposure(R.load_base_obsconf(), TEST_EXPOSURE)
     theta, x = _fake_train_data(oc, n=800, seed=11)

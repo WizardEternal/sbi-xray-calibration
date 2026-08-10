@@ -82,7 +82,6 @@ def load_level(level: str):
     raw = np.asarray(cov["cov_raw"]).mean(axis=1)
     conformal = np.asarray(cov["cov_recal"]).mean(axis=1)
     is_all = np.asarray(isc["cov_is_all"]).mean(axis=1)
-    is_okess = np.asarray(isc["cov_is_okess"]).mean(axis=1)
 
     return {
         "level": level,
@@ -90,7 +89,6 @@ def load_level(level: str):
         "raw": raw,
         "conformal": conformal,
         "is_all": is_all,
-        "is_okess": is_okess,
         "counts": float(summ["median_total_counts"]),
         "raw_dev": _mean_abs_dev(nominal, raw),
         "conformal_dev": _mean_abs_dev(nominal, conformal),

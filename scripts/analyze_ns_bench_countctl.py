@@ -42,7 +42,7 @@ def fit_clean_trend(rows, rng):
     return coef, sd, boot, len(cc)
 
 
-def cell_residual(rows, coef, sd, boot, fam, level, rng):
+def cell_residual(rows, coef, boot, fam, level, rng):
     sel = [r for r in rows if r["family"] == fam and r["level"] == level]
     if not sel:
         return None
@@ -83,7 +83,7 @@ def main():
     out = {"trend": {"slope": float(coef[0]), "intercept": float(coef[1]),
                      "resid_sd": float(sd), "n_clean": n_clean}, "cells": []}
     for fam, lvl in cells:
-        r = cell_residual(rows, coef, sd, boot, fam, lvl, rng)
+        r = cell_residual(rows, coef, boot, fam, lvl, rng)
         if r is None:
             continue
         # caught = CI entirely below 0 (real evidence penalty)

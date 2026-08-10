@@ -23,8 +23,6 @@ d2:
   knn_k: 5
   reg: 1.0e-3
 d3:
-  n_ref: 500
-  k_rep: 200
   kind: logreg
 families:
   B1:

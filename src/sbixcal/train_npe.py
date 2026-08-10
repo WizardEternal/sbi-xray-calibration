@@ -437,7 +437,6 @@ def run_training(cfg: dict, config_src_path: str | None = None,
 
         save_checkpoint(out_dir, de, summary, cfg, param_order, x.shape[1], meta,
                         config_src_path=config_src_path)
-        tl = summary.get("training_loss", [])
         vl = summary.get("validation_loss", [])
         print(f"[done] {run_name}: n={meta['n']} epochs={summary.get('epochs_trained')} "
               f"final_val={vl[-1] if vl else float('nan'):.4f} "
