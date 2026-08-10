@@ -1,6 +1,6 @@
 """Cross-instrument SBC figure: per-parameter rank-uniformity KS p-value at each
-count level, EPIC-pn vs NICER. The bright (10000-count) flow fails on both
-responses, while faint/medium mostly pass -- the count-regime miscalibration.
+count level, EPIC-pn vs NICER. The bright (10000-count) flow fails rank-uniformity
+on both responses, while faint/medium mostly pass; NICER bright coverage stays nominal.
 
 Usage (repo venv; requires both calibration suites already run):
     .venv\\Scripts\\python.exe scripts\\make_nicer_sbc_fig.py

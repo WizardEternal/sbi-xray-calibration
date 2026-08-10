@@ -373,9 +373,15 @@ B2, the partial-covering family, is absent at medium and bright, and at faint on
   total counts fewer photons land near the line. Line detectability tracks the
   effective area at the line energy; the gain-shift invisibility does not.
 
-The high-count SBC failure also reproduces: the bright flow fails rank-uniformity on
-every parameter on both responses, while faint and medium mostly pass, so it is the
-count regime and not one flow's training.
+The SBC rank failure at high counts also shows up here: the NICER bright flow fails
+rank-uniformity on every parameter (all five KS p < 0.005), while faint and medium
+mostly pass. Its coverage stays nominal at the same time (mean absolute deviation
+0.0115, the best of the three NICER levels), so the two diagnostics separate: rank
+non-uniformity at ~10⁴ counts recurs on both responses, but the coverage
+miscalibration of the XMM production flow does not, consistent with the reseed
+evidence that the coverage failure was one flow's training artifact. The NICER flows
+also train under a different budget (cap 350, on cuda), so this is a qualitative
+check, not a controlled replication.
 
 ![Cross-instrument SBC](outputs/diagnostics/nicer_sbc.png)
 
