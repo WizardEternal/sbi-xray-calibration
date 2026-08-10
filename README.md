@@ -199,19 +199,20 @@ Dupourqué I (arXiv:2401.06061 §3.2–3.3) recover excellently at 10⁴–10⁵
 a deliberately restricted prior and never run a rank-based SBC test; the rank-based
 calibration test is what this repo adds.
 
-**TARP: the ATC summary hides the over-confidence; read the curve.** A common
+**TARP: the ATC summary hides the miscalibration; read the curve.** A common
 shortcut is to read TARP's single area-to-curve (ATC) number. At bright that
 number is misleadingly benign: ATC ≈ −0.002 (recomputed from
 `outputs/calibration/bright/tarp.npz`), apparently fine. The `sbi` implementation
-integrates ECP−α over α ≥ 0.5 only, and the bright curve's over-confidence lobe
-sits almost entirely below that cut. The curve bows above the diagonal out to
-α ≈ 0.73 (max|ECP−α| = 0.102 at α ≈ 0.19; mean ECP−α = +0.080 over α < 0.5) and is
-nearly flat where the ATC actually integrates (mean −0.004 over α > 0.5), so the
-deviation is invisible to the statistic by construction. The unsigned whole-curve
-summary tells the truth: the bright ECP curve's abs-area is 0.053, versus
-0.005 / 0.012 at faint / medium. TARP does catch the over-confidence if you read
-the curve (or use abs-area / a KS statistic over the full α range); the ATC number
-alone hides it. The committed bright ECP curve makes this visible:
+integrates ECP−α over α ≥ 0.5 only, and the bright curve's deviation sits almost
+entirely below that cut: the curve bows above the diagonal out to α ≈ 0.73, with
+max|ECP−α| = 0.102 at α ≈ 0.19 and mean ECP−α = +0.080 over α < 0.5. The little
+that falls inside the window nearly cancels internally (+0.006 above the
+diagonal against −0.007 below, netting the −0.002), so the statistic stays
+benign while the curve is not. The unsigned whole-curve summary tells the
+truth: the bright ECP curve's abs-area is 0.053, versus 0.005 / 0.012 at faint /
+medium. TARP does catch the miscalibration if you read the curve (or use
+abs-area / a KS statistic over the full α range); the ATC number alone hides
+it. The committed bright ECP curve makes this visible:
 `outputs/diagnostics/tarp_bright_curve.png`.
 
 SBC rank histograms: `outputs/calibration/{faint,medium,bright}/sbc_ranks.png`.

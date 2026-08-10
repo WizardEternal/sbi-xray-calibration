@@ -37,9 +37,9 @@ train:
   learning_rate: 5.0e-4
   validation_fraction: 0.1
   stop_after_epochs: 20
-  # Capped at 150 epochs to keep the 3 production flows within the phase wall-
-  # clock budget on CPU (the dev learning curve shows the easy params plateau
-  # well before this; N_H is the slow one and benefits from more data, not more
+  # Capped at 150 epochs to keep the 3 production flows within the wall-clock
+  # budget on CPU (the dev learning curve shows the easy params plateau well
+  # before this; N_H is the slow one and benefits from more data, not more
   # epochs). Early stopping (patience 20) usually fires before the cap.
   max_num_epochs: 150
   show_progress: false

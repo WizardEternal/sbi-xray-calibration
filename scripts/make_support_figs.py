@@ -22,8 +22,9 @@ Produces three figures into outputs/diagnostics/ :
       The bright-level TARP expected-coverage (ECP-vs-alpha) curve, with the
       |ECP-alpha| area shaded. The figure: the sbi ATC (~ -0.002) integrates
       ECP-alpha over alpha>=0.5 only, so the over-confidence lobe (peaking near
-      alpha~0.19, ending at the alpha~0.73 crossing) sits outside the statistic;
-      the full-range abs-area (0.053) and max|ECP-alpha| (0.102 at alpha~0.19)
+      alpha~0.19, ending at the alpha~0.73 crossing) sits almost entirely below
+      the alpha >= 0.5 window (the remainder nearly cancels inside it); the
+      full-range abs-area (0.053) and max|ECP-alpha| (0.102 at alpha~0.19)
       catch it. Reads outputs/calibration/bright/tarp.npz. The lesson is "read
       the curve / use abs-area or KS", not "TARP is insufficient".
 
@@ -163,11 +164,11 @@ def make_tarp_bright_curve(tarp_npz: Path, out_path: Path):
     """Bright TARP ECP-vs-alpha curve with the |ECP-alpha| area shaded.
 
     The sbi ATC integrates ECP-alpha over alpha>=0.5 only, so the over-confidence
-    lobe (peaking near alpha~0.19, ending at the crossing) sits outside the
-    statistic and stays invisible to it; the unsigned abs-area and
-    max|ECP-alpha| catch it. All numbers, including the crossing point itself,
-    are recomputed from the npz (the crossing is not at alpha=0.5, so it is not
-    assumed to be).
+    lobe (peaking near alpha~0.19, ending at the crossing) sits almost entirely
+    below the alpha >= 0.5 window (the remainder nearly cancels inside it); the
+    unsigned abs-area and max|ECP-alpha| catch it. All numbers, including the
+    crossing point itself, are recomputed from the npz (the crossing is not at
+    alpha=0.5, so it is not assumed to be).
     """
     d = np.load(tarp_npz, allow_pickle=True)
     ecp = np.asarray(d["ecp"]); alpha = np.asarray(d["alpha"])
@@ -200,6 +201,9 @@ def make_tarp_bright_curve(tarp_npz: Path, out_path: Path):
         counts = float(json.load(f)["median_total_counts"])
 
     fig, ax = plt.subplots(figsize=(5.4, 5.4))
+    ax.axvspan(0.5, 1.0, color="0.85", alpha=0.35, zorder=0)
+    ax.text(0.52, 0.965, "ATC window (α ≥ 0.5)", fontsize=7.5, color="#555555",
+            ha="left", va="top", style="italic")
     ax.plot([0, 1], [0, 1], ls=(0, (4, 3)), color="#444444", lw=1.3,
             label="ideal (ECP = nominal)")
     ax.plot(alpha, ecp, color="#D55E00", lw=2.3, label=f"bright ECP (~{counts:.0f} ct)")
@@ -225,8 +229,8 @@ def make_tarp_bright_curve(tarp_npz: Path, out_path: Path):
     ax.grid(alpha=0.25, lw=0.7)
     ax.set_xlabel("nominal credibility level α")
     ax.set_ylabel("expected coverage probability (ECP)")
-    ax.set_title("Bright TARP: signed ATC vs unsigned abs-area\n"
-                 f"signed ATC = {atc:+.3f}  vs  abs-area = "
+    ax.set_title("Bright TARP: the ATC window vs the whole curve\n"
+                 f"ATC (α ≥ 0.5 window) = {atc:+.3f}  vs  abs-area = "
                  f"{abs_area:.3f}, max|dev| = {max_dev:.3f}", fontsize=9.5)
     ax.legend(loc="lower right", fontsize=8.2, framealpha=0.95)
     fig.tight_layout()

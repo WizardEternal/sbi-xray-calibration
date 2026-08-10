@@ -11,7 +11,7 @@ unless --force or the stage's own re-run is requested):
   1. simulate   data/sim/<name>_<level>.npz                       (5e4-row training sets + sanity sets)
   2. train      outputs/models/train_npe_prod_<level>/flow_state.pt
   3. calibrate  outputs/calibration/<level>/coverage_before_after.npz
-  4. detect     outputs/detect/results.jsonl (144 cells) + consequence.jsonl + analyze_detect tables
+  4. detect     outputs/detect/scores.jsonl (per-spectrum scores) + results.jsonl (144 cells) + analyze_detect tables
   5. ns_bench   outputs/ns_bench/results.jsonl              -- opt-in only (--with-ns),
                 because the NS run is multi-hour and is normally launched
                 separately in the background. Default run_all does not touch it.
@@ -108,6 +108,7 @@ def _detect_done() -> bool:
 
 
 def _ns_done() -> bool:
+    # results.jsonl ships committed and NS is multi-hour, so a fresh clone deliberately skips this stage; delete the file (or rerun the stage directly) to recompute.
     p = _repo_root() / "outputs" / "ns_bench" / "results.jsonl"
     return p.exists() and p.stat().st_size > 0
 
