@@ -400,6 +400,8 @@ check, not a controlled replication.
 ```powershell
 # from the repo root, with the venv python; cap compute as needed
 $env:OMP_NUM_THREADS = 4
+python -m venv .venv                                         # one-time venv setup
+.venv\Scripts\python.exe -m pip install -r requirements.txt # one-time dependency install
 .venv\Scripts\python.exe -m pip install -e . --no-deps      # one-time editable install
 
 # full pipeline (each stage skip-if-exists; NS is opt-in via --with-ns)
@@ -423,7 +425,7 @@ count-controlled evidence bootstrap in `analyze_ns_bench.py` draws on a second
 fixed seed (`20260630`). Expensive artifacts are checkpointed with
 skip-if-exists; `data/` is empty and rebuildable; no data or checkpoints are
 committed. Python 3.12, native Windows; `sbi` (NPE+NSF), `jaxspec` (CPU JAX),
-`ultranest`, `arviz`.
+`ultranest`.
 
 ## Author
 

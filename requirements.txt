@@ -5,26 +5,19 @@ torch>=2.12.0
 sbi>=0.26.1
 jaxspec>=0.3.4
 jax>=0.6.2
-jaxlib>=0.6.2
+jaxlib>=0.6.2  # jaxspec pin pass-through, not imported directly
 ultranest>=4.5.0
 numpy>=2.4.6
 scipy>=1.15.3
 matplotlib>=3.10.9
-corner>=2.2.3
-arviz>=0.23.4
 pyyaml>=6.0.3
 pytest>=9.0.3
-h5py>=3.16.0
-tqdm>=4.68.2
-numpyro>=0.19.0
+numpyro>=0.19.0  # jaxspec pin pass-through, not imported directly
 flax>=0.11.2
-equinox>=0.13.8
-interpax>=0.3.14
+equinox>=0.13.8  # jaxspec pin pass-through, not imported directly
+interpax>=0.3.14  # jaxspec pin pass-through, not imported directly
 astropy>=7.2.0
-pandas>=2.3.3
-seaborn>=0.13.2
 scikit-learn>=1.9.0
-cython>=3.2.5
 
 # Notebook-only (optional): needed solely to execute notebooks/walkthrough.ipynb.
 # Not required by the library, scripts, or tests.

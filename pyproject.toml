@@ -9,6 +9,25 @@ description = "Calibration + misspecification detection for SBI X-ray spectral f
 requires-python = ">=3.12,<3.13"
 readme = "README.md"
 license = { file = "LICENSE" }
+dependencies = [
+    "torch>=2.12.0",
+    "sbi>=0.26.1",
+    "jaxspec>=0.3.4",
+    "jax>=0.6.2",
+    "jaxlib>=0.6.2",
+    "ultranest>=4.5.0",
+    "numpy>=2.4.6",
+    "scipy>=1.15.3",
+    "matplotlib>=3.10.9",
+    "pyyaml>=6.0.3",
+    "pytest>=9.0.3",
+    "numpyro>=0.19.0",
+    "flax>=0.11.2",
+    "equinox>=0.13.8",
+    "interpax>=0.3.14",
+    "astropy>=7.2.0",
+    "scikit-learn>=1.9.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
