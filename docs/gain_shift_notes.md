@@ -61,7 +61,7 @@ Both are genuine gain errors; the sign is just which way we label the slope. The
 simulator config exposes a signed percent grid and the centre (0%) is the
 nominal response.
 
-## Proof (outputs/diagnostics/gain_shift_check.png)
+## Proof
 
 Folded tbabs*(powerlaw + narrow Gauss at 6.4 keV) through nominal, +2%, and -2%
 responses. Flux-weighted Fe-K centroid over 5.5-7.5 keV:
@@ -72,8 +72,8 @@ responses. Flux-weighted Fe-K centroid over 5.5-7.5 keV:
 | 1.020 | 6.274 keV     | -0.127 keV (= -2.0%) |
 | 0.980 | 6.530 keV     | +0.129 keV (= +2.0%) |
 
-The shift magnitude matches the gain factor to <1% and the line visibly moves in
-the zoom panel. Verdict assertions in the script pass.
+The shift magnitude matches the gain factor to <1%, and the check script's
+assertions passed. The one-off script and its figure are not kept in the repo.
 
 ## What did NOT need to be done
 

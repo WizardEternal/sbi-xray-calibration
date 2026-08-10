@@ -46,7 +46,6 @@ figures:
   - builder: detect_tables
     outputs:
       - outputs/detect/auc_table.md
-      - outputs/detect/auc_heatmap.png
       - outputs/detect/consequence.md
 
   - builder: nicer_replication

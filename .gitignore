@@ -70,7 +70,6 @@ outputs/calibration/*/*
 !outputs/detect/
 outputs/detect/*
 !outputs/detect/auc_table.md
-!outputs/detect/auc_heatmap.png
 !outputs/detect/consequence.md
 !outputs/detect/results.jsonl
 # the record behind consequence.md and diagnostics/dgamma_silent_failure.png
@@ -107,11 +106,9 @@ outputs/ns_bench/*
 # only the specific committed files
 !outputs/diagnostics/
 outputs/diagnostics/*
-!outputs/diagnostics/brems_check.png
 !outputs/diagnostics/coverage_money_panel.png
 !outputs/diagnostics/detector_auc_grid.png
 !outputs/diagnostics/dgamma_silent_failure.png
-!outputs/diagnostics/gain_shift_check.png
 !outputs/diagnostics/learning_curve_dev.json
 !outputs/diagnostics/learning_curve_dev.png
 !outputs/diagnostics/npe_recovery_bright.png
