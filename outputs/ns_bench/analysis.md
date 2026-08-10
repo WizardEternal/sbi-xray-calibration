@@ -1,4 +1,4 @@
-# Phase-5 NS-vs-NPE benchmark: analysis
+# NS-vs-NPE benchmark: analysis
 
 Spectra analyzed: 76 (56 clean, 20 misspecified). Detector cross-check: **READY** (144 detector cells available).
 
@@ -18,7 +18,7 @@ Spectra analyzed: 76 (56 clean, 20 misspecified). Detector cross-check: **READY*
 | medium | 16 | 0.91 |
 | bright | 15 | 0.85 |
 
-## 3. NS misspecification flags vs Phase-4 detector AUC
+## 3. NS misspecification flags vs detector AUC
 
 logZ scales with total counts, so each cell's flag is the count-controlled residual: mean logZ minus the clean logZ-vs-log10(counts) trend (95% CI). Below the trend => the well-specified Model A fits the misspecified spectra worse => flagged; on the trend => no penalty. Detector AUCs are read read-only from outputs/detect/results.jsonl; cells the detector grid has not produced yet show as pending.
 

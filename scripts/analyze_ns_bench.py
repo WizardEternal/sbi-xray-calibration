@@ -1,11 +1,19 @@
-r"""NS-vs-NPE benchmark analysis: the speed-vs-agreement table + the
-NS-flag-vs-detector-flag cross-check.
+r"""NS-vs-NPE benchmark analysis: the speed-vs-agreement table, the NS-flag-vs-
+detector-flag cross-check, and the canonical count-controlled nested-sampling
+evidence analysis.
 
 Usage (repo venv):
     .venv\Scripts\python.exe scripts\analyze_ns_bench.py --config configs\ns_bench.yaml
+    .venv\Scripts\python.exe scripts\analyze_ns_bench.py --config configs\ns_bench_nicer.yaml
+
+    # count-controlled analysis only, no config (the standalone invocation
+    # analyze_ns_bench_countctl.py used to document): pass a results.jsonl path
+    # directly, writes only <dir>/count_controlled.json next to it.
+    .venv\Scripts\python.exe scripts\analyze_ns_bench.py outputs\ns_bench\results.jsonl
+    .venv\Scripts\python.exe scripts\analyze_ns_bench.py outputs\ns_bench_nicer\results.jsonl
 
 Reads outputs/ns_bench/results.jsonl (written by run_ns_benchmark.py) and prints
-(and writes to outputs/ns_bench/analysis.md):
+(and writes to outputs/ns_bench/analysis.md), in --config mode:
 
   1. speed-vs-agreement table, per count level (clean Model-A spectra only -- the
      well-specified spine): NS wall-clock (s/spectrum) and n_like_evals vs NPE
@@ -21,7 +29,22 @@ Reads outputs/ns_bench/results.jsonl (written by run_ns_benchmark.py) and prints
         * evidence flag: logZ relative to the clean-population logZ at the same
           level (a misspecified spectrum the model cannot fit has lower evidence).
      and reports them next to the detector AUC for the matching
-     (family, strength, level) cell.
+     (family, strength, level) cell. The d-logZ count-controlled column here is
+     the same count-controlled evidence residual as (3) below, computed with the
+     same ported functions and RNG-consumption order.
+
+  3. Count-controlled nested-sampling evidence analysis (written separately to
+     outputs/ns_bench/count_controlled.json): logZ is the log marginal likelihood
+     of one dataset, so it scales ~linearly with total counts
+     (logZ ~ a*log10(counts)+b), and a count "level" spans a ~30x count range. A
+     level-matched mean(logZ_mis) - mean(logZ_clean) over unmatched spectra is
+     therefore confounded by which spectra land in each group. This fits
+     logZ vs log10(counts) on the clean spectra (all levels), then reports each
+     misspecified cell's mean residual from that trend, with a bootstrap CI and a
+     per-spectrum breakdown. A real model error sits below the clean trend
+     (negative residual); a count artifact sits on it. This is the canonical
+     count-controlled analysis (the numbers the README quotes) -- ported from the
+     former standalone analyze_ns_bench_countctl.py, merged in here (C9b).
 
   *** Detector cross-check status ***  The detector benchmark
   (outputs/detect/results.jsonl) may still be running (the full 144-cell grid).
@@ -30,8 +53,10 @@ Reads outputs/ns_bench/results.jsonl (written by run_ns_benchmark.py) and prints
   computed are shown as "pending" and the whole cross-check is labelled a stub
   until the detector grid finishes. The NS-side flags are always computed.
 
-Writes only to outputs/ns_bench/analysis.md. Reads outputs/ns_bench/results.jsonl
-and (read-only, if present) outputs/detect/results.jsonl.
+Writes to outputs/ns_bench/analysis.md, analysis_summary.json and
+count_controlled.json in --config mode; only count_controlled.json in the bare
+results.jsonl-path mode. Reads outputs/ns_bench/results.jsonl and (read-only, if
+present) outputs/detect/results.jsonl.
 """
 
 from __future__ import annotations
@@ -95,21 +120,104 @@ def speed_agreement_table(rows):
     return "\n".join(lines), agg
 
 
-# 2. NS misspecification flags vs detector AUC
+# 2. NS misspecification flags vs detector AUC, and
+# 3. the count-controlled evidence analysis they both draw on
+#
+# fit_clean_trend / cell_residual are ported verbatim from the former standalone
+# scripts/analyze_ns_bench_countctl.py (C9b merge). ns_flag_table's markdown/AUC
+# cross-check and count_controlled_report's outputs/ns_bench/count_controlled.json
+# both call them, so the count-controlled numbers are the same computation
+# everywhere they are reported, not two implementations that can drift apart.
 
-def _clean_trend(rows, rng):
-    """Fit logZ = a*log10(counts)+b on the clean spectra. logZ scales with total
-    counts, so this trend is the baseline a misspecified cell is compared against."""
+def fit_clean_trend(rows, rng):
+    """Fit logZ = a*log10(counts)+b on the clean spectra (all levels). logZ scales
+    with total counts, so this trend is the count-controlled baseline every
+    misspecified cell's residual is compared against."""
     cc = np.array([r["n_counts"] for r in rows if r["family"] == "clean"], float)
     cz = np.array([r["ns"]["logz"] for r in rows if r["family"] == "clean"], float)
     X = np.vstack([np.log10(cc), np.ones_like(cc)]).T
     coef, *_ = np.linalg.lstsq(X, cz, rcond=None)
+    resid = cz - X @ coef
+    sd = resid.std(ddof=2)
     boot = []
+    n = len(cc)
     for _ in range(2000):
-        idx = rng.integers(0, len(cc), len(cc))
+        idx = rng.integers(0, n, n)
         c, *_ = np.linalg.lstsq(X[idx], cz[idx], rcond=None)
         boot.append(c)
-    return coef, np.array(boot)
+    boot = np.array(boot)
+    return coef, sd, boot, n
+
+
+def cell_residual(sel, coef, boot, fam, level, rng):
+    """Count-controlled residual + bootstrap CI for one cell's spectra (`sel`,
+    already filtered by the caller -- count_controlled_report filters by
+    family+level only, matching the cell list below; ns_flag_table filters by
+    family+strength+level, a no-op today since the ns_bench subsample draws
+    exactly one strength per family/level cell). Bootstraps over both sources of
+    uncertainty: the clean-trend fit (each `boot` row) and the finite cell itself
+    (resampling the n cell spectra) -- dropping the cell resample understates the
+    CI badly for small n."""
+    if not sel:
+        return None
+    gc = np.array([r["n_counts"] for r in sel], float)
+    gz = np.array([r["ns"]["logz"] for r in sel], float)
+    pred = coef[0] * np.log10(gc) + coef[1]
+    res = gz - pred
+    bmeans = []
+    n = len(res)
+    for b in range(len(boot)):
+        predb = boot[b, 0] * np.log10(gc) + boot[b, 1]
+        idx = rng.integers(0, n, n)
+        bmeans.append((gz[idx] - predb[idx]).mean())
+    lo, hi = np.percentile(bmeans, [2.5, 97.5])
+    # significance from the cell's own residual scatter (honest per-cell
+    # t-statistic); dividing by the clean-trend SD understates the noise badly for
+    # high-count cells, where the per-spectrum penalty varies by hundreds of nats.
+    # The bootstrap CI above is the robust statement and the one reported.
+    cell_sd = res.std(ddof=1)
+    sig = res.mean() / (cell_sd / np.sqrt(n)) if n > 1 and cell_sd > 0 else float("nan")
+    return dict(fam=fam, level=level, n=n, mean_resid=float(res.mean()),
+                ci=[float(lo), float(hi)], sigma=float(sig),
+                per_spec=[round(float(x), 1) for x in res],
+                counts=[int(c) for c in gc])
+
+
+# the fixed (family, level) cells the ns_bench subsample draws misspecified
+# spectra for; count_controlled_report visits them in exactly this order so the
+# shared-rng bootstrap draws land the same way run to run.
+_COUNT_CONTROLLED_CELLS = [("B1", "medium"), ("B1", "bright"),
+                           ("B4", "medium"), ("B4", "bright")]
+
+
+def count_controlled_report(rows, rng):
+    """The canonical count-controlled NS-evidence analysis (outputs/ns_bench/
+    count_controlled.json): fit_clean_trend once, then cell_residual over the
+    fixed cell list above, in that order, sharing one rng stream -- ported from
+    the former standalone analyze_ns_bench_countctl.py's main()."""
+    coef, sd, boot, n_clean = fit_clean_trend(rows, rng)
+    out = {"trend": {"slope": float(coef[0]), "intercept": float(coef[1]),
+                     "resid_sd": float(sd), "n_clean": n_clean}, "cells": []}
+    for fam, lvl in _COUNT_CONTROLLED_CELLS:
+        sel = [r for r in rows if r["family"] == fam and r["level"] == lvl]
+        r = cell_residual(sel, coef, boot, fam, lvl, rng)
+        if r is None:
+            continue
+        r["caught"] = bool(r["ci"][1] < 0)  # CI entirely below 0 = a real evidence penalty
+        out["cells"].append(r)
+    return out, coef, sd
+
+
+def _print_count_controlled(label, out, coef, sd):
+    """Console report matching the former standalone script's format."""
+    print(f"# Count-controlled NS analysis: {label}")
+    print(f"clean trend: logZ = {coef[0]:.2f}*log10(counts) + {coef[1]:.2f}  "
+          f"(n_clean={out['trend']['n_clean']}, resid sd={sd:.2f})")
+    print(f"{'cell':22s} {'n':>3s} {'mean_resid':>11s} {'95% CI':>20s} {'sigma':>7s}  verdict")
+    for r in out["cells"]:
+        verdict = "CAUGHT (penalty)" if r["caught"] else "null/boost"
+        print(f"{r['fam']+'/'+r['level']:22s} {r['n']:3d} {r['mean_resid']:+11.1f} "
+              f"[{r['ci'][0]:+7.1f},{r['ci'][1]:+7.1f}] {r['sigma']:+7.1f}  {verdict}")
 
 
 def _detector_auc_lookup(detect_rows):
@@ -126,7 +234,7 @@ def ns_flag_table(rows, detect_rows):
     the clean logZ-vs-log10(counts) trend, with a bootstrap CI), shown next to the
     detector AUCs. Below the trend is a real evidence penalty; on the trend is none."""
     rng = np.random.default_rng(20260630)
-    coef, boot = _clean_trend(rows, rng)
+    coef, sd, boot, n_clean = fit_clean_trend(rows, rng)
     det = _detector_auc_lookup(detect_rows)
 
     groups = defaultdict(list)
@@ -149,23 +257,15 @@ def ns_flag_table(rows, detect_rows):
     # iterate in (family, canonical count-level order) -- not alphabetical on level,
     # since "bright" < "medium" as strings would consume the shared bootstrap rng
     # stream in a different order per cell than the canonical reproducer
-    # (scripts/analyze_ns_bench_countctl.py, which visits medium before bright for
-    # each family) and silently change every cell's CI despite an identical seed.
+    # (count_controlled_report / _COUNT_CONTROLLED_CELLS above, which visits medium
+    # before bright for each family) and silently change every cell's CI despite an
+    # identical seed.
     _level_order = {"faint": 0, "medium": 1, "bright": 2}
     for (fam, strength, lvl), rs in sorted(
             groups.items(), key=lambda kv: (kv[0][0], _level_order.get(kv[0][2], 99), kv[0][1])):
-        gc = np.array([r["n_counts"] for r in rs], float)
-        gz = np.array([r["ns"]["logz"] for r in rs], float)
-        resid = gz - (coef[0] * np.log10(gc) + coef[1])
-        mean_r = float(resid.mean())
-        # bootstrap the residual estimate over both sources of uncertainty: the clean
-        # trend fit (each b) and the finite cell itself (resample the n cell spectra).
-        # dropping the cell resample understates the CI badly for small n.
-        bmeans = []
-        for b in boot:
-            ci = rng.integers(0, len(gc), len(gc))
-            bmeans.append((gz[ci] - (b[0] * np.log10(gc[ci]) + b[1])).mean())
-        lo, hi = (float(x) for x in np.percentile(bmeans, [2.5, 97.5]))
+        cr = cell_residual(rs, coef, boot, fam, lvl, rng)
+        mean_r = cr["mean_resid"]
+        lo, hi = cr["ci"]
         aucs = det.get((fam, strength, lvl), {})
         d1 = aucs.get("D1"); d2 = aucs.get("D2"); d3 = aucs.get("D3")
         have = sum(a is not None for a in (d1, d2, d3))
@@ -174,10 +274,10 @@ def ns_flag_table(rows, detect_rows):
         def f(a):
             return f"{a:.3f}" if a is not None else "n/a"
         lines.append(
-            f"| {fam} | {strength:g} | {lvl} | {len(rs)} | {mean_r:+.0f} [{lo:+.0f}, {hi:+.0f}] | "
+            f"| {fam} | {strength:g} | {lvl} | {cr['n']} | {mean_r:+.0f} [{lo:+.0f}, {hi:+.0f}] | "
             f"{f(d1)} | {f(d2)} | {f(d3)} | {status} |")
         rowsout.append({
-            "family": fam, "strength": strength, "level": lvl, "n": len(rs),
+            "family": fam, "strength": strength, "level": lvl, "n": cr["n"],
             "dlogz_count_controlled": mean_r, "ci95": [lo, hi],
             "detector_auc": aucs, "detector_status": status,
         })
@@ -214,11 +314,11 @@ def truth_recovery(rows):
     return "\n".join(lines)
 
 
-def main(argv=None):
-    ap = argparse.ArgumentParser(description="NS-vs-NPE benchmark analysis")
-    ap.add_argument("--config", required=True)
-    args = ap.parse_args(argv)
-    cfg = load_config(args.config)
+def _run_full(config_path: str) -> int:
+    """--config mode: the speed/agreement + misspec-flag + truth-recovery
+    analysis, plus the count-controlled evidence analysis. Writes analysis.md,
+    analysis_summary.json and count_controlled.json under the config's out_dir."""
+    cfg = load_config(config_path)
 
     out = _out_dir(cfg)
     all_rows = _read_jsonl(out / "results.jsonl")
@@ -247,7 +347,7 @@ def main(argv=None):
     det_status = ("READY" if detect_rows else "STUB (no outputs/detect/results.jsonl)")
 
     md = []
-    md.append("# Phase-5 NS-vs-NPE benchmark: analysis\n")
+    md.append("# NS-vs-NPE benchmark: analysis\n")
     md.append(f"Spectra analyzed: {len(rows)} ({n_clean} clean, {n_mis} misspecified)"
               f"{f'; {n_err} error row(s) skipped' if n_err else ''}. "
               f"Detector cross-check: **{det_status}** "
@@ -256,7 +356,7 @@ def main(argv=None):
     md.append(speed_tbl + "\n")
     md.append("## 2. NS truth recovery (clean; 90% interval coverage proxy)\n")
     md.append(recov_tbl + "\n")
-    md.append("## 3. NS misspecification flags vs Phase-4 detector AUC\n")
+    md.append("## 3. NS misspecification flags vs detector AUC\n")
     md.append("logZ scales with total counts, so each cell's flag is the count-"
               "controlled residual: mean logZ minus the clean logZ-vs-log10(counts) "
               "trend (95% CI). Below the trend => the well-specified Model A fits the "
@@ -282,7 +382,52 @@ def main(argv=None):
         "speed_agreement": speed_agg, "ns_misspec_flags": flag_rows,
         "detector_status": det_status,
     }, indent=2), encoding="utf-8")
+
+    # canonical count-controlled evidence analysis, written separately -- its own
+    # fresh rng stream (seed 20260630), independent of ns_flag_table's, matching
+    # what the former standalone script did on every invocation.
+    cc_rng = np.random.default_rng(20260630)
+    cc_out, cc_coef, cc_sd = count_controlled_report(rows, cc_rng)
+    _print_count_controlled(str(out / "results.jsonl"), cc_out, cc_coef, cc_sd)
+    (out / "count_controlled.json").write_text(
+        json.dumps(cc_out, indent=2), encoding="utf-8")
+    print(f"\n[written] {out / 'count_controlled.json'}")
     return 0
+
+
+def _run_countctl_only(results_path: str) -> int:
+    """Bare results.jsonl-path mode (the former standalone analyze_ns_bench_
+    countctl.py invocation): writes only <dir>/count_controlled.json next to the
+    given results.jsonl, with no config and no analysis.md/analysis_summary.json."""
+    rows = _read_jsonl(Path(results_path))
+    if not rows:
+        print(f"No usable rows in {results_path}.")
+        return 0
+    rng = np.random.default_rng(20260630)
+    out, coef, sd = count_controlled_report(rows, rng)
+    _print_count_controlled(results_path, out, coef, sd)
+    outpath = str(results_path).replace("results.jsonl", "count_controlled.json")
+    Path(outpath).write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print(f"\nwrote {outpath}")
+    return 0
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(
+        description="NS-vs-NPE benchmark analysis + count-controlled evidence")
+    ap.add_argument("--config", help="ns_bench config (e.g. configs/ns_bench.yaml); "
+                     "runs the full analysis and writes analysis.md, "
+                     "analysis_summary.json and count_controlled.json")
+    ap.add_argument("results_path", nargs="?", default=None,
+                     help="results.jsonl path for a count-controlled-only run "
+                     "(no config); writes only count_controlled.json next to it")
+    args = ap.parse_args(argv)
+
+    if args.config:
+        return _run_full(args.config)
+    if args.results_path:
+        return _run_countctl_only(args.results_path)
+    ap.error("either --config <ns_bench.yaml> or a results.jsonl path is required")
 
 
 if __name__ == "__main__":
