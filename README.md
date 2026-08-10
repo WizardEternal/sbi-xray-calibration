@@ -186,7 +186,7 @@ training under three new seeds, and retraining one variant on the same data with
 the epoch cap lifted from 150 to 400, gives near-calibrated flows every time (raw
 coverage deviation **0.014–0.033**; SBC still flags two of the three reseeds). The cleanest control is the
 uncapped retrain: identical data, cap lifted, converged at 162 epochs → deviation
-0.014, SBC uniform. That isolates the cause as undertraining / the epoch cap, not
+0.014, SBC near-uniform (one parameter of five at p = 0.028). That isolates the cause as undertraining / the epoch cap, not
 the count regime:
 
 | variant | epochs (cap) | raw cov dev | SBC ks_p_min |
@@ -201,17 +201,20 @@ context, Barret & Dupourqué I (arXiv:2401.06061 §3.2–3.3) recover excellentl
 10⁴–10⁵ counts with a deliberately restricted prior and never run a rank-based SBC
 test; the rank-based calibration test is what this repo adds.
 
-**TARP: the signed area summary hides the over-confidence; read the curve.** A
-common shortcut is to read TARP's single signed area-to-curve (ATC) number. At
-bright that number is misleadingly benign: ATC ≈ **−0.002** (recomputed from
-`outputs/calibration/bright/tarp.npz`), apparently fine. The signed area cancels
-because the bright ECP curve bows above the diagonal at α < 0.5 and below it at
-α > 0.5 (mean ECP−α = +0.080 for α<0.5, −0.004 for α>0.5); the two lobes nearly
-annihilate in a signed integral. The unsigned summary tells the truth: the bright
-ECP curve's **abs-area is 0.053** and its **max|ECP−α| = 0.102 at α ≈ 0.19**,
-versus abs-areas of only 0.005 / 0.012 at faint / medium. TARP does catch the
-over-confidence if you read the curve (or use abs-area / a KS statistic); the
-signed ATC alone hides it. The committed bright ECP curve makes this visible:
+**TARP: the ATC summary hides the over-confidence; read the curve.** A common
+shortcut is to read TARP's single area-to-curve (ATC) number. At bright that
+number is misleadingly benign: ATC ≈ −0.002 (recomputed from
+`outputs/calibration/bright/tarp.npz`), apparently fine. The reason is
+mechanical: the `sbi` implementation integrates ECP−α over α ≥ 0.5 only, and
+the bright curve's over-confidence lobe sits almost entirely below that cut.
+The curve bows above the diagonal out to α ≈ 0.73 (max|ECP−α| = 0.102 at α ≈
+0.19; mean ECP−α = +0.080 over α < 0.5) and is nearly flat where the ATC
+actually integrates (mean −0.004 over α > 0.5), so the deviation is invisible
+to the statistic by construction. The unsigned whole-curve summary tells the
+truth: the bright ECP curve's abs-area is 0.053, versus 0.005 / 0.012 at
+faint / medium. TARP does catch the over-confidence if you read the curve (or
+use abs-area / a KS statistic over the full α range); the ATC number alone
+hides it. The committed bright ECP curve makes this visible:
 `outputs/diagnostics/tarp_bright_curve.png`.
 
 SBC rank histograms: `outputs/calibration/{faint,medium,bright}/sbc_ranks.png`.
@@ -259,7 +262,7 @@ is the relevant one.
 Full grid: `outputs/detect/auc_table.md`; heatmap:
 `outputs/diagnostics/detector_auc_grid.png`.
 
-- **B1 (unmodeled Fe-K line):** the per-spectrum PPC (D1) catches it at ≥1000 counts (AUC 0.97), because the line adds localized counts the posterior-predictive check cannot reproduce. At ~100 counts shot noise buries it (best per-spectrum AUC 0.76; D3's 0.80 is the population statistic). Where the line slips through it biases Γ softer, and the signed bias grows with counts: +0.10 at medium, **+0.20 mean / +0.26 median (mean |ΔΓ| 0.46) at bright** for the strongest line (`outputs/diagnostics/dgamma_silent_failure.png`, `outputs/detect/consequence.md`).
+- **B1 (unmodeled Fe-K line):** the per-spectrum PPC (D1) catches it at ≥1000 counts (AUC 0.97), because the line adds localized counts the posterior-predictive check cannot reproduce. At ~100 counts shot noise buries it (best per-spectrum AUC 0.76; D3's 0.80 is the population statistic). Where the line slips through it biases Γ softer, and the signed bias grows with counts: +0.09 at medium, **+0.20 mean / +0.26 median (mean |ΔΓ| 0.46) at bright** for the strongest line (`outputs/diagnostics/dgamma_silent_failure.png`, `outputs/detect/consequence.md`).
 - **B2 (partial covering):** among the per-spectrum detectors, the embedding-OOD (D2) is the one that gets lift (0.67/0.83/0.84 > PPC's 0.59/0.64/0.78), because a covering fraction reshapes the whole soft continuum, a global distortion the embedding sees better than the channel-wise PPC. The population test (D3) separates it best (0.81/0.93/0.96 with counts), though that is supervised two-sample separability and not a per-spectrum trust score. The f≈0.9 near-chance behaviour is a weak leak absorbed into N_H, not an anomalous inversion, and AUC rises monotonically as the leak grows.
 - **B3 (wrong continuum family):** only the population test (D3) gets meaningful lift (0.71–0.81); per-spectrum detectors stay near chance (best D1/D2 0.54–0.66). At the kT where brems looks most powerlaw-like, the 5-parameter model absorbs the difference into N_H/Γ/blackbody: a silent continuum-family error for any per-spectrum trust score.
 - **B4 (detector gain shift):** not detectable by any detector at any level. All 36 B4 cells span AUC 0.43–0.58 (mean 0.50), flat in counts and in gain strength. D3's population separability is no exception (0.53–0.54, at its ~0.66 cv-accuracy control floor). A gain shift preserves spectral shape (it slides the energy axis by up to 3%), so the NPE folds it into the continuum parameters. The embedding-OOD detector does not catch it either (D2 on B4 = 0.48–0.54), against the initial expectation that it would. Gain miscalibration stays invisible to all three trust scores while distorting the continuum, and a per-spectrum score that catches it remains an open problem.
@@ -350,7 +353,8 @@ The per-spectrum dumps and the count-controlled analysis are regenerated by
 Calibration and detection also run on the NICER XTI response, the instrument the
 priors were built on. Fetch the public on-axis response first
 (`python scripts/fetch_nicer_response.py` downloads the NICER CALDB response files
-`nixtiaveonaxis20170601v005.arf` and `nixtiref20170601v003.rmf` into `data/nicer/`),
+`nixtiaveonaxis20170601v005.arf` and `nixtiref20170601v003.rmf` into `data/nicer/`,
+saved as `nicer.arf` / `nicer.rmf`),
 then run the calibration and detection benchmarks against the NICER configs
 directly:
 

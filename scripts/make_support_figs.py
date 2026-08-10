@@ -20,12 +20,12 @@ Produces three figures into outputs/diagnostics/ :
 
   tarp_bright_curve.png
       The bright-level TARP expected-coverage (ECP-vs-alpha) curve, with the
-      |ECP-alpha| area shaded. The figure: the signed area-to-curve
-      (ATC ~ -0.002) cancels because the curve bows above the diagonal at
-      alpha<0.5 and below at alpha>0.5, hiding the over-confidence; the unsigned
-      abs-area (0.053) and max|ECP-alpha| (0.102 at alpha~0.19) catch it. Reads
-      outputs/calibration/bright/tarp.npz. The lesson is "read the curve / use
-      abs-area or KS", not "TARP is insufficient".
+      |ECP-alpha| area shaded. The figure: the sbi ATC (~ -0.002) integrates
+      ECP-alpha over alpha>=0.5 only, so the over-confidence lobe (peaking near
+      alpha~0.19, ending at the alpha~0.73 crossing) sits outside the statistic;
+      the full-range abs-area (0.053) and max|ECP-alpha| (0.102 at alpha~0.19)
+      catch it. Reads outputs/calibration/bright/tarp.npz. The lesson is "read
+      the curve / use abs-area or KS", not "TARP is insufficient".
 
 Writes only outputs/diagnostics/. No model loading, no heavy compute.
 
@@ -162,11 +162,12 @@ def make_dgamma_fig(cons, out_path: Path):
 def make_tarp_bright_curve(tarp_npz: Path, out_path: Path):
     """Bright TARP ECP-vs-alpha curve with the |ECP-alpha| area shaded.
 
-    The signed ATC cancels (the curve bows above the diagonal below the
-    ECP=alpha crossing and below the diagonal above it) and hides the
-    over-confidence; the unsigned abs-area and max|ECP-alpha| catch it. All
-    numbers, including the crossing point itself, are recomputed from the npz
-    (the crossing is not at alpha=0.5, so it is not assumed to be).
+    The sbi ATC integrates ECP-alpha over alpha>=0.5 only, so the over-confidence
+    lobe (peaking near alpha~0.19, ending at the crossing) sits outside the
+    statistic and stays invisible to it; the unsigned abs-area and
+    max|ECP-alpha| catch it. All numbers, including the crossing point itself,
+    are recomputed from the npz (the crossing is not at alpha=0.5, so it is not
+    assumed to be).
     """
     d = np.load(tarp_npz, allow_pickle=True)
     ecp = np.asarray(d["ecp"]); alpha = np.asarray(d["alpha"])
