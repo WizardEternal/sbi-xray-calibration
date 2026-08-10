@@ -128,7 +128,7 @@ scripts/
   paired_ns_gain_check.py   paired clean-vs-gain-shifted NS evidence check at matched counts
   fetch_nicer_response.py   downloads the public NICER XTI ARF+RMF into data/nicer/
 tests/  test_simulate / test_train_npe / test_calibrate / test_detect / test_gonogo /
-  test_ns_bench / test_analyze_detect / test_run_calibration   (72 tests)
+  test_ns_bench / test_analyze_detect / test_run_calibration   (73 tests)
 notebooks/walkthrough.ipynb   load checkpoints + artifacts, end to end
 ```
 
