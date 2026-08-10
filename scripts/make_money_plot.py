@@ -283,10 +283,14 @@ def plot_detection(ax, level="medium"):
         ax.plot(fpr, tpr, color=st["color"], ls=st["ls"], lw=2.1, zorder=3,
                 label=f"{st['label']} [{c['detector']}, AUC {auc:.2f}]")
 
-    # (ii) D3 population-separability overlay (dotted grey) -- segregated, labelled
-    # once, not as a per-spectrum win. Show only where it is well above its ~0.5-AUC
-    # control floor (B2/B3) so the panel stays readable.
-    d3_drawn = False
+    # (ii) D3 population-separability overlay (dotted) -- segregated by keeping the
+    # dotted linestyle (vs the solid per-spectrum curves above), but colored by
+    # family (same OKABE_ITO family color as its solid curve) so the three D3
+    # curves are distinguishable instead of stacking as identical grey dashes.
+    # Show only where it is well above its ~0.5-AUC control floor (B2/B3) so the
+    # panel stays readable. One legend entry per family that is actually drawn
+    # (checked against the rendered figure: 8 entries total fit the panel fine
+    # at the existing fontsize, so no combined-entry fallback was needed).
     for fam in order:
         if fam not in d3_cells:
             continue
@@ -294,10 +298,10 @@ def plot_detection(ax, level="medium"):
         fpr, tpr, auc = roc_for_cell(scores, level, fam, c["strength"], "D3")
         if auc < 0.6:   # at/near the D3 control floor -> not informative to draw
             continue
-        lbl = ("D3 population separability\n(not a per-spectrum score)") if not d3_drawn else None
-        ax.plot(fpr, tpr, color="#777777", ls=":", lw=1.6, zorder=2,
-                alpha=0.85, label=lbl)
-        d3_drawn = True
+        fam_color = FAMILY_STYLE[fam]["color"]
+        lbl = f"{fam} D3 (population, not per-spectrum)"
+        ax.plot(fpr, tpr, color=fam_color, ls=":", lw=1.8, zorder=2,
+                alpha=0.9, label=lbl)
 
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)

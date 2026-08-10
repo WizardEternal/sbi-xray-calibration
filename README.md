@@ -52,10 +52,14 @@ retrain (deviation 0.014–0.033): every robustness variant lands near the diago
 which identifies the sagging bright curve as a single-flow training artifact.
 Panel (b): detection ROC at the medium (~1000-count) level, the best per-spectrum
 detector (D1/D2) per misspecification family at its strongest grid point; B4 (gain
-shift) sits on the chance diagonal. D3 (dotted grey) is overlaid as a
-population-separability statistic, a supervised two-sample test separate from the
-per-spectrum trust scores (see the D3 footnote in [Detection](#detection)).
-Colorblind-safe Okabe–Ito palette, dpi 220.
+shift) sits on the chance diagonal. This is one grid cell per family, so it can
+differ from the [Detection](#detection) table below, which reports the best AUC
+over the whole strength grid per family (see B3, B4 at medium: different detector,
+different number). Both are correct, they just answer different questions, one
+grid point here vs. the best anywhere on the grid there. D3 (dotted, colored by
+family) is overlaid as a population-separability statistic, a supervised
+two-sample test separate from the per-spectrum trust scores (see the D3 footnote
+in [Detection](#detection)). Colorblind-safe Okabe–Ito palette, dpi 220.
 
 Nested sampling (UltraNest) on the exact same Poisson likelihood is ~8 800–13 000×
 slower per spectrum than the amortized NPE but agrees with it to 0.04–0.10 of the

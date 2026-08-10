@@ -106,7 +106,8 @@ def make_auc_grid(results, out_path: Path):
         g = grids[lv]
         im = ax.imshow(g, cmap=cmap, norm=norm, aspect="auto")
         ax.set_xticks(range(len(FAMILIES)))
-        ax.set_xticklabels([FAM_LABEL[f] for f in FAMILIES], fontsize=9)
+        ax.set_xticklabels([FAM_LABEL[f] for f in FAMILIES], fontsize=9,
+                           rotation=20, ha="right", rotation_mode="anchor")
         ax.set_yticks(range(len(DETECTORS)))
         ax.set_yticklabels([DET_LABEL[d] for d in DETECTORS], fontsize=9)
         ax.set_title(lv, fontsize=12)
@@ -161,31 +162,64 @@ def make_dgamma_fig(cons, out_path: Path):
 def make_tarp_bright_curve(tarp_npz: Path, out_path: Path):
     """Bright TARP ECP-vs-alpha curve with the |ECP-alpha| area shaded.
 
-    The signed ATC cancels (the curve bows above the diagonal at
-    alpha<0.5 and below at alpha>0.5) and hides the over-confidence; the unsigned
-    abs-area and max|ECP-alpha| catch it. All numbers are recomputed from the npz.
+    The signed ATC cancels (the curve bows above the diagonal below the
+    ECP=alpha crossing and below the diagonal above it) and hides the
+    over-confidence; the unsigned abs-area and max|ECP-alpha| catch it. All
+    numbers, including the crossing point itself, are recomputed from the npz
+    (the crossing is not at alpha=0.5, so it is not assumed to be).
     """
     d = np.load(tarp_npz, allow_pickle=True)
     ecp = np.asarray(d["ecp"]); alpha = np.asarray(d["alpha"])
     atc = float(d["atc"])
-    absdiff = np.abs(ecp - alpha)
+    diff = ecp - alpha
+    absdiff = np.abs(diff)
     abs_area = float(np.trapezoid(absdiff, alpha))
     max_dev = float(np.max(absdiff))
     amax = float(alpha[np.argmax(absdiff)])
 
+    # Interior zero-crossing of ECP-alpha: where the curve actually switches
+    # from bowing above the diagonal to bowing below it. alpha=0 and alpha=1
+    # are trivial fixed points (ECP=alpha there by construction) so they are
+    # excluded; take the first interior sign change and linearly interpolate
+    # between its bracketing grid points for a sub-grid-spacing estimate.
+    interior = np.where((alpha > 1e-9) & (alpha < 1 - 1e-9))[0]
+    sign_changes = np.where(np.diff(np.sign(diff[interior])) != 0)[0]
+    if len(sign_changes):
+        i = interior[sign_changes[0]]
+        a0, a1 = alpha[i], alpha[i + 1]
+        d0, d1 = diff[i], diff[i + 1]
+        crossing = float(a0 + (0.0 - d0) * (a1 - a0) / (d1 - d0))
+    else:
+        crossing = 0.5  # no interior crossing found; fall back to the midpoint
+
+    # read the bright-level median count directly from its summary.json rather
+    # than hardcoding it, so the label tracks the data instead of going stale.
+    summary_path = tarp_npz.parent / "summary.json"
+    with open(summary_path) as f:
+        counts = float(json.load(f)["median_total_counts"])
+
     fig, ax = plt.subplots(figsize=(5.4, 5.4))
     ax.plot([0, 1], [0, 1], ls=(0, (4, 3)), color="#444444", lw=1.3,
             label="ideal (ECP = nominal)")
-    ax.plot(alpha, ecp, color="#D55E00", lw=2.3, label="bright ECP (~9982 ct)")
+    ax.plot(alpha, ecp, color="#D55E00", lw=2.3, label=f"bright ECP (~{counts:.0f} ct)")
     ax.fill_between(alpha, alpha, ecp, color="#D55E00", alpha=0.18,
                     label=f"|ECP−α|, abs-area {abs_area:.3f}")
     ax.annotate(f"max|ECP−α| = {max_dev:.3f}\nat α = {amax:.2f}",
                 xy=(amax, ecp[np.argmax(absdiff)]), xytext=(0.40, 0.18),
                 fontsize=9, arrowprops=dict(arrowstyle="->", color="#333333", lw=1.0))
-    ax.text(0.22, 0.42, "bows ABOVE\n(α<0.5)", fontsize=8, color="#7a3500",
-            ha="center")
-    ax.text(0.78, 0.66, "bows below\n(α>0.5)", fontsize=8, color="#7a3500",
-            ha="center")
+    # Place the two "bows above / below" labels inside their own region
+    # (split at the computed crossing, not a hardcoded 0.5), offset from both
+    # the curve and the diagonal by a fixed margin so the text sits in clear
+    # space regardless of where the crossing lands.
+    margin = 0.09
+    x_above = 0.44 * crossing
+    y_above = max(x_above, float(np.interp(x_above, alpha, ecp))) + margin
+    x_below = crossing + 0.56 * (1.0 - crossing)
+    y_below = min(x_below, float(np.interp(x_below, alpha, ecp))) - margin
+    ax.text(x_above, y_above, f"bows ABOVE\n(α<{crossing:.2f})", fontsize=8,
+            color="#7a3500", ha="center")
+    ax.text(x_below, y_below, f"bows below\n(α>{crossing:.2f})", fontsize=8,
+            color="#7a3500", ha="center")
     ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.set_aspect("equal", "box")
     ax.grid(alpha=0.25, lw=0.7)
     ax.set_xlabel("nominal credibility level α")
