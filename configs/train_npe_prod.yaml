@@ -1,11 +1,11 @@
-# NPE training config -- production model (tbabs*(powerlaw+blackbody), 5 params).
+# NPE training config: production model (tbabs*(powerlaw+blackbody), 5 params).
 #
 # One flow per count level (3 flows: faint/medium/bright). Amortizing over
 # exposure is deliberately avoided: it is a confound for the calibration
 # analysis (coverage is exposure-dependent) and fixed-exposure flows match
 # Barret & Dupourque (2024). See train_npe_dev.yaml header for the full rationale.
 #
-# Training size (50000) follows the dev learning-curve verdict.
+# Training size (50000) follows the dev learning curve.
 # Device: cpu, the device used for all three committed production flows;
 # override with --device.
 

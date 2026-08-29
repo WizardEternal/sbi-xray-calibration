@@ -2,7 +2,7 @@
 #
 # Drives scripts/run_calibration.py. The suite operates on a checkpoint
 # directory (one trained flow per count level; outputs/models/<run>_<level>/).
-# Almost everything the test sets need -- prior, base model, exposure, response --
+# Almost everything the test sets need (prior, base model, exposure, response)
 # is read from the checkpoint's arch.json (written by train_npe.save_checkpoint),
 # so this config only sets the suite's sample sizes / seeds and tells the script
 # which trained run + levels to evaluate.

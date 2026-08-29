@@ -14,13 +14,13 @@ Produces three figures into outputs/diagnostics/ :
       The consequence figure: signed Gamma-bias (DeltaGamma) imposed by an
       undetected / weakly-detected misspecification, as a function of strength,
       one line per count level, for B1 (the unmodeled Fe-K line). Reads
-      outputs/detect/consequence.jsonl. The point: the line silently biases the
-      photon index, and the signed bias grows with counts even where the
-      detector AUC has not yet reached 1.
+      outputs/detect/consequence.jsonl. The line biases the photon index even
+      where it is not flagged, and the signed bias grows with counts even where
+      the detector AUC has not yet reached 1.
 
   tarp_bright_curve.png
       The bright-level TARP expected-coverage (ECP-vs-alpha) curve, with the
-      |ECP-alpha| area shaded. The figure: the sbi ATC (~ -0.002) integrates
+      |ECP-alpha| area shaded. The sbi ATC (~ -0.002) integrates
       ECP-alpha over alpha>=0.5 only, so the over-confidence lobe (peaking near
       alpha~0.19, ending at the alpha~0.73 crossing) sits almost entirely below
       the alpha >= 0.5 window (the remainder nearly cancels inside it); the
@@ -65,8 +65,8 @@ LEVEL_MARKER = {"faint": "o", "medium": "s", "bright": "^"}
 
 
 # kept local: unlike sbixcal._shared._read_jsonl this does not tolerate a
-# missing file or skip malformed lines (crashes instead) -- unifying it would
-# change behavior at this call site.
+# missing file or skip malformed lines (crashes instead), which this call site
+# depends on.
 def _read_jsonl(path: Path):
     rows = []
     with open(path) as f:

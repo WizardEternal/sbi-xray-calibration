@@ -1,0 +1,22 @@
+{
+  "tag": "gainmarg_medium",
+  "level": "medium",
+  "flow": "gainmarg",
+  "N": 500,
+  "N_samp": 3000,
+  "gain": 1.03,
+  "gamma_bias_mean": 0.017779793500900268,
+  "gamma_bias_se": 0.005066579561400743,
+  "gamma_bias_z": 3.5092300999976285,
+  "log10norm_bias_mean": 0.0037499962581436065,
+  "log10norm_bias_se": 0.0018017108415384966,
+  "log10norm_bias_z": 2.0813529961008905,
+  "sigma_gamma_clean_mean": 0.2975479556487229,
+  "sigma_gamma_gain_mean": 0.2983926891116039,
+  "gamma_bias_in_sigma": 0.05975437963314597,
+  "g_marg_median_mean": 1.0017680178284645,
+  "g_marg_median_median": 1.0016517043113708,
+  "g_marg_width_mean": 0.08937161473035812,
+  "g_marg_width_over_prior": 0.8937161473035812,
+  "g_marg_frac_exclude_g1": 0.0
+}

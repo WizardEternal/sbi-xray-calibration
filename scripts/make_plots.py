@@ -7,12 +7,12 @@ loading, no simulation, no heavy compute), but those source artifacts are
 gitignored, so the pipeline outputs must be present locally (i.e. after running
 the benchmarks). It then dispatches to the per-figure builders:
 
-    money_plot           -> make_money_plot.main()            (outputs/money_plot.png)
-    coverage_money_panel -> make_coverage_money_panel.main()  (the calibration panel)
-    support_figs         -> make_support_figs.main()          (AUC grid + dGamma)
-    detect_tables        -> analyze_detect.main()             (AUC md/heatmap + consequence)
-    nicer_replication    -> make_nicer_fig.main()             (NICER-vs-EPIC-pn detection figure)
-    nicer_sbc            -> make_nicer_sbc_fig.main()         (cross-instrument SBC figure)
+    summary_figure       -> make_summary_figure.main()   (outputs/summary_figure.png)
+    coverage_panel       -> make_coverage_panel.main()   (the calibration panel)
+    support_figs         -> make_support_figs.main()     (AUC grid + dGamma)
+    detect_tables        -> analyze_detect.main()        (AUC md/heatmap + consequence)
+    nicer_replication    -> make_nicer_fig.main()        (NICER-vs-EPIC-pn detection figure)
+    nicer_sbc            -> make_nicer_sbc_fig.main()    (cross-instrument SBC figure)
 
 Each figure is skip-if-exists (per its declared output paths in the config)
 unless --force is passed.
@@ -20,7 +20,7 @@ unless --force is passed.
 Usage:
     .venv\\Scripts\\python.exe scripts\\make_plots.py --config configs\\make_plots.yaml
     .venv\\Scripts\\python.exe scripts\\make_plots.py --config configs\\make_plots.yaml --force
-    .venv\\Scripts\\python.exe scripts\\make_plots.py --config configs\\make_plots.yaml --only money_plot
+    .venv\\Scripts\\python.exe scripts\\make_plots.py --config configs\\make_plots.yaml --only summary_figure
 """
 
 from __future__ import annotations
@@ -46,11 +46,11 @@ def _outputs_exist(rel_paths) -> bool:
 
 def _run_builder(builder: str, detect_config: str):
     """Dispatch one builder. Returns the module's main() exit code (0 = ok)."""
-    if builder == "money_plot":
-        mod = importlib.import_module("make_money_plot")
+    if builder == "summary_figure":
+        mod = importlib.import_module("make_summary_figure")
         return mod.main()
-    if builder == "coverage_money_panel":
-        mod = importlib.import_module("make_coverage_money_panel")
+    if builder == "coverage_panel":
+        mod = importlib.import_module("make_coverage_panel")
         return mod.main()
     if builder == "support_figs":
         mod = importlib.import_module("make_support_figs")
@@ -73,7 +73,7 @@ def main(argv=None):
     ap.add_argument("--force", action="store_true",
                     help="rebuild figures even if their outputs already exist")
     ap.add_argument("--only", default=None,
-                    help="build only this builder key (e.g. money_plot)")
+                    help="build only this builder key (e.g. summary_figure)")
     args = ap.parse_args(argv)
 
     with open(args.config) as f:

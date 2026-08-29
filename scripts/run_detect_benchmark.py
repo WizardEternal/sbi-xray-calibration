@@ -12,9 +12,9 @@ negative class, then score every spectrum with each detector and compute the
 clean-vs-misspecified ROC AUC.
 
 Detectors (see src/sbixcal/detect.py):
-  D1  PPC               -- per-spectrum (chi2 + KS sub-scores)
-  D2  embedding OOD     -- per-spectrum (kNN primary, Mahalanobis secondary)
-  D3  marginal C2ST     -- per-cell population two-sample test (CV accuracy +
+  D1  PPC               : per-spectrum (chi2 + KS sub-scores)
+  D2  embedding OOD     : per-spectrum (kNN primary, Mahalanobis secondary)
+  D3  marginal C2ST     : per-cell population two-sample test (CV accuracy +
                            out-of-fold per-spectrum probabilities for the ROC)
 
 Outputs (outputs/detect/, gitignored):

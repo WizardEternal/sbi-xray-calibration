@@ -1,4 +1,4 @@
-# Model A (dev): tbabs * powerlaw  -- 3 parameters
+# Model A (dev): tbabs * powerlaw, 3 parameters
 # Priors follow Barret & Dupourque 2024 (A&A 686, A133; arXiv:2401.06061),
 # Table 1, "Model 1: tbabs*powerlaw". Uniform in linear coords for N_H and
 # Gamma, log-uniform for the power-law normalization (their stated convention).

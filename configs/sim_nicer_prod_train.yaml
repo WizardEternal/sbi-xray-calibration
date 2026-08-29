@@ -1,4 +1,4 @@
-# NICER training datasets (50000 rows/level) for the NPE flows -- mirrors
+# NICER training datasets (50000 rows/level) for the NPE flows. Mirrors
 # sim_modelA_prod_train.yaml but response: NICER. Distinct seed_offsets (11/12/13)
 # from the eval set (sim_nicer_prod.yaml, offsets 1/2/3) so train != eval.
 name: modelA_nicer_train

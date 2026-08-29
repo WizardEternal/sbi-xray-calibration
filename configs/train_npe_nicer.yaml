@@ -1,7 +1,7 @@
-# NPE training config -- NICER second instrument, production model (5 params).
+# NPE training config: NICER second instrument, production model (5 params).
 # Mirrors train_npe_prod.yaml; datasets point at modelA_nicer_train_*.
 # max_num_epochs raised 150 -> 350: the XMM bright flow's miscalibration was an
-# undertraining/epoch-cap artifact (verified, gonogo uncapped control), so the
+# undertraining/epoch-cap artifact (verified by the uncapped reseed control), so the
 # NICER flows get headroom to converge under early stopping (patience 20) from
 # the start, avoiding a repeat. device: cuda (RTX 4050 available).
 name: train_npe_nicer

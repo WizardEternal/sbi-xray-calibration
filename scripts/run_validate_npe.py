@@ -16,8 +16,8 @@ For each trained flow named in a train config this script:
 
 Outputs one figure per count level:
   outputs/diagnostics/npe_recovery_<level>.png
-and, after all levels, a posterior-width-vs-count-level monotonicity table +
-verdict (widths must shrink as counts grow).
+and, after all levels, a posterior-width-vs-count-level monotonicity check
+(widths must shrink as counts grow).
 
 Usage (repo venv):
     .venv\\Scripts\\python.exe scripts\\run_validate_npe.py --config configs\\train_npe_prod.yaml
@@ -244,7 +244,8 @@ def main(argv=None):
             "what": "Sanity validation of the production flows "
                     "(scripts/run_validate_npe.py, deterministic per-level seed). Recovery "
                     "Pearson r, 90% credible-interval coverage, median 90%-CI width as a "
-                    "fraction of the prior width. NOT the rigorous SBC/TARP pass.",
+                    "fraction of the prior width. The rigorous SBC/TARP pass is "
+                    "separate (scripts/run_calibration.py).",
             "config": args.config, "base_model": cfg["base_model"],
             "n_test": args.n_test, "cred": CRED, "param_names": pn,
             "levels": {r["level"]: {

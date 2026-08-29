@@ -1,0 +1,60 @@
+{
+  "fixed_medium": {
+    "N": 500,
+    "gamma_bias": 0.01494387435913086,
+    "gamma_se": 0.0057831003073723335,
+    "gamma_z": 2.5840593392579256,
+    "lognorm_bias": 0.005385141605748591,
+    "lognorm_se": 0.0018140555002329679,
+    "lognorm_z": 2.968564966759292,
+    "sigmaGamma_clean": 0.3137869577224961,
+    "sigmaGamma_shift": 0.31673043664491857,
+    "gamma_bias_in_sigma": 0.047624268604391076
+  },
+  "fixed_bright": {
+    "N": 500,
+    "gamma_bias": 0.021921642780303955,
+    "gamma_se": 0.001825661952759137,
+    "gamma_z": 12.007503769892125,
+    "lognorm_bias": 0.005099555574459482,
+    "lognorm_se": 0.0009335838492106512,
+    "lognorm_z": 5.462343397190489,
+    "sigmaGamma_clean": 0.21274593527534397,
+    "sigmaGamma_shift": 0.21644219951336208,
+    "gamma_bias_in_sigma": 0.10304141769821418
+  },
+  "gainmarg_medium": {
+    "N": 500,
+    "gamma_bias": 0.009009116291999818,
+    "gamma_se": 0.005652762569949688,
+    "gamma_z": 1.5937545899933319,
+    "lognorm_bias": 0.004642028021453819,
+    "lognorm_se": 0.0019025584353189726,
+    "lognorm_z": 2.4398872251592953,
+    "sigmaGamma_clean": 0.31252971772934734,
+    "sigmaGamma_shift": 0.3149551961864945,
+    "gamma_bias_in_sigma": 0.028826430834976685,
+    "g_median_shift": 1.0014824481606484,
+    "g_width90_shift": 0.08929157621860505,
+    "g_width_frac_of_prior": 0.8929157621860504,
+    "g_frac_excl1_shift": 0.0,
+    "g_median_clean": 1.0005949684381485
+  },
+  "gainmarg_bright": {
+    "N": 500,
+    "gamma_bias": 0.02167472243309021,
+    "gamma_se": 0.0020550463075955437,
+    "gamma_z": 10.547072517528905,
+    "lognorm_bias": 0.0024139935142514666,
+    "lognorm_se": 0.0008230354733531023,
+    "lognorm_z": 2.9330370225923477,
+    "sigmaGamma_clean": 0.234827871755146,
+    "sigmaGamma_shift": 0.23636160274292342,
+    "gamma_bias_in_sigma": 0.09230046787499888,
+    "g_median_shift": 1.0015954377651215,
+    "g_width90_shift": 0.08833509740829468,
+    "g_width_frac_of_prior": 0.8833509740829467,
+    "g_frac_excl1_shift": 0.0,
+    "g_median_clean": 1.000135066628456
+  }
+}

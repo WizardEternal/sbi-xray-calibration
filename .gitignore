@@ -9,52 +9,35 @@ build/
 dist/
 sbi-logs/
 
-# Heavy / regenerable artifacts: checkpoints, datasets, and raw benchmark dumps
-# are not committed (all rebuildable from config + seed). Final README/RESULTS
-# figures are the exception and are committed below via negations.
+# Checkpoints, datasets and raw benchmark dumps are not committed; all of them
+# rebuild from config + seed. The figures and small summary files the README
+# quotes are the exception and are un-ignored below.
 *.h5
 *.pt
 *.pkl
 *.ckpt
 
-# trained-flow checkpoints + their metadata (regenerable; some are large)
 outputs/models/
-
-# per-level calibration dumps (npz/json/most png) -- regenerable
 outputs/calibration/
-
-# detection-benchmark scores/AUC JSONL + working figures -- regenerable
 outputs/detect/
-
-# NS-vs-NPE benchmark JSONL + analysis -- regenerable
 outputs/ns_bench/
+outputs/reseed/
 
-# GO/NO-GO robustness pack: per-variant calibration dumps + figures -- regenerable
-# (the summary.jsonl record is committed below, like the detect markdown tables)
-outputs/gonogo/
+# Un-ignored files. git can only descend into an ignored directory once a path
+# under it has been negated, so each block re-includes the directory, re-ignores
+# its contents, then names the files that are committed.
 
-# Final figures and tables to commit (un-ignored); everything heavy above stays
-# ignored. Each negation re-includes one file from an otherwise-ignored
-# directory -- git can only descend into the directory once a path under it
-# has been negated, so the directory itself is re-included first.
+!outputs/summary_figure.png
 
-# the money plot (top-level outputs/, not under any ignored subdir)
-!outputs/money_plot.png
-
-# trained-flow metadata: the three production flows' summary.json (the
-# committed record behind the README's train/val-loss-gap and epoch-cap
-# numbers) is small and committed too; every other model directory (gonogo
-# variants, NICER flows) and the production checkpoints/losses/configs stay out
+# the three production flows' summary.json (loss curves, epochs trained)
 !outputs/models/
 outputs/models/*
 !outputs/models/train_npe_prod_*/
 outputs/models/train_npe_prod_*/*
 !outputs/models/train_npe_prod_*/summary.json
 
-# calibration figures + the per-level summary.json (the committed record
-# behind the calibration table); the tarp.npz (the record behind the README's
-# TARP abs-area / ATC / max|ECP-alpha| numbers) is small and committed too;
-# the rest of the npz stay ignored
+# calibration figures, per-level summary.json, and tarp.npz (the TARP curve is
+# read back for the abs-area / ATC / max|ECP-alpha| numbers)
 !outputs/calibration/
 !outputs/calibration/*/
 outputs/calibration/*/*
@@ -64,33 +47,26 @@ outputs/calibration/*/*
 !outputs/calibration/*/summary.json
 !outputs/calibration/*/tarp.npz
 
-# detection figures, the AUC / consequence tables, and the per-cell
-# results.jsonl (the verifiable record behind the README numbers); per-spectrum
-# scores stay out
+# detection tables and per-cell results; per-spectrum scores stay out
 !outputs/detect/
 outputs/detect/*
 !outputs/detect/auc_table.md
 !outputs/detect/consequence.md
 !outputs/detect/results.jsonl
-# the record behind consequence.md and diagnostics/dgamma_silent_failure.png
 !outputs/detect/consequence.jsonl
 
-# GO/NO-GO robustness pack: the one-line-per-variant verdict record (the
-# evidence behind the ROBUST/FRAGILE/MIXED call) is committed; each variant's
-# sbc.npz (the record behind the README's per-param SBC fail counts) is small
-# and committed too; the rest of the per-variant calibration dumps/figures
-# stay ignored
-!outputs/gonogo/
-outputs/gonogo/*
-!outputs/gonogo/summary.jsonl
-!outputs/gonogo/*/
-outputs/gonogo/*/*
-!outputs/gonogo/*/sbc.npz
+# reseed pack: the one-line-per-variant summary and each variant's sbc.npz
+!outputs/reseed/
+outputs/reseed/*
+!outputs/reseed/summary.jsonl
+!outputs/reseed/*/
+outputs/reseed/*/*
+!outputs/reseed/*/sbc.npz
 
-# NS-vs-NPE benchmark: commit the digested analysis (analysis.md +
-# analysis_summary.json), the count-controlled evidence summary, the paired
-# gain check, and the per-spectrum log-evidence (the evidence record behind the
-# README's NS table); raw backups/probes/timing logs stay out
+# NS-vs-NPE benchmark: the digested analysis, the count-controlled evidence
+# summary, the paired gain check, the per-spectrum log-evidence, and the
+# thread-wise bootstrap results. The bootstrap's run directories are heavy and
+# stay out.
 !outputs/ns_bench/
 outputs/ns_bench/*
 !outputs/ns_bench/analysis.md
@@ -98,15 +74,17 @@ outputs/ns_bench/*
 !outputs/ns_bench/count_controlled.json
 !outputs/ns_bench/paired_gain_check.jsonl
 !outputs/ns_bench/results.jsonl
+!outputs/ns_bench/higson/
+outputs/ns_bench/higson/*
+!outputs/ns_bench/higson/higson_results.json
+!outputs/ns_bench/higson/higson_table.md
+!outputs/ns_bench/higson/higson_recompute.jsonl
+!outputs/ns_bench/higson/higson_mc_noise.jsonl
 
-# diagnostics figures + tables used in the README (money-panel, detector grid,
-# dGamma, recovery scatters, learning curve, de-risk checks, TARP curve, the
-# validation summary + learning-curve json); re-include the directory, ignore
-# all its contents (so stray dumps like a stdout log stay out), then re-include
-# only the specific committed files
+# diagnostics figures and tables used in the README
 !outputs/diagnostics/
 outputs/diagnostics/*
-!outputs/diagnostics/coverage_money_panel.png
+!outputs/diagnostics/coverage_panel.png
 !outputs/diagnostics/detector_auc_grid.png
 !outputs/diagnostics/dgamma_silent_failure.png
 !outputs/diagnostics/learning_curve_dev.json
@@ -122,10 +100,9 @@ outputs/diagnostics/*
 # ignored: contains absolute local paths
 outputs/diagnostics/validation_prod_stdout.txt
 
-# NICER benchmark outputs: commit the small evidence files behind the README's
-# NICER numbers (the detection results.jsonl + the per-level calibration
-# summary.json); heavy dumps stay out and are regenerated by the pipeline.
-# ns_bench_nicer stays fully ignored.
+# NICER: the detection results.jsonl and the per-level calibration summary.json.
+# Heavy dumps stay out and are regenerated by the pipeline; ns_bench_nicer is
+# fully ignored.
 outputs/detect_nicer/*
 !outputs/detect_nicer/results.jsonl
 outputs/calibration_nicer/**

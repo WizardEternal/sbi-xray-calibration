@@ -8,16 +8,16 @@
 # Each figure is skip-if-exists unless --force.
 #
 # The per-figure builders live in:
-#   make_money_plot.py            -> outputs/money_plot.png            (the money plot)
-#   make_coverage_money_panel.py  -> outputs/diagnostics/coverage_money_panel.png
-#   make_support_figs.py          -> outputs/diagnostics/detector_auc_grid.png
-#                                    outputs/diagnostics/dgamma_silent_failure.png
-#   analyze_detect.py             -> outputs/detect/{auc_table.md,consequence.md}
-#   make_nicer_fig.py             -> outputs/diagnostics/nicer_replication.png
-#                                    (requires data/nicer/nicer.arf and the
-#                                    outputs/detect{,_nicer}/results.jsonl already built)
-#   make_nicer_sbc_fig.py         -> outputs/diagnostics/nicer_sbc.png
-#                                    (requires outputs/calibration{,_nicer}/*/sbc.npz already built)
+#   make_summary_figure.py   -> outputs/summary_figure.png
+#   make_coverage_panel.py   -> outputs/diagnostics/coverage_panel.png
+#   make_support_figs.py     -> outputs/diagnostics/detector_auc_grid.png
+#                               outputs/diagnostics/dgamma_silent_failure.png
+#   analyze_detect.py        -> outputs/detect/{auc_table.md,consequence.md}
+#   make_nicer_fig.py        -> outputs/diagnostics/nicer_replication.png
+#                               (requires data/nicer/nicer.arf and the
+#                               outputs/detect{,_nicer}/results.jsonl already built)
+#   make_nicer_sbc_fig.py    -> outputs/diagnostics/nicer_sbc.png
+#                               (requires outputs/calibration{,_nicer}/*/sbc.npz already built)
 #
 # Seeds are irrelevant for these (they only read finished artifacts), but the
 # underlying benchmarks that produced the artifacts are themselves seeded (see
@@ -31,11 +31,11 @@ detect_config: configs/detect.yaml      # passed through to analyze_detect.py
 # writes (used for the skip-if-exists check). Builder keys map to functions in
 # make_plots.py.
 figures:
-  - builder: money_plot
-    outputs: [outputs/money_plot.png]
+  - builder: summary_figure
+    outputs: [outputs/summary_figure.png]
 
-  - builder: coverage_money_panel
-    outputs: [outputs/diagnostics/coverage_money_panel.png]
+  - builder: coverage_panel
+    outputs: [outputs/diagnostics/coverage_panel.png]
 
   - builder: support_figs
     outputs:

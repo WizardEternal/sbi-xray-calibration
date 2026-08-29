@@ -1,0 +1,61 @@
+{
+  "param_names": [
+    "tbabs_1_nh",
+    "powerlaw_1_alpha",
+    "powerlaw_1_norm",
+    "blackbodyrad_1_kT",
+    "blackbodyrad_1_norm",
+    "gain_g"
+  ],
+  "n_channels": 102,
+  "n_params": 6,
+  "flow": {
+    "hidden_features": 50,
+    "num_transforms": 5,
+    "num_bins": 10
+  },
+  "embedding": {
+    "embed_dim": 20,
+    "conv_channels": [
+      16,
+      32
+    ],
+    "kernel_size": 5,
+    "mlp_hidden": 64
+  },
+  "prior_cfg": {
+    "tbabs_1_nh": {
+      "dist": "uniform",
+      "low": 0.15,
+      "high": 0.35
+    },
+    "powerlaw_1_alpha": {
+      "dist": "uniform",
+      "low": 1.0,
+      "high": 3.0
+    },
+    "powerlaw_1_norm": {
+      "dist": "loguniform",
+      "low": 0.0001,
+      "high": 0.01
+    },
+    "blackbodyrad_1_kT": {
+      "dist": "uniform",
+      "low": 0.3,
+      "high": 3.0
+    },
+    "blackbodyrad_1_norm": {
+      "dist": "loguniform",
+      "low": 0.01,
+      "high": 1.0
+    },
+    "gain_g": {
+      "dist": "uniform",
+      "low": 0.95,
+      "high": 1.05
+    }
+  },
+  "base_model": "tbabs_powerlaw_bb",
+  "exposure_s": 3534.0,
+  "median_total_counts": 9886.0
+}

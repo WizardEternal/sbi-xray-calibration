@@ -1,7 +1,7 @@
 """Nested-sampling benchmark: UltraNest vs amortized NPE on the same
 Poisson likelihood (the speed-vs-trust comparison).
 
-Goal: for a config-driven subsample of spectra, run
+For a config-driven subsample of spectra this runs
 UltraNest's ``ReactiveNestedSampler`` on the exact same Poisson likelihood the
 IS-refinement uses (``calibrate.poisson_loglik`` of the observed counts
 given the model counts ``fold_theta(theta)``), with the same box-uniform prior as
@@ -9,8 +9,8 @@ the flow, and compare its posterior to the amortized NPE posterior. Per spectrum
 we record NS quantiles / logZ / n_like_evals / wall-clock and NPE quantiles /
 sampling wall-clock.
 
-Likelihood reuse, not duplication
----------------------------------
+Likelihood reuse
+----------------
 The log-likelihood is literally ``calibrate.poisson_loglik(counts, fold_theta(theta))``
 and the prior is the box read from the checkpoint's ``arch.json`` (same
 ``priors.prior_bounds`` the flow's BoxUniform uses). UltraNest gets a *vectorized*

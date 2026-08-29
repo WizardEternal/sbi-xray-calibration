@@ -63,7 +63,7 @@ def fold_theta(base_model_name, param_order, theta, obsconf):
     noiseless per-channel model counts (lambda).
 
     Unlike ``simulate_spectra`` (which draws theta from a prior), this takes theta
-    directly -- used by the importance-sampling refinement, where the
+    directly, and is used by the importance-sampling refinement, where the
     proposal samples must be folded through the same response to evaluate the
     exact Poisson likelihood p(x | theta) = Poisson(x; lambda(theta)).
 

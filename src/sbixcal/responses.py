@@ -14,7 +14,7 @@ from jaxspec.data.util import load_example_obsconf
 
 EXAMPLE_NAME = "NGC7793_ULX4_PN"
 
-# Second instrument for the article extension: a real NICER XTI response
+# Second instrument: a real NICER XTI response
 # (on-axis ARF nixtiaveonaxis20170601v005 + RMF nixtiref20170601v003, public
 # NICER CALDB). Sourced into data/nicer/; loaded as a zero-count mock obsconf,
 # since the benchmark only needs the response (counts come from fakeit). The
@@ -68,8 +68,8 @@ def gain_shift_obsconf(obsconf, gain: float):
     perturbed by multiplicative `gain` (1.0 = nominal).
 
     Implemented in-place (no RMF FITS rewrite) by rescaling the unfolded
-    (input) energy-grid coords that `in_energies` -- and hence the forward
-    model's per-bin photon-flux evaluation -- is built from. A source feature
+    (input) energy-grid coords that `in_energies` (and hence the forward model's
+    per-bin photon-flux evaluation) is built from. A source feature
     at model-energy E is folded as if it sat at E/gain in the nominal response,
     so gain>1 shifts features to lower channel energy and gain<1 to higher.
     See docs/gain_shift_notes.md.

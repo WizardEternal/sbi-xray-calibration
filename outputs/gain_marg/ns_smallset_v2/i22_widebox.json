@@ -1,0 +1,191 @@
+{
+  "run": "i22_widebox",
+  "purpose": "Prior-box truncation test for the i22 g-shrink.",
+  "smoke_wiring_test_only": false,
+  "started": "2026-08-14T14:41:14",
+  "finished": "2026-08-14T18:03:04",
+  "python": "3.12.13",
+  "spectrum": {
+    "level": "medium",
+    "idx": 22,
+    "scheme": "B4",
+    "strength": 0.0,
+    "population": 500,
+    "spectrum_eval_seed": 20300611,
+    "exposure_s": 353.4,
+    "total_counts": 3853,
+    "expected_counts": 3853,
+    "counts_gate": "PASS",
+    "truth_phys": [
+      0.26608932862538665,
+      1.8644702017151666,
+      0.00014895011005558424,
+      2.809982331789726,
+      0.4428830891111282
+    ],
+    "phys_order": [
+      "tbabs_1_nh",
+      "powerlaw_1_alpha",
+      "powerlaw_1_norm",
+      "blackbodyrad_1_kT",
+      "blackbodyrad_1_norm"
+    ]
+  },
+  "config": {
+    "phys_box": "wide",
+    "priors": {
+      "tbabs_1_nh": {
+        "dist": "uniform",
+        "low": 0.05,
+        "high": 0.6
+      },
+      "powerlaw_1_alpha": {
+        "dist": "uniform",
+        "low": 0.3,
+        "high": 4.5
+      },
+      "powerlaw_1_norm": {
+        "dist": "loguniform",
+        "low": 1e-06,
+        "high": 0.1
+      },
+      "blackbodyrad_1_kT": {
+        "dist": "uniform",
+        "low": 0.05,
+        "high": 8.0
+      },
+      "blackbodyrad_1_norm": {
+        "dist": "loguniform",
+        "low": 0.0001,
+        "high": 5.0
+      },
+      "gain_g": {
+        "dist": "uniform",
+        "low": 0.95,
+        "high": 1.05
+      }
+    },
+    "gain_prior_std": 0.02886751345948129,
+    "sampler": {
+      "kind": "default_mlfriends_ellipsoidal"
+    },
+    "min_live": 400,
+    "dlogz_target": 0.5,
+    "max_ncalls": null,
+    "n_gain_bins": 200,
+    "ndraw_min": 2000,
+    "ndraw_max": 65536,
+    "ns_seed": 0,
+    "log_dir": "outputs/gain_marg/ns_smallset_v2/i22_widebox_ns_logdir"
+  },
+  "ns": {
+    "logz": -326.0364710464929,
+    "logzerr": 0.3240367927155119,
+    "achieved_dlogz_proxy": 0.009947852996049278,
+    "ess": 1867.144148032766,
+    "n_like_evals": 159213,
+    "niter": 6553,
+    "n_equal_weight_samples": 6553,
+    "wall_s": 12091.070770368,
+    "wall_h": 3.3586307695466666,
+    "means": {
+      "tbabs_1_nh": 0.2980703431349142,
+      "powerlaw_1_alpha": 2.3722713963147704,
+      "powerlaw_1_norm": 0.0001057529753162822,
+      "blackbodyrad_1_kT": 2.9982506042076444,
+      "blackbodyrad_1_norm": 0.39558588518313653,
+      "gain_g": 0.9996200233731567
+    },
+    "stds": {
+      "tbabs_1_nh": 0.09080348313926549,
+      "powerlaw_1_alpha": 1.1837994181529132,
+      "powerlaw_1_norm": 0.00018848949819876291,
+      "blackbodyrad_1_kT": 0.16168459944521796,
+      "blackbodyrad_1_norm": 0.05188909613010479,
+      "gain_g": 0.029490492093896876
+    },
+    "quantiles": {
+      "tbabs_1_nh": {
+        "0.025": 0.16783733534208234,
+        "0.16": 0.21707068335462648,
+        "0.5": 0.280606010333303,
+        "0.84": 0.3756947417810883,
+        "0.975": 0.5362369603660153
+      },
+      "powerlaw_1_alpha": {
+        "0.025": 0.43096820602325436,
+        "0.16": 0.9872329902218941,
+        "0.5": 2.3477513910054877,
+        "0.84": 3.735638930365215,
+        "0.975": 4.367169426106922
+      },
+      "powerlaw_1_norm": {
+        "0.025": 1.198646566489355e-06,
+        "0.16": 2.873073419574191e-06,
+        "0.5": 2.154520214927459e-05,
+        "0.84": 0.00021431077521648814,
+        "0.975": 0.0007240700755575364
+      },
+      "blackbodyrad_1_kT": {
+        "0.025": 2.7050207132946325,
+        "0.16": 2.8362856631386575,
+        "0.5": 2.990780868471666,
+        "0.84": 3.156615257822354,
+        "0.975": 3.3299154017125545
+      },
+      "blackbodyrad_1_norm": {
+        "0.025": 0.30335108248854825,
+        "0.16": 0.3446979149793484,
+        "0.5": 0.3929599142513773,
+        "0.84": 0.4469942807805956,
+        "0.975": 0.5066084522346603
+      },
+      "gain_g": {
+        "0.025": 0.9521091875302936,
+        "0.16": 0.9654917046072883,
+        "0.5": 0.9980067548502115,
+        "0.84": 1.0354065128385483,
+        "0.975": 1.0479523664693513
+      }
+    },
+    "gain_g_std": 0.029490492093896876,
+    "g_shrink_std_over_prior_std": 1.0215806129367535,
+    "folder_stats": {
+      "n_bins": 200,
+      "build_time_s": 0.20198231400001987,
+      "warmup_time_s": 15.201824264999914,
+      "n_loglike_blocks": 7774,
+      "n_points": 159215,
+      "n_fakeit_calls": 140188,
+      "fold_time_s": 12055.606181540048,
+      "fakeit_calls_per_point": 0.8804949282416857,
+      "ms_per_point": 75.71903515083407,
+      "ms_per_fakeit_call": 85.99599239264451
+    },
+    "ultranest_scalars": {
+      "niter": 6553.0,
+      "logz": -326.0364710464929,
+      "logzerr": 0.3240367927155119,
+      "logz_bs": -326.0829235102106,
+      "logz_single": -326.0364710464929,
+      "logzerr_tail": 0.009947852996049278,
+      "logzerr_bs": 0.32388405835132517,
+      "ess": 1867.144148032766,
+      "H": 9.227136027142251,
+      "Herr": 0.13216656526705153,
+      "ncall": 159213.0,
+      "logzerr_single": 0.15188100627746587
+    },
+    "diagnostics": {
+      "insertion_order_MWW_test": {
+        "independent_iterations": Infinity,
+        "converged": 1.0
+      },
+      "insertion_order_note": "ultranest flags a run when the MWW independent-sample check fails; 'converged'/large p = insertion order uniform = sampling looked unbiased. A FAIL here invalidates the run; rerun with 2x nsteps.",
+      "evals_per_iteration": 24.296200213642607
+    }
+  },
+  "wall_total_s": 12109.969940627,
+  "samples_npz": "i22_widebox_samples.npz",
+  "prediction_recorded_before_run": "Recorded before the run, 2026-08-14. Prior-box truncation test for medium i22. The original nominal-box run gave std(gain_g) = 0.0208732, i.e. g-shrink = std(g)/0.0288675 = 0.7230, so the g posterior is 28% narrower than its prior. i22's true kT is 2.80998 keV, sitting 0.19 keV below the nominal prior ceiling kT <= 3.0, so the exact blackbody kT-proportional-to-g degeneracy direction runs into the wall of the box. Hypothesis: the apparent g constraint is that wall and not the data. Prediction if the hypothesis is true: with kT allowed up to 8.0, and the other physics bounds widened too, the degeneracy is free to extend, so g-shrink moves substantially toward 1.0 (g posterior about equal to g prior). Prediction if false: g-shrink stays near 0.72 and the constraint is genuinely data-driven."
+}

@@ -11,11 +11,11 @@ For each evaluated count level the suite produces, in outputs/calibration/<level
     tarp.png / tarp.npz           TARP expected-coverage curve + ATC + KS p-value
     coverage_before_after.png/npz raw-vs-conformal-recalibrated per-param coverage
     is_refinement.npz             per-case ESS + low-ESS flags (Paper III diagnostic)
-    summary.json                  all headline numbers for this level
+    summary.json                  every number this level reports
 
 Skip-if-exists per artifact (delete the level folder or pass --force to redo).
 The flow, prior, base model, exposure and response are all read from the
-checkpoint's arch.json -- the fresh test sims use exactly the prior/simulator the
+checkpoint's arch.json, so the fresh test sims use exactly the prior/simulator the
 flow was trained for (the correct SBC setup).
 
 This script reads a checkpoint directory; it never writes into outputs/models.
@@ -46,8 +46,8 @@ def _cov_at(nominal, cov, target):
 
     Thin wrapper around the shared lookup (sbixcal._shared._cov_at_full):
     this file's copy returns the per-param vector as a list, unlike
-    scripts/run_gonogo.py's ``_cov_at`` which drops it -- kept as two local
-    wrappers with their own original return shapes."""
+    scripts/run_reseed_pack.py's ``_cov_at`` which drops it. Each keeps its own
+    original return shape."""
     mean, per_param, nearest = _cov_at_full(nominal, cov, target)
     return mean, per_param.tolist(), nearest
 
@@ -174,7 +174,7 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
     print(f"  Coverage (mean |emp-nominal|): raw={raw_dev:.3f} -> "
           f"recalibrated={recal_dev:.3f}")
 
-    # 3a. importance-sampling refinement (Paper III) -- ESS report
+    # 3a. importance-sampling refinement (Paper III): ESS report
     n_is_cases = int(cfg.get("n_is_cases", 20))
     n_is = int(cfg.get("n_is_samples", 2000))
     low_ess_frac = float(cfg.get("low_ess_frac", 0.1))
@@ -269,11 +269,11 @@ def run_one_checkpoint(ckpt_dir: Path, level: str, cfg: dict,
             "raw_mean_abs_dev": raw_dev,
             "recal_mean_abs_dev": recal_dev,
             "nominal_levels": nlv.tolist(),
-            # headline coverage (mean over parameters) at the standard nominal
+            # coverage (mean over parameters) at the standard nominal
             # levels, raw NPE vs the two recalibrations. The IS numbers come
             # from the separate IS-coverage test set (cov_raw_isc is raw NPE on
             # the same observations, so raw_is and raw_conformal differ only by
-            # test-set sampling noise -- both report raw-NPE under-coverage).
+            # test-set sampling noise, and both report raw-NPE under-coverage).
             "at_levels": {
                 f"{int(round(t*100))}": {
                     "nominal_used": _cov_at(nlv, cov_raw, t)[2],
@@ -346,7 +346,7 @@ def main(argv=None):
               "(scripts/run_train_npe.py) or pass --checkpoint.")
         return 0
 
-    # ---- cross-level headline table ----
+    # ---- cross-level table ----
     print("\n=== CALIBRATION SUMMARY ===")
     print("| level | ~counts | SBC KS p (min) | TARP ATC | cov dev raw->recal | low-ESS |")
     print("|---|---|---|---|---|---|")
@@ -358,8 +358,8 @@ def main(argv=None):
               f"{r['is_refinement']['cov_testset_n_low_ess']}/"
               f"{r['is_refinement']['cov_testset_n_cases']} |")
 
-    # ---- headline coverage-at-nominal table (raw vs IS vs conformal) ----
-    print("\n=== COVERAGE @ NOMINAL (mean over params; for the money plot) ===")
+    # ---- coverage-at-nominal table (raw vs IS vs conformal) ----
+    print("\n=== COVERAGE @ NOMINAL (mean over params) ===")
     print("| level | ~counts | nom | raw NPE | IS-refined | conformal | low-ESS frac |")
     print("|---|---|---|---|---|---|---|")
     for r in results:

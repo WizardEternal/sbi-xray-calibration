@@ -26,9 +26,8 @@ class Brems(AdditiveComponent):
     $$\mathcal{M}(E) = K \, E^{-1} \exp(-E / kT)$$
 
     The free-free continuum shape with the slowly varying O(1) Gaunt factor
-    dropped. This is an intentional, documented approximation: the component's
-    purpose is to be a *different continuum family* (B3 misspecification), not a
-    calibrated plasma model (the B3 wrong-continuum decision).
+    dropped. The component is a *different continuum family*, which is all B3
+    needs. It is not a calibrated plasma model.
 
     Parameters:
         kT   (keV): temperature / exponential cutoff scale
@@ -100,7 +99,7 @@ def build_model_b2(base_name: str):
 
 def build_model_b3(base_name: str, use_diskbb: bool = False):
     """B3: continuum-family swap. powerlaw -> custom thermal bremsstrahlung
-    (default) or Diskbb (documented fallback).
+    (default) or Diskbb.
 
     The "strength" of this misspecification is not a single parameter; instead a
     grid of continuum temperatures (kT / Tin) is swept to span shapes from

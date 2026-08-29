@@ -1,0 +1,500 @@
+{
+  "generated": "2026-08-26T17:59:35",
+  "script": "outputs/gain_marg/ns_smallset_v2/c2st_real.py",
+  "interpreter": ".venv/Scripts/python.exe",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "param_order": [
+    "tbabs_1_nh",
+    "powerlaw_1_alpha",
+    "powerlaw_1_norm",
+    "blackbodyrad_1_kT",
+    "blackbodyrad_1_norm",
+    "gain_g"
+  ],
+  "seeds": {
+    "npe_main_seed": 10,
+    "npe_null_seed_a": 11,
+    "npe_null_seed_b": 12,
+    "clf_seed": 0,
+    "cv_seed": 0
+  },
+  "classifier_config": {
+    "type": "sklearn Pipeline(StandardScaler, MLPClassifier)",
+    "hidden_layer_sizes": [
+      64,
+      64
+    ],
+    "activation": "relu",
+    "solver": "adam",
+    "max_iter": 1000,
+    "early_stopping": true,
+    "n_iter_no_change": 20,
+    "n_cv_folds": 5
+  },
+  "npe_draw_convention": "rejection-and-clip (src/sbixcal/detect.py:218-239): reject_outside_prior=True, max_sampling_time=20.0s, exception fallback to unrejected draw, top-up any shortfall with unrejected draws, then clip into the flow's training prior box.",
+  "cases": {
+    "i22_widebox": {
+      "level": "medium",
+      "note": "default MLFriends sampler, wide physics box for NS inference; flow trained on nominal box only; see the two-prior-boxes note in the module docstring.",
+      "variants": {
+        "ns24": {
+          "case": "i22_widebox",
+          "level": "medium",
+          "variant_npz": "outputs/gain_marg/ns_smallset_v2/i22_widebox_samples.npz",
+          "model_dir": "outputs/gain_marg/model_medium",
+          "flow_exposure_s": 353.4,
+          "conditioning_total_counts": 3853.0,
+          "n_ns_samples": 6553,
+          "param_order": [
+            "tbabs_1_nh",
+            "powerlaw_1_alpha",
+            "powerlaw_1_norm",
+            "blackbodyrad_1_kT",
+            "blackbodyrad_1_norm",
+            "gain_g"
+          ],
+          "c2st_real": {
+            "accuracy_mean": 0.9799330700721247,
+            "accuracy_std": 0.002097236539078639,
+            "fold_scores": [
+              0.977116704805492,
+              0.9782525753529188,
+              0.9816863792445631,
+              0.9813048454788249,
+              0.9813048454788249
+            ],
+            "n_per_class": 6553,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "c2st_null": {
+            "accuracy_mean": 0.4932095720448376,
+            "accuracy_std": 0.0061654042358017845,
+            "fold_scores": [
+              0.488558352402746,
+              0.4849294162533384,
+              0.4979015642884395,
+              0.4956123616940099,
+              0.49904616558565434
+            ],
+            "n_per_class": 6553,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "npe_draw_provenance": {
+            "main_seed": 10,
+            "main": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 6553,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_a_seed": 11,
+            "null_a": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 6553,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_b_seed": 12,
+            "null_b": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 6553,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            }
+          },
+          "draw_wall_s": 0.3193212999995012,
+          "wall_s": 20.398749199999656
+        }
+      },
+      "nominal_box_restricted_secondary_check": {
+        "n_inside_nominal_box": 203,
+        "frac_inside_nominal_box": 0.030978177933770792,
+        "per_param_frac_outside_nominal_box": {
+          "tbabs_1_nh": 0.2279871814436136,
+          "powerlaw_1_alpha": 0.505569967953609,
+          "powerlaw_1_norm": 0.7282160842362276,
+          "blackbodyrad_1_kT": 0.48161147566000306,
+          "blackbodyrad_1_norm": 0.0,
+          "gain_g": 0.0
+        },
+        "status": "computed",
+        "c2st_real": {
+          "accuracy_mean": 0.6207166516109606,
+          "accuracy_std": 0.04700496576713477,
+          "fold_scores": [
+            0.6097560975609756,
+            0.654320987654321,
+            0.6419753086419753,
+            0.654320987654321,
+            0.5432098765432098
+          ],
+          "n_per_class": 203,
+          "n_folds": 5,
+          "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+          "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+        },
+        "c2st_null": {
+          "accuracy_mean": 0.5073471845829569,
+          "accuracy_std": 0.02401241171106419,
+          "fold_scores": [
+            0.524390243902439,
+            0.48148148148148145,
+            0.48148148148148145,
+            0.5185185185185185,
+            0.5308641975308642
+          ],
+          "n_per_class": 203,
+          "n_folds": 5,
+          "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+          "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+        },
+        "npe_draw_provenance": {
+          "main_seed": 110,
+          "main": {
+            "used_fallback": false,
+            "fallback_exc": null,
+            "n_from_rejection": 203,
+            "n_topped_up": 0,
+            "n_clipped": 0
+          },
+          "null_a_seed": 111,
+          "null_a": {
+            "used_fallback": false,
+            "fallback_exc": null,
+            "n_from_rejection": 203,
+            "n_topped_up": 0,
+            "n_clipped": 0
+          },
+          "null_b_seed": 112,
+          "null_b": {
+            "used_fallback": false,
+            "fallback_exc": null,
+            "n_from_rejection": 203,
+            "n_topped_up": 0,
+            "n_clipped": 0
+          }
+        },
+        "wall_s": 0.6261441999995441
+      }
+    },
+    "i394_slice": {
+      "level": "bright",
+      "note": "SliceSampler, nominal physics box (matches flow training box).",
+      "variants": {
+        "ns24": {
+          "case": "i394_slice",
+          "level": "bright",
+          "variant_npz": "outputs/gain_marg/ns_smallset_v2/i394_slice_samples.npz",
+          "model_dir": "outputs/gain_marg/model_bright",
+          "flow_exposure_s": 3534.0,
+          "conditioning_total_counts": 6829.0,
+          "n_ns_samples": 8179,
+          "param_order": [
+            "tbabs_1_nh",
+            "powerlaw_1_alpha",
+            "powerlaw_1_norm",
+            "blackbodyrad_1_kT",
+            "blackbodyrad_1_norm",
+            "gain_g"
+          ],
+          "c2st_real": {
+            "accuracy_mean": 0.9061621577783276,
+            "accuracy_std": 0.0022853754080407753,
+            "fold_scores": [
+              0.9043398533007335,
+              0.9043398533007335,
+              0.9092298288508558,
+              0.9079792112503822,
+              0.904922042188933
+            ],
+            "n_per_class": 8179,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "c2st_null": {
+            "accuracy_mean": 0.5003677759431442,
+            "accuracy_std": 0.010589882441022852,
+            "fold_scores": [
+              0.49144254278728605,
+              0.4990831295843521,
+              0.4944987775061125,
+              0.518495872821767,
+              0.498318557016203
+            ],
+            "n_per_class": 8179,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "npe_draw_provenance": {
+            "main_seed": 10,
+            "main": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8179,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_a_seed": 11,
+            "null_a": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8179,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_b_seed": 12,
+            "null_b": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8179,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            }
+          },
+          "draw_wall_s": 0.27413549999982934,
+          "wall_s": 18.897972599999775
+        },
+        "ns48": {
+          "case": "i394_slice",
+          "level": "bright",
+          "variant_npz": "outputs/gain_marg/ns_smallset_v2_ns48/i394_slice_samples.npz",
+          "model_dir": "outputs/gain_marg/model_bright",
+          "flow_exposure_s": 3534.0,
+          "conditioning_total_counts": 6829.0,
+          "n_ns_samples": 8141,
+          "param_order": [
+            "tbabs_1_nh",
+            "powerlaw_1_alpha",
+            "powerlaw_1_norm",
+            "blackbodyrad_1_kT",
+            "blackbodyrad_1_norm",
+            "gain_g"
+          ],
+          "c2st_real": {
+            "accuracy_mean": 0.9129102202098824,
+            "accuracy_std": 0.004104819183124332,
+            "fold_scores": [
+              0.9149524101934295,
+              0.9066625729198649,
+              0.9133906633906634,
+              0.9118550368550369,
+              0.9176904176904177
+            ],
+            "n_per_class": 8141,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "c2st_null": {
+            "accuracy_mean": 0.5057737671799692,
+            "accuracy_std": 0.005938196259692396,
+            "fold_scores": [
+              0.49953945348480194,
+              0.5035308566165183,
+              0.5104422604422605,
+              0.5135135135135135,
+              0.5018427518427518
+            ],
+            "n_per_class": 8141,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "npe_draw_provenance": {
+            "main_seed": 10,
+            "main": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8141,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_a_seed": 11,
+            "null_a": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8141,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_b_seed": 12,
+            "null_b": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8141,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            }
+          },
+          "draw_wall_s": 0.26105459999962477,
+          "wall_s": 18.540084999998726
+        }
+      }
+    },
+    "i416_slice": {
+      "level": "bright",
+      "note": "SliceSampler, nominal physics box (matches flow training box).",
+      "variants": {
+        "ns24": {
+          "case": "i416_slice",
+          "level": "bright",
+          "variant_npz": "outputs/gain_marg/ns_smallset_v2/i416_slice_samples.npz",
+          "model_dir": "outputs/gain_marg/model_bright",
+          "flow_exposure_s": 3534.0,
+          "conditioning_total_counts": 54509.0,
+          "n_ns_samples": 8743,
+          "param_order": [
+            "tbabs_1_nh",
+            "powerlaw_1_alpha",
+            "powerlaw_1_norm",
+            "blackbodyrad_1_kT",
+            "blackbodyrad_1_norm",
+            "gain_g"
+          ],
+          "c2st_real": {
+            "accuracy_mean": 0.9248543348353968,
+            "accuracy_std": 0.0050978082323800125,
+            "fold_scores": [
+              0.9219554030874786,
+              0.9319416642836718,
+              0.9247926794395196,
+              0.9185015727766657,
+              0.9270803545896482
+            ],
+            "n_per_class": 8743,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "c2st_null": {
+            "accuracy_mean": 0.49548125298283113,
+            "accuracy_std": 0.011829990015932833,
+            "fold_scores": [
+              0.5102915951972555,
+              0.4844152130397484,
+              0.5058621675722047,
+              0.49070631970260226,
+              0.48613096940234485
+            ],
+            "n_per_class": 8743,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "npe_draw_provenance": {
+            "main_seed": 10,
+            "main": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8743,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_a_seed": 11,
+            "null_a": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8743,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_b_seed": 12,
+            "null_b": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8743,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            }
+          },
+          "draw_wall_s": 0.3538929999995162,
+          "wall_s": 23.77120670000113
+        },
+        "ns48": {
+          "case": "i416_slice",
+          "level": "bright",
+          "variant_npz": "outputs/gain_marg/ns_smallset_v2_ns48/i416_slice_samples.npz",
+          "model_dir": "outputs/gain_marg/model_bright",
+          "flow_exposure_s": 3534.0,
+          "conditioning_total_counts": 54509.0,
+          "n_ns_samples": 8744,
+          "param_order": [
+            "tbabs_1_nh",
+            "powerlaw_1_alpha",
+            "powerlaw_1_norm",
+            "blackbodyrad_1_kT",
+            "blackbodyrad_1_norm",
+            "gain_g"
+          ],
+          "c2st_real": {
+            "accuracy_mean": 0.9220611868083285,
+            "accuracy_std": 0.011669623426251753,
+            "fold_scores": [
+              0.9082332761578045,
+              0.9176672384219554,
+              0.9342481417953116,
+              0.915927938232771,
+              0.9342293394338004
+            ],
+            "n_per_class": 8744,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "c2st_null": {
+            "accuracy_mean": 0.5020011108108183,
+            "accuracy_std": 0.00592592995773727,
+            "fold_scores": [
+              0.49885648942252714,
+              0.5005717552887364,
+              0.5111492281303602,
+              0.4955676293966257,
+              0.5038604518158422
+            ],
+            "n_per_class": 8744,
+            "n_folds": 5,
+            "classifier": "Pipeline(StandardScaler, MLPClassifier(hidden_layer_sizes=(64, 64), activation=relu, solver=adam, max_iter=1000, early_stopping=True, n_iter_no_change=20, random_state=0))",
+            "cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=0)"
+          },
+          "npe_draw_provenance": {
+            "main_seed": 10,
+            "main": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8744,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_a_seed": 11,
+            "null_a": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8744,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            },
+            "null_b_seed": 12,
+            "null_b": {
+              "used_fallback": false,
+              "fallback_exc": null,
+              "n_from_rejection": 8744,
+              "n_topped_up": 0,
+              "n_clipped": 0
+            }
+          },
+          "draw_wall_s": 0.34984309999890684,
+          "wall_s": 20.89740609999899
+        }
+      }
+    }
+  }
+}

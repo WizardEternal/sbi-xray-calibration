@@ -1,0 +1,117 @@
+{
+  "level": "medium",
+  "n_mis": 100,
+  "n_clean": 150,
+  "n_budget": 6000,
+  "strengths_pct": [
+    0.1,
+    0.2,
+    0.3,
+    0.5
+  ],
+  "seed_set0": {
+    "points": {
+      "0.1pct": {
+        "gain_factor": 1.001,
+        "auc_ess_eff": 0.4573333333333333,
+        "ci95_lo": 0.38593,
+        "ci95_hi": 0.5277533333333334,
+        "perm_p_vs_0p5": 0.265,
+        "ess_frac_median_mis": 0.2746723914139725,
+        "ess_frac_median_clean": 0.2485277411843915,
+        "n_mis": 100,
+        "n_clean": 150
+      },
+      "0.2pct": {
+        "gain_factor": 1.002,
+        "auc_ess_eff": 0.43706666666666666,
+        "ci95_lo": 0.36386666666666667,
+        "ci95_hi": 0.5081383333333334,
+        "perm_p_vs_0p5": 0.094,
+        "ess_frac_median_mis": 0.30738724136011547,
+        "ess_frac_median_clean": 0.2485277411843915,
+        "n_mis": 100,
+        "n_clean": 150
+      },
+      "0.3pct": {
+        "gain_factor": 1.003,
+        "auc_ess_eff": 0.5045333333333333,
+        "ci95_lo": 0.43673166666666663,
+        "ci95_hi": 0.5771366666666667,
+        "perm_p_vs_0p5": 0.9133333333333333,
+        "ess_frac_median_mis": 0.22864194124483334,
+        "ess_frac_median_clean": 0.2485277411843915,
+        "n_mis": 100,
+        "n_clean": 150
+      },
+      "0.5pct": {
+        "gain_factor": 1.005,
+        "auc_ess_eff": 0.45486666666666664,
+        "ci95_lo": 0.38393,
+        "ci95_hi": 0.524135,
+        "perm_p_vs_0p5": 0.21866666666666668,
+        "ess_frac_median_mis": 0.27774752445118667,
+        "ess_frac_median_clean": 0.2485277411843915,
+        "n_mis": 100,
+        "n_clean": 150
+      }
+    },
+    "source": "clean cell reused from committed is_ess_sweep_results.json (n=150, seeds 80000-81999); fresh B4 misspec draw per amplitude, seed base 970000",
+    "clean_n": 150,
+    "clean_ess_frac_median": 0.2485277411843915
+  },
+  "wall_s_seedset0": 182.75314164161682,
+  "seed_set1": {
+    "points": {
+      "0.1pct": {
+        "gain_factor": 1.001,
+        "auc_ess_eff": 0.5557333333333333,
+        "ci95_lo": 0.4815966666666666,
+        "ci95_hi": 0.6325500000000001,
+        "perm_p_vs_0p5": 0.13,
+        "ess_frac_median_mis": 0.26943083202824836,
+        "ess_frac_median_clean": 0.33755630690128235,
+        "n_mis": 100,
+        "n_clean": 150
+      },
+      "0.2pct": {
+        "gain_factor": 1.002,
+        "auc_ess_eff": 0.5807333333333333,
+        "ci95_lo": 0.5070583333333334,
+        "ci95_hi": 0.6548033333333334,
+        "perm_p_vs_0p5": 0.03133333333333333,
+        "ess_frac_median_mis": 0.26166189128341394,
+        "ess_frac_median_clean": 0.33755630690128235,
+        "n_mis": 100,
+        "n_clean": 150
+      },
+      "0.3pct": {
+        "gain_factor": 1.003,
+        "auc_ess_eff": 0.5902666666666667,
+        "ci95_lo": 0.5158633333333333,
+        "ci95_hi": 0.6646683333333333,
+        "perm_p_vs_0p5": 0.013666666666666667,
+        "ess_frac_median_mis": 0.22912001170791363,
+        "ess_frac_median_clean": 0.33755630690128235,
+        "n_mis": 100,
+        "n_clean": 150
+      },
+      "0.5pct": {
+        "gain_factor": 1.005,
+        "auc_ess_eff": 0.5277333333333334,
+        "ci95_lo": 0.45545833333333335,
+        "ci95_hi": 0.5980733333333333,
+        "perm_p_vs_0p5": 0.4573333333333333,
+        "ess_frac_median_mis": 0.3097356037379453,
+        "ess_frac_median_clean": 0.33755630690128235,
+        "n_mis": 100,
+        "n_clean": 150
+      }
+    },
+    "source": "fully fresh clean (n=150, drawn once, shared across amplitudes) + fresh B4 misspec draw per amplitude, seed base 982000 (clean draw seed base 980000)",
+    "clean_n": 150,
+    "clean_ess_frac_median": 0.33755630690128235
+  },
+  "wall_s_seedset1": 330.70330142974854,
+  "wall_s_total": 513.4564430713654
+}

@@ -67,7 +67,7 @@ def write_auc_markdown(table, levels, families, detectors, out_path: Path):
 
 def write_consequence_markdown(cons, out_path: Path) -> bool:
     """Write the B1 dGamma-bias table. Returns False and leaves out_path
-    untouched when there are no consequence rows -- a committed table must
+    untouched when there are no consequence rows. A committed table must
     never be replaced by a placeholder generated from empty or missing input."""
     if not cons:
         return False
@@ -154,7 +154,7 @@ def main(argv=None):
           + (f", {cons_md_path.name}" if cons_ok else "")
           + (f", {p3.name}" if p3 else ""))
     if not cons_ok:
-        print(f"[analyze] no consequence rows in {cons_path} -- leaving "
+        print(f"[analyze] no consequence rows in {cons_path}, leaving "
               f"{cons_md_path.name} untouched (not overwriting a committed "
               f"table with a placeholder). Regenerate it with:\n"
               f"  .venv\\Scripts\\python.exe scripts\\run_detect_benchmark.py "

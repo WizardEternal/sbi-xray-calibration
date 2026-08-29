@@ -1,0 +1,97 @@
+{
+  "created": "2026-07-23T22:02:50",
+  "select_seed": 20260723,
+  "strength": 0.0,
+  "ns_budget": {
+    "min_live": 400,
+    "dlogz": 0.5,
+    "ndraw_min": 2000,
+    "max_ncalls": null,
+    "n_gain_bins": 200,
+    "npe_samples": 4000
+  },
+  "levels": {
+    "medium": {
+      "exposure_s": 353.4,
+      "model_dir": "outputs/gain_marg/model_medium",
+      "model_exists": true
+    },
+    "bright": {
+      "exposure_s": 3534.0,
+      "model_dir": "outputs/gain_marg/model_bright",
+      "model_exists": true
+    }
+  },
+  "jobs": [
+    {
+      "level": "medium",
+      "strength": 0.0,
+      "idx": 22,
+      "spectrum_id": "medium_s0_i22",
+      "status": "done"
+    },
+    {
+      "level": "medium",
+      "strength": 0.0,
+      "idx": 87,
+      "spectrum_id": "medium_s0_i87",
+      "status": "done"
+    },
+    {
+      "level": "medium",
+      "strength": 0.0,
+      "idx": 91,
+      "spectrum_id": "medium_s0_i91",
+      "status": "done"
+    },
+    {
+      "level": "medium",
+      "strength": 0.0,
+      "idx": 95,
+      "spectrum_id": "medium_s0_i95",
+      "status": "done"
+    },
+    {
+      "level": "medium",
+      "strength": 0.0,
+      "idx": 197,
+      "spectrum_id": "medium_s0_i197",
+      "status": "done"
+    },
+    {
+      "level": "medium",
+      "strength": 0.0,
+      "idx": 482,
+      "spectrum_id": "medium_s0_i482",
+      "status": "done"
+    },
+    {
+      "level": "bright",
+      "strength": 0.0,
+      "idx": 8,
+      "spectrum_id": "bright_s0_i8",
+      "status": "done"
+    },
+    {
+      "level": "bright",
+      "strength": 0.0,
+      "idx": 238,
+      "spectrum_id": "bright_s0_i238",
+      "status": "done"
+    },
+    {
+      "level": "bright",
+      "strength": 0.0,
+      "idx": 394,
+      "spectrum_id": "bright_s0_i394",
+      "status": "done"
+    },
+    {
+      "level": "bright",
+      "strength": 0.0,
+      "idx": 416,
+      "spectrum_id": "bright_s0_i416",
+      "status": "done"
+    }
+  ]
+}

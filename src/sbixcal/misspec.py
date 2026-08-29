@@ -120,7 +120,7 @@ def simulate_misspec_population(
     """Generate ``n`` misspecified spectra for one (family, strength) in memory.
 
     Same per-family parameter assembly and B4 gain-shift-on-response path as the
-    other families in this module -- the detection benchmark needs to draw fresh
+    other families in this module. The detection benchmark needs to draw fresh
     misspecified test populations on the fly without disk round-trips.
 
     ``obsconf`` is the exposure-scaled ObsConfiguration for the count level (the

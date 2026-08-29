@@ -10,11 +10,7 @@ three are config-driven and operate on any trained checkpoint via
 ``train_npe.load_posterior`` (the flow carries its own CNN embedding net and the
 prior/base-model/exposure needed to rebuild the simulator context).
 
-Framing: this is a systematic
-misspecification-detection benchmark for X-ray spectral SBI. The individual
-detector ideas are not new; they are adapted from the general-SBI
-misspecification literature and benchmarked here on X-ray spectra. Each
-detector's docstring cites its methodological ancestor.
+Each detector's docstring cites its methodological ancestor.
 
 Detectors
 ---------
@@ -24,7 +20,7 @@ D1  **Posterior predictive check (PPC).** Draw K theta ~ posterior(.|x_obs),
       (a) chi2-like statistic on binned counts using the replicate-ensemble
           variance (so the null distribution is the replicate ensemble itself);
       (b) a KS-like distance between the observed and replicate cumulative count
-          spectra -- the direct descendant of Buchner et al. (2014, A&A 564,
+          spectra, the direct descendant of Buchner et al. (2014, A&A 564,
           A125) QQ-plot model-discovery methodology (cumulative-counts QQ plot).
     Score = a tail-probability-style statistic: the fraction of replicates whose
     own discrepancy is *less* extreme than the observed one (PPP-complement),
@@ -40,17 +36,17 @@ D2  **Embedding-space OOD.** Push spectra through the flow's trained CNN
     extension 2024, arXiv:2406.03154), who proposed MMD / distance tests in the
     learned summary-statistic (embedding) space for SBI misspecification.
 
-    **Scoping vs Schmitt.** Our D2 operates on the flow's
-    *posterior-trained, un-regularized* CNN embedding -- a near-sufficient summary
-    learned for inference, not Schmitt's MMD-regularized, deliberately overcomplete
-    summary network trained specifically to surface misspecification. Schmitt's
+    Relation to Schmitt et al. Our D2 operates on the flow's
+    *posterior-trained, un-regularized* CNN embedding, a near-sufficient summary
+    the flow learned for inference. Schmitt's network is MMD-regularized and
+    deliberately overcomplete, trained to surface misspecification. Schmitt's
     Eq. 12-13 give the consequence: a misspecification that preserves the summary
-    distribution is *provably invisible* to any test in that summary space. That is
-    exactly why a gain shift (B4) -- which the NPE folds into the
-    continuum parameters, leaving the near-sufficient summary distribution
-    essentially unchanged -- evades D2. So a D2 non-detection here scopes to the
-    near-sufficient embedding; an MMD-regularized overcomplete summary space
-    (Schmitt+23/24) is the natural next attempt, not refuted by this benchmark.
+    distribution is *provably invisible* to any test in that summary space. A gain
+    shift (B4) is that case, since the NPE folds it into the continuum parameters
+    and leaves the near-sufficient summary distribution essentially unchanged, so
+    it evades D2. A D2 non-detection here therefore scopes to the near-sufficient
+    embedding. An MMD-regularized overcomplete summary space (Schmitt+23/24) is
+    the natural next attempt. This benchmark does not test it.
 
 D3  **Simplified marginal C2ST.** A single classifier per benchmark cell, trained
     with stratified k-fold CV on the embedding features to distinguish the
@@ -62,7 +58,7 @@ D3  **Simplified marginal C2ST.** A single classifier per benchmark cell, traine
     in the sbi toolkit and Schmitt+23/24) trains a fresh classifier per spectrum on
     its posterior-predictive replicates. We found that conditional form pathological
     against overconfident NPE posteriors (tight replicate clusters are trivially
-    separable from the broad clean cloud for clean and misspec alike -- see
+    separable from the broad clean cloud for clean and misspec alike, see
     the D3 discussion below), so we take the marginal population two-sample test instead.
 
 Everything here is pure / importable; the benchmark CLI lives in
@@ -334,7 +330,7 @@ def detect_d1_ppc(
     return score
 
 
-# D2: embedding-space OOD (Mahalanobis + kNN)  -- Schmitt+23/24
+# D2: embedding-space OOD (Mahalanobis + kNN), Schmitt+23/24
 
 @dataclass
 class EmbeddingReference:
@@ -418,14 +414,13 @@ def detect_d2_embedding(
     Higher = more suspicious. The reference is reused across many spectra (build it
     once per count level with :func:`build_embedding_reference`).
 
-    Why k-NN is primary (empirical): the clean reference
+    k-NN is the primary score because the clean reference
     cloud is dominated by a single high-variance brightness axis (the log-uniform
     norm prior spans decades of total counts). The Mahalanobis whitening inverts
     that covariance and *amplifies* the low-variance noise directions, washing out
     the misspecification signal; the raw-Euclidean k-NN distance is far more
     sensitive to an embedding displaced off the clean manifold by an unmodeled
-    feature. The spec wording ("Mahalanobis distance *and/or* k-NN") permits this;
-    both are stored so the benchmark can report either.
+    feature. Both are stored so either can be reported.
     """
     e = embed_spectra(posterior, np.asarray(x_obs).reshape(1, -1), device=device)
     maha = float(reference.mahalanobis(e)[0])
@@ -457,9 +452,8 @@ def detect_d2_embedding(
 #   folds) feed the same ROC machinery as D1/D2 so D3 has a per-spectrum score too.
 #
 # This is a population two-sample test, by construction supervised on the cell's
-# clean/misspec labels -- that is exactly the C2ST definition (measure how
-# distinguishable two samples are), not a blind per-spectrum deployment, and the
-# benchmark's job is precisely to report that distinguishability per cell.
+# clean/misspec labels, which is the C2ST definition (how distinguishable two
+# samples are). The benchmark's job is to report that distinguishability per cell.
 
 
 def _make_c2st_clf(kind: str, seed: int):
@@ -484,7 +478,7 @@ class MarginalC2STResult:
     ``cv_accuracy`` is the cross-validated clean-vs-misspec classification accuracy
     (the C2ST statistic; 0.5 = indistinguishable). ``clean_proba`` / ``mis_proba``
     are the per-spectrum held-out class-1 (=misspecified) probabilities for the
-    clean and misspecified spectra respectively -- these are the per-spectrum D3
+    clean and misspecified spectra respectively. These are the per-spectrum D3
     scores fed to :func:`roc_auc`. Higher proba = more suspicious.
     """
     cv_accuracy: float
@@ -582,11 +576,11 @@ def score(
     pass the prebuilt clean ``reference`` so it is fit once per count level, not per
     spectrum (the benchmark does this).
 
-    **D3 is not a per-spectrum detector** -- it is the simplified marginal C2ST,
+    **D3 is not a per-spectrum detector.** It is the simplified marginal C2ST,
     which operates on whole clean/misspecified populations per benchmark cell. Call
     :func:`detect_d3_c2st_cell` (clean+misspec embeddings -> CV accuracy +
     per-spectrum held-out probabilities) instead; calling ``score(..., "D3")``
-    raises, by design, to prevent the leaky per-spectrum misuse.
+    raises, so the per-spectrum form cannot be called by mistake.
     """
     cfg = cfg or {}
     if detector == "D1":

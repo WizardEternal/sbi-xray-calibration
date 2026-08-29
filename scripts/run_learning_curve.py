@@ -1,7 +1,7 @@
 """Learning curve: dev model, middle (medium) count level.
 
 Trains the dev flow at N in {10k, 25k, 50k} on the medium dev dataset (prefixes
-of the 50k training set -- deterministic seed order, so a prefix is a valid
+of the 50k training set, in deterministic seed order, so a prefix is a valid
 fixed-seed subsample). For each N records:
   * best validation loss (the flow's own model-selection metric), and
   * a quick posterior-quality proxy: mean per-parameter Pearson correlation
@@ -10,7 +10,7 @@ fixed-seed subsample). For each N records:
 
 Outputs:
   outputs/diagnostics/learning_curve_dev.png
-  prints a table (also the 50k-vs-100k verdict inputs).
+  prints a table (also the inputs to the 50k-vs-100k training-size choice).
 
 Usage:
     .venv\\Scripts\\python.exe scripts\\run_learning_curve.py --config configs\\train_npe_dev.yaml
@@ -155,7 +155,7 @@ def main(argv=None):
         pr = ", ".join("%.3f" % v for v in r["rs"])
         print(f"| {r['n']} | {r['best_val']:.3f} | {r['mean_r']:.3f} | {pr} | "
               f"{r['epochs']} | {r['wall_s']:.1f} |")
-    # verdict helper
+    # training-size helper
     if len(rows) >= 2:
         dv = rows[-2]["best_val"] - rows[-1]["best_val"]
         dr = rows[-1]["mean_r"] - rows[-2]["mean_r"]

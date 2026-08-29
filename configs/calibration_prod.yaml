@@ -1,4 +1,4 @@
-# Calibration suite config -- production flows (tbabs*(powerlaw+blackbody),
+# Calibration suite config: production flows (tbabs*(powerlaw+blackbody),
 # 5 params; one flow per count level: train_npe_prod_{faint,medium,bright}).
 #
 # Drives scripts/run_calibration.py. The suite operates on a checkpoint directory

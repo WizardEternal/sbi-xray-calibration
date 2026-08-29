@@ -6,7 +6,7 @@ artifacts with skip-if-exists so figures are regenerable.
 
 What's here
 -----------
-1. **SBC** (Talts et al. 2018, arXiv:1804.06788) -- via sbi's built-in
+1. **SBC** (Talts et al. 2018, arXiv:1804.06788), via sbi's built-in
    ``sbi.diagnostics.run_sbc`` + ``check_sbc``. N fresh simulations are drawn
    from the same prior/simulator the flow was trained for (``simulate.py``), the
    rank statistic per parameter is computed by sbi, and we record the uniformity
@@ -14,7 +14,7 @@ What's here
    accuracy (``c2st_ranks``). Rank histograms are drawn with
    ``sbi.analysis.sbc_rank_plot``.
 
-2. **Expected coverage / TARP** (Lemos et al. 2023, arXiv:2302.03026) -- via
+2. **Expected coverage / TARP** (Lemos et al. 2023, arXiv:2302.03026), via
    ``sbi.diagnostics.run_tarp`` + ``check_tarp``. The expected-coverage-vs-nominal
    (ECP vs alpha) curve is saved as npz + figure, and we also compute the simple
    per-parameter empirical coverage of equal-tailed credible intervals vs nominal
@@ -22,7 +22,7 @@ What's here
    recalibration comparison.
 
 3. **Recalibration, two methods behind one interface** (``recalibrate``):
-   (a) **Importance-sampling refinement** with the known Poisson likelihood --
+   (a) **Importance-sampling refinement** with the known Poisson likelihood,
        the Barret & Dupourque Paper III move (A&A 708, A280, 2026,
        arXiv:2512.16709, Sec. 2-3). NPE posterior samples theta ~ q_NPE(.|x) are
        reweighted by
@@ -40,12 +40,11 @@ What's here
        2005, Angelopoulos & Bates 2021). On a held-out calibration set we learn,
        per parameter, the empirical quantile level at which the marginal interval
        attains nominal coverage, then apply that adjustment to new posteriors.
-       Deliberately simple and well-documented.
 
 Before/after coverage comparison (npz + figure) is produced by
 ``coverage_before_after``.
 
-Pure, importable functions only -- the CLI lives in
+Pure, importable functions only. The CLI lives in
 ``scripts/run_calibration.py``. Nothing here touches ``outputs/models`` except to
 *read* a checkpoint via ``train_npe.load_posterior``.
 """
@@ -344,9 +343,9 @@ def importance_refine(
     **Low-ESS is Paper III's own NPE-failure diagnostic.** A small effective
     sample size means the NPE proposal q badly mismatches the true posterior, so
     the reweighting is dominated by a few samples and cannot be trusted to repair
-    the posterior -- the correct response is to flag it (and, in production,
-    fall back to sequential NPE or nested sampling), not to report the IS result
-    as if it were reliable.
+    the posterior. The correct response is to flag it (and, in production, fall
+    back to sequential NPE or nested sampling), not to report the IS result as if
+    it were reliable.
     """
     torch.manual_seed(seed)
     x_t = torch.as_tensor(np.asarray(x_obs, dtype=np.float32), device=device)
@@ -371,7 +370,7 @@ def importance_refine(
     total_underflow = not np.isfinite(m)
     if total_underflow:
         # everything underflowed: the IS weights are totally degenerate, so the
-        # uniform fallback below is not a real reweighting -- report ess=0 (not
+        # uniform fallback below is not a real reweighting, so report ess=0 (not
         # n_samples), so a total failure cannot masquerade as a perfect ESS.
         weights = np.full(n_samples, 1.0 / n_samples)
         ess = 0.0
@@ -441,9 +440,8 @@ def is_coverage_curve(
     with the exact Poisson likelihood, then form **weighted** equal-tailed central
     credible intervals at each nominal level and measure how often the truth falls
     inside. We return both the all-cases coverage and a coverage restricted to the
-    cases that pass the low-ESS gate (Paper III's own failure flag), so the
-    write-up can state plainly where IS refinement works and where it fails for
-    lack of effective sample size.
+    cases that pass the low-ESS gate (Paper III's own failure flag), so both the
+    all-cases and the pass-the-gate coverage are available.
 
     Returns a dict with:
       ``cov_all``       (len(levels), n_params) IS coverage, all cases
@@ -505,7 +503,7 @@ class ConformalRecalibrator:
     """Per-parameter quantile recalibration learned on a held-out calibration set.
 
     For each parameter we collect, on the calibration set, the posterior CDF value
-    at the truth -- u_i = F_post,i(theta_true,i) -- which under perfect calibration
+    at the truth (u_i = F_post,i(theta_true,i)), which under perfect calibration
     is Uniform(0,1). We store the empirical CDF of these u-values, ``G``. To build a
     recalibrated central interval of nominal level ``c`` for a new posterior, we map
     the nominal tail quantiles {(1-c)/2, (1+c)/2} through ``G^{-1}`` to the adjusted
@@ -542,7 +540,7 @@ class ConformalRecalibrator:
 
         ``G`` is the empirical CDF of PIT values for parameter ``p``. We want the
         sample-quantile level whose calibration-set coverage equals ``nominal_q``;
-        that is ``G^{-1}(nominal_q)`` -- the inverse empirical CDF, i.e. the
+        that is ``G^{-1}(nominal_q)``, the inverse empirical CDF, i.e. the
         ``nominal_q`` empirical quantile of the stored PIT values.
         """
         u = self.u_sorted[p]

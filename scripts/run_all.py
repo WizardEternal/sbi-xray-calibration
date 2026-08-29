@@ -12,10 +12,10 @@ unless --force or the stage's own re-run is requested):
   2. train      outputs/models/train_npe_prod_<level>/flow_state.pt
   3. calibrate  outputs/calibration/<level>/coverage_before_after.npz
   4. detect     outputs/detect/scores.jsonl (per-spectrum scores) + results.jsonl (144 cells) + analyze_detect tables
-  5. ns_bench   outputs/ns_bench/results.jsonl              -- opt-in only (--with-ns),
+  5. ns_bench   outputs/ns_bench/results.jsonl              opt-in only (--with-ns),
                 because the NS run is multi-hour and is normally launched
                 separately in the background. Default run_all does not touch it.
-  6. plots      money_plot + supporting figures (make_plots.py)
+  6. plots      summary figure + supporting figures (make_plots.py)
 
 Crash-safety: every stage delegates to a script that is itself append/skip
 resumable (simulate npz skip-if-exists, train per-level checkpoint skip, detect
@@ -84,7 +84,7 @@ def _train_done() -> bool:
 
 def _calib_done() -> bool:
     # Gate on an actual intermediate (coverage_before_after.npz), not the
-    # committed summary.json -- summary.json ships in the repo, so checking it
+    # committed summary.json, which ships in the repo, so checking it
     # would report the stage done on a fresh clone where none of the npz
     # intermediates have been computed.
     root = _repo_root() / "outputs" / "calibration"
@@ -147,7 +147,7 @@ def stage_calibrate(force, env):
           "configs/calibration_prod.yaml"] + (["--force"] if force else []),
          env=env)
     # the coverage panel is rebuilt in the plots stage too, harmless here
-    _run([py, "scripts/make_coverage_money_panel.py"], env=env)
+    _run([py, "scripts/make_coverage_panel.py"], env=env)
 
 
 def stage_detect(force, env):
@@ -167,7 +167,7 @@ def stage_ns(force, env):
     if _ns_done() and not force:
         print("[skip] ns_bench (results.jsonl present)")
     else:
-        print("[run_all] launching the NESTED-SAMPLING benchmark (multi-hour).")
+        print("[run_all] launching the nested-sampling benchmark (multi-hour).")
         _run([py, "scripts/run_ns_benchmark.py", "--config",
               "configs/ns_bench.yaml"], env=env)
     _run([py, "scripts/analyze_ns_bench.py", "--config", "configs/ns_bench.yaml"],

@@ -1,0 +1,211 @@
+{
+  "run": "i394_slice",
+  "purpose": "Independent-sampler NS realization for bright i394. The earlier bright runs used exactly one sampler (MLFriends ellipsoidal), so no sampler-independent check existed for these spectra.",
+  "smoke_wiring_test_only": false,
+  "started": "2026-08-14T14:44:08",
+  "finished": "2026-08-15T02:44:26",
+  "python": "3.12.13",
+  "spectrum": {
+    "level": "bright",
+    "idx": 394,
+    "scheme": "B4",
+    "strength": 0.0,
+    "population": 500,
+    "spectrum_eval_seed": 20300611,
+    "exposure_s": 3534.0,
+    "total_counts": 6829,
+    "expected_counts": 6829,
+    "counts_gate": "PASS",
+    "truth_phys": [
+      0.315101680235788,
+      2.6716004902265613,
+      0.002288418814836443,
+      1.8608650713372423,
+      0.022409740919639487
+    ],
+    "phys_order": [
+      "tbabs_1_nh",
+      "powerlaw_1_alpha",
+      "powerlaw_1_norm",
+      "blackbodyrad_1_kT",
+      "blackbodyrad_1_norm"
+    ]
+  },
+  "config": {
+    "phys_box": "nominal",
+    "priors": {
+      "tbabs_1_nh": {
+        "dist": "uniform",
+        "low": 0.15,
+        "high": 0.35
+      },
+      "powerlaw_1_alpha": {
+        "dist": "uniform",
+        "low": 1.0,
+        "high": 3.0
+      },
+      "powerlaw_1_norm": {
+        "dist": "loguniform",
+        "low": 0.0001,
+        "high": 0.01
+      },
+      "blackbodyrad_1_kT": {
+        "dist": "uniform",
+        "low": 0.3,
+        "high": 3.0
+      },
+      "blackbodyrad_1_norm": {
+        "dist": "loguniform",
+        "low": 0.01,
+        "high": 1.0
+      },
+      "gain_g": {
+        "dist": "uniform",
+        "low": 0.95,
+        "high": 1.05
+      }
+    },
+    "gain_prior_std": 0.02886751345948129,
+    "sampler": {
+      "kind": "ultranest.stepsampler.SliceSampler",
+      "nsteps": 24,
+      "generate_direction": "generate_mixture_random_direction",
+      "adaptive_nsteps": false,
+      "region_filter": false
+    },
+    "min_live": 400,
+    "dlogz_target": 0.5,
+    "max_ncalls": null,
+    "n_gain_bins": 200,
+    "ndraw_min": 2000,
+    "ndraw_max": 65536,
+    "ns_seed": 0,
+    "log_dir": "outputs/gain_marg/ns_smallset_v2/i394_slice_ns_logdir"
+  },
+  "ns": {
+    "logz": -353.7551464652622,
+    "logzerr": 0.25473964560893964,
+    "achieved_dlogz_proxy": 0.00993582789209313,
+    "ess": 2559.0991837583556,
+    "n_like_evals": 497084,
+    "niter": 8179,
+    "n_equal_weight_samples": 8179,
+    "wall_s": 43198.250865307,
+    "wall_h": 11.999514129251946,
+    "means": {
+      "tbabs_1_nh": 0.31932247599301133,
+      "powerlaw_1_alpha": 2.6148209738232473,
+      "powerlaw_1_norm": 0.0022630921937800376,
+      "blackbodyrad_1_kT": 1.689687154367681,
+      "blackbodyrad_1_norm": 0.031098357930927804,
+      "gain_g": 1.020256290755466
+    },
+    "stds": {
+      "tbabs_1_nh": 0.022220253666116144,
+      "powerlaw_1_alpha": 0.12012816671427418,
+      "powerlaw_1_norm": 0.00010698656772396141,
+      "blackbodyrad_1_kT": 0.19450589549329678,
+      "blackbodyrad_1_norm": 0.014799739327087145,
+      "gain_g": 0.02225304383510348
+    },
+    "quantiles": {
+      "tbabs_1_nh": {
+        "0.025": 0.26717406860440485,
+        "0.16": 0.29623911050044294,
+        "0.5": 0.3231476204710998,
+        "0.84": 0.34227947313374957,
+        "0.975": 0.3487988538791507
+      },
+      "powerlaw_1_alpha": {
+        "0.025": 2.3861145352171436,
+        "0.16": 2.491439766190718,
+        "0.5": 2.6178682383236334,
+        "0.84": 2.7317644892091226,
+        "0.975": 2.854378426224029
+      },
+      "powerlaw_1_norm": {
+        "0.025": 0.002023290581903691,
+        "0.16": 0.002152081413344568,
+        "0.5": 0.0022756394642522663,
+        "0.84": 0.0023696554673156957,
+        "0.975": 0.002433433265418362
+      },
+      "blackbodyrad_1_kT": {
+        "0.025": 1.3712836470664258,
+        "0.16": 1.502873645047046,
+        "0.5": 1.6672240012993356,
+        "0.84": 1.8906660001679656,
+        "0.975": 2.1087193979044088
+      },
+      "blackbodyrad_1_norm": {
+        "0.025": 0.010929117679901451,
+        "0.16": 0.016699647954286034,
+        "0.5": 0.028611736007301172,
+        "0.84": 0.045258232343793,
+        "0.975": 0.06678847250930574
+      },
+      "gain_g": {
+        "0.025": 0.9651770366536705,
+        "0.16": 0.997098518139878,
+        "0.5": 1.0245886071813923,
+        "0.84": 1.0424432494997493,
+        "0.975": 1.0487990154814515
+      }
+    },
+    "gain_g_std": 0.02225304383510348,
+    "g_shrink_std_over_prior_std": 0.7708680509091321,
+    "folder_stats": {
+      "n_bins": 200,
+      "build_time_s": 0.21608727200009525,
+      "warmup_time_s": 15.691905969000118,
+      "n_loglike_blocks": 496686,
+      "n_points": 497086,
+      "n_fakeit_calls": 496858,
+      "fold_time_s": 43080.10718174473,
+      "fakeit_calls_per_point": 0.9995413268528986,
+      "ms_per_point": 86.66529973031776,
+      "ms_per_fakeit_call": 86.70506901719351
+    },
+    "ultranest_scalars": {
+      "niter": 8179.0,
+      "logz": -353.7551464652622,
+      "logzerr": 0.25473964560893964,
+      "logz_bs": -353.6955207693866,
+      "logz_single": -353.7551464652622,
+      "logzerr_tail": 0.00993582789209313,
+      "logzerr_bs": 0.2545458040688686,
+      "ess": 2559.0991837583556,
+      "H": 12.023436346134588,
+      "Herr": 0.10310585472511227,
+      "ncall": 497084.0,
+      "logzerr_single": 0.17337413551431619
+    },
+    "diagnostics": {
+      "insertion_order_MWW_test": {
+        "independent_iterations": Infinity,
+        "converged": 1.0
+      },
+      "insertion_order_note": "ultranest flags a run when the MWW independent-sample check fails; 'converged'/large p = insertion order uniform = sampling looked unbiased. A FAIL here invalidates the run; rerun with 2x nsteps.",
+      "stepsampler_info": {
+        "num_logs": 7779,
+        "rejection_rate": 2.195103269486224,
+        "mean_scale": 1.8603606800769907,
+        "mean_nsteps": 24.0,
+        "mean_distance": 1.4121920226136078,
+        "frac_far_enough": 0.8493379611775292,
+        "last_logstat": {
+          "rejection_rate": 1.375,
+          "scale": 1.429626432695086,
+          "steps": 24,
+          "jump-distance": 1.3007452467913265,
+          "reference-distance": 0.7272392320776655
+        }
+      },
+      "stepsampler_mean_jump_distance": 1.4121920226136078,
+      "stepsampler_far_enough_fraction": 0.8493379611775292,
+      "evals_per_iteration": 60.77564494436973
+    }
+  },
+  "wall_total_s": 43217.67713443,
+  "samples_npz": "i394_slice_samples.npz"
+}

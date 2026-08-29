@@ -1,4 +1,4 @@
-# NPE training config -- dev model (tbabs*powerlaw, 3 params).
+# NPE training config: dev model (tbabs*powerlaw, 3 params).
 #
 # Why one flow per count level (not amortized over exposure):
 #   Amortizing a single flow over all exposures would let the network trade

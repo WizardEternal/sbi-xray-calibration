@@ -1,0 +1,211 @@
+{
+  "run": "i416_slice",
+  "purpose": "Independent-sampler NS realization for bright i416 (54509 counts, the expensive one).",
+  "smoke_wiring_test_only": false,
+  "started": "2026-08-14T14:44:09",
+  "finished": "2026-08-15T02:03:56",
+  "python": "3.12.13",
+  "spectrum": {
+    "level": "bright",
+    "idx": 416,
+    "scheme": "B4",
+    "strength": 0.0,
+    "population": 500,
+    "spectrum_eval_seed": 20300611,
+    "exposure_s": 3534.0,
+    "total_counts": 54509,
+    "expected_counts": 54509,
+    "counts_gate": "PASS",
+    "truth_phys": [
+      0.24584966296877309,
+      1.2838979785808715,
+      0.009787588898535534,
+      0.6299988875409985,
+      0.7678348523532226
+    ],
+    "phys_order": [
+      "tbabs_1_nh",
+      "powerlaw_1_alpha",
+      "powerlaw_1_norm",
+      "blackbodyrad_1_kT",
+      "blackbodyrad_1_norm"
+    ]
+  },
+  "config": {
+    "phys_box": "nominal",
+    "priors": {
+      "tbabs_1_nh": {
+        "dist": "uniform",
+        "low": 0.15,
+        "high": 0.35
+      },
+      "powerlaw_1_alpha": {
+        "dist": "uniform",
+        "low": 1.0,
+        "high": 3.0
+      },
+      "powerlaw_1_norm": {
+        "dist": "loguniform",
+        "low": 0.0001,
+        "high": 0.01
+      },
+      "blackbodyrad_1_kT": {
+        "dist": "uniform",
+        "low": 0.3,
+        "high": 3.0
+      },
+      "blackbodyrad_1_norm": {
+        "dist": "loguniform",
+        "low": 0.01,
+        "high": 1.0
+      },
+      "gain_g": {
+        "dist": "uniform",
+        "low": 0.95,
+        "high": 1.05
+      }
+    },
+    "gain_prior_std": 0.02886751345948129,
+    "sampler": {
+      "kind": "ultranest.stepsampler.SliceSampler",
+      "nsteps": 24,
+      "generate_direction": "generate_mixture_random_direction",
+      "adaptive_nsteps": false,
+      "region_filter": false
+    },
+    "min_live": 400,
+    "dlogz_target": 0.5,
+    "max_ncalls": null,
+    "n_gain_bins": 200,
+    "ndraw_min": 2000,
+    "ndraw_max": 65536,
+    "ns_seed": 0,
+    "log_dir": "outputs/gain_marg/ns_smallset_v2/i416_slice_ns_logdir"
+  },
+  "ns": {
+    "logz": -470.91576041708737,
+    "logzerr": 0.3113516710246827,
+    "achieved_dlogz_proxy": 0.009934143768759895,
+    "ess": 2270.6663373655324,
+    "n_like_evals": 465566,
+    "niter": 8743,
+    "n_equal_weight_samples": 8743,
+    "wall_s": 40767.184555697,
+    "wall_h": 11.324217932138055,
+    "means": {
+      "tbabs_1_nh": 0.23944112980072313,
+      "powerlaw_1_alpha": 1.2854858252450683,
+      "powerlaw_1_norm": 0.009894870075670211,
+      "blackbodyrad_1_kT": 0.8690427037273605,
+      "blackbodyrad_1_norm": 0.18242365743867786,
+      "gain_g": 0.989848301653486
+    },
+    "stds": {
+      "tbabs_1_nh": 0.009649563323717946,
+      "powerlaw_1_alpha": 0.01239802867664289,
+      "powerlaw_1_norm": 9.196657508377351e-05,
+      "blackbodyrad_1_kT": 0.5066541870167233,
+      "blackbodyrad_1_norm": 0.24560289176305003,
+      "gain_g": 0.020922118721291714
+    },
+    "quantiles": {
+      "tbabs_1_nh": {
+        "0.025": 0.22292937822737802,
+        "0.16": 0.22965122899155418,
+        "0.5": 0.2385505181113952,
+        "0.84": 0.24902384679065287,
+        "0.975": 0.26065330623519467
+      },
+      "powerlaw_1_alpha": {
+        "0.025": 1.2640280676336142,
+        "0.16": 1.2747252755903837,
+        "0.5": 1.284548187824302,
+        "0.84": 1.295308777927991,
+        "0.975": 1.3159316396190022
+      },
+      "powerlaw_1_norm": {
+        "0.025": 0.009661827471326196,
+        "0.16": 0.009816145992744505,
+        "0.5": 0.009918115092565858,
+        "0.84": 0.009976313839883724,
+        "0.975": 0.009996315018200431
+      },
+      "blackbodyrad_1_kT": {
+        "0.025": 0.3278528103649404,
+        "0.16": 0.445413536336177,
+        "0.5": 0.6789913032781588,
+        "0.84": 1.38351078826011,
+        "0.975": 2.180308395393061
+      },
+      "blackbodyrad_1_norm": {
+        "0.025": 0.010822850312147825,
+        "0.16": 0.015988561318630322,
+        "0.5": 0.05727332901062618,
+        "0.84": 0.4227493349347328,
+        "0.975": 0.8941146847288888
+      },
+      "gain_g": {
+        "0.025": 0.9549701981508972,
+        "0.16": 0.9677793445139692,
+        "0.5": 0.9883347126109941,
+        "0.84": 1.0115910976371087,
+        "0.975": 1.0359596827894884
+      }
+    },
+    "gain_g_std": 0.020922118721291714,
+    "g_shrink_std_over_prior_std": 0.7247634525453047,
+    "folder_stats": {
+      "n_bins": 200,
+      "build_time_s": 0.2163508629998887,
+      "warmup_time_s": 15.827042355999993,
+      "n_loglike_blocks": 465168,
+      "n_points": 465568,
+      "n_fakeit_calls": 465340,
+      "fold_time_s": 40652.12132866966,
+      "fakeit_calls_per_point": 0.9995102756203176,
+      "ms_per_point": 87.31725833534448,
+      "ms_per_fakeit_call": 87.3600406770741
+    },
+    "ultranest_scalars": {
+      "niter": 8743.0,
+      "logz": -470.91576041708737,
+      "logzerr": 0.3113516710246827,
+      "logz_bs": -470.9520499809115,
+      "logz_single": -470.91576041708737,
+      "logzerr_tail": 0.009934143768759895,
+      "logzerr_bs": 0.3111931487636639,
+      "ess": 2270.6663373655324,
+      "H": 13.802054938674985,
+      "Herr": 0.1928673848463267,
+      "ncall": 465566.0,
+      "logzerr_single": 0.18575558496768668
+    },
+    "diagnostics": {
+      "insertion_order_MWW_test": {
+        "independent_iterations": Infinity,
+        "converged": 1.0
+      },
+      "insertion_order_note": "ultranest flags a run when the MWW independent-sample check fails; 'converged'/large p = insertion order uniform = sampling looked unbiased. A FAIL here invalidates the run; rerun with 2x nsteps.",
+      "stepsampler_info": {
+        "num_logs": 8343,
+        "rejection_rate": 2.467138119781054,
+        "mean_scale": 1.7011266885451906,
+        "mean_nsteps": 24.0,
+        "mean_distance": 1.152534727515275,
+        "frac_far_enough": 0.6814095649047105,
+        "last_logstat": {
+          "rejection_rate": 2.375,
+          "scale": 1.3204703837279441,
+          "steps": 24,
+          "jump-distance": 0.979061649057181,
+          "reference-distance": 0.972620768072229
+        }
+      },
+      "stepsampler_mean_jump_distance": 1.152534727515275,
+      "stepsampler_far_enough_fraction": 0.6814095649047105,
+      "evals_per_iteration": 53.25014297152007
+    }
+  },
+  "wall_total_s": 40786.830343639995,
+  "samples_npz": "i416_slice_samples.npz"
+}

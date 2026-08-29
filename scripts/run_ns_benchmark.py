@@ -14,9 +14,9 @@ counts vs simulate.fold_theta(theta)) and the same box prior, plus the amortized
 NPE posterior, and appends one row per spectrum to outputs/ns_bench/results.jsonl
 keyed by spectrum_id (resume-skips ids already present).
 
-critical modelling note (B4): a B4 spectrum is generated with a gain-shifted
+B4 and the inference model: a B4 spectrum is generated with a gain-shifted
 response, but both inferences (NPE and NS) use the nominal (clean) response and the
-well-specified Model A -- that mismatch is exactly the misspecification. So the
+well-specified Model A, and that mismatch is the misspecification. So the
 likelihood's model_counts_fn always folds through the clean exposure-scaled obsconf.
 
 --pilot N keeps only the first N spectra of each block (the 6-spectrum pilot uses
@@ -28,7 +28,7 @@ With --workers > 1 the per-spectrum NS+NPE work is fanned out across spectra wit
 multiprocessing.Pool (Windows-safe spawn; the ``if __name__ == "__main__":`` guard
 below is required). Each worker rebuilds and caches its own ``LevelNS`` per count
 level (the NPE posterior and the model_counts_fn closure are not picklable, so we
-pass only picklable args -- the checkpoint dir, response, counts/truth arrays -- and
+pass only picklable args (the checkpoint dir, response, counts/truth arrays) and
 reconstruct per process), and pins OMP/MKL to a single thread to avoid oversubscribing
 the cores the cross-spectrum parallelism is already using.
 
@@ -292,7 +292,7 @@ def run_one_task(task: dict) -> dict:
         agree = NB.quantile_agreement(
             ns.quantiles, npe.quantiles, state.param_names, state.low, state.high)
         return _row_from_results(task, state, ns, npe, agree)
-    except Exception as exc:  # noqa: BLE001 -- per-spectrum fault isolation
+    except Exception as exc:  # noqa: BLE001, per-spectrum fault isolation
         import traceback
         return {
             "spectrum_id": task["spectrum_id"],

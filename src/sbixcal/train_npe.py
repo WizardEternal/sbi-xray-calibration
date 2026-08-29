@@ -3,12 +3,13 @@
 Trains a Neural Posterior Estimator (NPE) with a Neural Spline Flow (NSF) and a
 small 1-D CNN embedding net over the binned EPIC-pn counts spectrum, on the
 simulated datasets (data/sim/*.npz). Config-driven; one trained flow
-per count level (not amortized over exposure -- see the config headers and
-Note: amortizing over exposure is a confound for a calibration analysis,
-and fixed-exposure flows match Barret & Dupourque's setup).
+per count level (not amortized over exposure: amortizing lets the net trade
+information across count regimes, which is a
+confound for a calibration study, and fixed-exposure flows match Barret &
+Dupourque's setup; see the config headers).
 
-Key design points
-------------------
+Design
+------
 * Embedding net (`SpectrumCNN`): input is the ~102-channel counts spectrum.
   Counts are normalized with ``log1p`` (counts span ~0 to thousands and are
   Poisson; log1p compresses the dynamic range, is defined at 0, and keeps the
@@ -16,8 +17,8 @@ Key design points
   ~tens of k params.
 * Flow: NSF via ``posterior_nn(model="nsf", embedding_net=cnn)``.
 * Prior: BoxUniform built from the YAML prior bounds (log-uniform params get
-  *linear* box bounds -- the flow models theta in linear units, matching how the
-  npz stores theta; this is fine for a bounded NPE and matches how the simulator stores it).
+  *linear* box bounds, since the flow models theta in linear units, matching how
+  the npz stores theta).
 * Checkpoints are cold-loadable: ``load_posterior(<dir>)`` rebuilds the exact
   architecture from the saved config, loads the flow state_dict, and returns a
   ready-to-sample DirectPosterior. Loading needs no training data.
@@ -72,7 +73,7 @@ class SpectrumCNN(nn.Module):
     flow conditions on.
 
     The ``log1p`` normalization is applied *inside* the module so it travels with
-    the saved weights -- a cold-loaded posterior normalizes inputs identically
+    the saved weights, so a cold-loaded posterior normalizes inputs identically
     without the caller having to remember to do it.
     """
 
@@ -193,7 +194,7 @@ def build_density_estimator(cfg: dict, n_channels: int):
     is both redundant and harmful (raw counts have extreme outliers under the
     log-uniform norm prior, which the z-scorer warns about and which causes
     precision loss). theta IS z-scored (``z_score_theta="independent"``, the
-    default) -- that is cheap and helps the flow.
+    default), which is cheap and helps the flow.
     """
     flow = cfg.get("flow", {}) or {}
     embedding_net = build_embedding_net(cfg, n_channels)

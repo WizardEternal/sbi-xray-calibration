@@ -1,4 +1,4 @@
-# Model A (production): tbabs * (powerlaw + blackbody)  -- 5 parameters
+# Model A (production): tbabs * (powerlaw + blackbody), 5 parameters
 # Priors follow Barret & Dupourque 2024 (A&A 686, A133; arXiv:2401.06061),
 # Table 1, "Model 2: tbabs*(powerlaw+bbodyrad)". Uniform in linear coords for
 # N_H, Gamma, kTbb; log-uniform for the two normalizations (their convention).

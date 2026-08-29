@@ -22,7 +22,7 @@ from sbixcal import ns_bench as NB
 BASE_MODEL = "tbabs_powerlaw_bb"
 RESP = "NGC7793_ULX4_PN"
 EXPOSURE = 353.4            # medium (~1000 counts), matches sim_modelA_prod
-GAIN = 1.03                 # 3% gain shift (the headline B4 strength)
+GAIN = 1.03                 # 3% gain shift (the B4 strength the benchmark reports)
 N = 12                      # matched-count pairs (deterministic from the seeds below)
 PRIOR_CFG = {
     "tbabs_1_nh":         {"dist": "uniform",    "low": 0.15,   "high": 0.35},

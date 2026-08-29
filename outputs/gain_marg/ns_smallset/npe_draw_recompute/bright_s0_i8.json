@@ -1,0 +1,610 @@
+{
+  "spectrum_id": "bright_s0_i8",
+  "level": "bright",
+  "idx": 8,
+  "strength": 0.0,
+  "generated": "2026-08-11T11:29:13",
+  "script": "scripts/npe_draw_recompute.py",
+  "interpreter": ".venv/Scripts/python.exe",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "seeds": {
+    "npe_primary_torch_manual_seed": 0,
+    "npe_extra_torch_manual_seeds": [
+      1,
+      2
+    ],
+    "spectrum_eval_seed": 20300611,
+    "spectrum_select_seed": 20260723,
+    "c2st_subsample_seed": 0
+  },
+  "n_samples": 4000,
+  "flow": {
+    "model_dir": "outputs/gain_marg/model_bright",
+    "flow_state_sha256": "0405616ccec5d8ba2dff8bdb640fd4db78b73dc5430dc9e8791326ce8d013d9a",
+    "exposure_s": 3534.0
+  },
+  "conditioning": {
+    "total_counts_regenerated": 25067,
+    "total_counts_committed": 25067,
+    "counts_match": true,
+    "truth_phys": [
+      0.1802446117663593,
+      2.409897164879708,
+      0.006963380468605988,
+      0.36272430322364885,
+      0.022447042215387677
+    ]
+  },
+  "prior_bounds": {
+    "tbabs_1_nh": [
+      0.15,
+      0.35
+    ],
+    "powerlaw_1_alpha": [
+      1.0,
+      3.0
+    ],
+    "powerlaw_1_norm": [
+      0.0001,
+      0.01
+    ],
+    "blackbodyrad_1_kT": [
+      0.3,
+      3.0
+    ],
+    "blackbodyrad_1_norm": [
+      0.01,
+      1.0
+    ],
+    "gain_g": [
+      0.95,
+      1.05
+    ]
+  },
+  "prior_std_g": 0.028867513459481315,
+  "outside_prior_raw": {
+    "n_samples": 4000,
+    "frac_outside_any_param": 0.037250000000000005,
+    "pct_outside_any_param": 3.7250000000000005,
+    "n_outside": 149,
+    "per_param": {
+      "tbabs_1_nh": {
+        "frac_below_low": 0.00075,
+        "frac_above_high": 0.0,
+        "frac_outside": 0.00075
+      },
+      "powerlaw_1_alpha": {
+        "frac_below_low": 0.0,
+        "frac_above_high": 0.0045,
+        "frac_outside": 0.0045
+      },
+      "powerlaw_1_norm": {
+        "frac_below_low": 0.00025,
+        "frac_above_high": 0.0025,
+        "frac_outside": 0.00275
+      },
+      "blackbodyrad_1_kT": {
+        "frac_below_low": 0.00625,
+        "frac_above_high": 0.00025,
+        "frac_outside": 0.0065
+      },
+      "blackbodyrad_1_norm": {
+        "frac_below_low": 0.0195,
+        "frac_above_high": 0.0,
+        "frac_outside": 0.0195
+      },
+      "gain_g": {
+        "frac_below_low": 0.00175,
+        "frac_above_high": 0.00275,
+        "frac_outside": 0.0045
+      }
+    },
+    "criterion": "sbi.utils.sbiutils.within_support(prior, samples) on the BoxUniform built from arch.json prior_cfg linear bounds"
+  },
+  "outside_prior_clipped": {
+    "n_samples": 4000,
+    "frac_outside_any_param": 0.0,
+    "pct_outside_any_param": 0.0,
+    "n_outside": 0,
+    "per_param": {
+      "tbabs_1_nh": {
+        "frac_below_low": 0.0,
+        "frac_above_high": 0.0,
+        "frac_outside": 0.0
+      },
+      "powerlaw_1_alpha": {
+        "frac_below_low": 0.0,
+        "frac_above_high": 0.0,
+        "frac_outside": 0.0
+      },
+      "powerlaw_1_norm": {
+        "frac_below_low": 0.0,
+        "frac_above_high": 0.0,
+        "frac_outside": 0.0
+      },
+      "blackbodyrad_1_kT": {
+        "frac_below_low": 0.0,
+        "frac_above_high": 0.0,
+        "frac_outside": 0.0
+      },
+      "blackbodyrad_1_norm": {
+        "frac_below_low": 0.0,
+        "frac_above_high": 0.0,
+        "frac_outside": 0.0
+      },
+      "gain_g": {
+        "frac_below_low": 0.0,
+        "frac_above_high": 0.0,
+        "frac_outside": 0.0
+      }
+    },
+    "criterion": "sbi.utils.sbiutils.within_support(prior, samples) on the BoxUniform built from arch.json prior_cfg linear bounds"
+  },
+  "outside_prior_logged_pct_original": null,
+  "raw_reproduction_control": {
+    "reproduces_committed": true,
+    "worst_rel_mean_diff_in_npe_std": 5.828265180745277e-07,
+    "per_param": {
+      "tbabs_1_nh": {
+        "npe_mean_committed": 0.21081887506321073,
+        "npe_mean_reproduced": 0.2108188682049513,
+        "npe_std_committed": 0.031032313149213463,
+        "npe_std_reproduced": 0.03103231202239373,
+        "rel_mean_diff": 2.2100380979040322e-07,
+        "rel_std_diff": 3.6311174398259456e-08
+      },
+      "powerlaw_1_alpha": {
+        "npe_mean_committed": 2.529089636862278,
+        "npe_mean_reproduced": 2.5290896357297896,
+        "npe_std_committed": 0.13140532781541445,
+        "npe_std_reproduced": 0.13140531296869326,
+        "rel_mean_diff": 8.618283171365926e-09,
+        "rel_std_diff": 1.1298416458916949e-07
+      },
+      "powerlaw_1_norm": {
+        "npe_mean_committed": 0.00763871215673862,
+        "npe_mean_reproduced": 0.007638711812440306,
+        "npe_std_committed": 0.0006756770403618074,
+        "npe_std_reproduced": 0.0006756770542442709,
+        "rel_mean_diff": 5.095604752724385e-07,
+        "rel_std_diff": 2.054600453889897e-08
+      },
+      "blackbodyrad_1_kT": {
+        "npe_mean_committed": 1.0695650561004877,
+        "npe_mean_reproduced": 1.0695653164833785,
+        "npe_std_committed": 0.44675882570433545,
+        "npe_std_reproduced": 0.44675881710013354,
+        "rel_mean_diff": 5.828265180745277e-07,
+        "rel_std_diff": 1.9259164926288278e-08
+      },
+      "blackbodyrad_1_norm": {
+        "npe_mean_committed": 0.07565083771198988,
+        "npe_mean_reproduced": 0.07565083523374051,
+        "npe_std_committed": 0.1188125595500233,
+        "npe_std_reproduced": 0.1188125673614811,
+        "rel_mean_diff": 2.0858479768421187e-08,
+        "rel_std_diff": 6.574606110354432e-08
+      },
+      "gain_g": {
+        "npe_mean_committed": 1.0015878935754299,
+        "npe_mean_reproduced": 1.001587893590331,
+        "npe_std_committed": 0.02869973949056924,
+        "npe_std_reproduced": 0.028699736361936064,
+        "rel_mean_diff": 5.192099878401499e-10,
+        "rel_std_diff": 1.0901259840618832e-07
+      }
+    }
+  },
+  "metrics_raw_reproduced": {
+    "per_param": {
+      "tbabs_1_nh": {
+        "ns_mean": 0.19600961694470953,
+        "ns_std": 0.012261007118081911,
+        "npe_mean": 0.2108188682049513,
+        "npe_std": 0.03103231202239373,
+        "mean_diff_in_ns_std": 1.2078331834912512,
+        "std_ratio_npe_over_ns": 2.5309757773999535,
+        "overlap68_iou": 0.39814925229198833,
+        "overlap95_iou": 0.40069530904065714,
+        "npe_q68": [
+          0.18125684738159178,
+          0.24107499957084655
+        ],
+        "npe_q95": [
+          0.164790466055274,
+          0.2852560788393021
+        ]
+      },
+      "powerlaw_1_alpha": {
+        "ns_mean": 2.4620572171075805,
+        "ns_std": 0.051073747735961135,
+        "npe_mean": 2.5290896357297896,
+        "npe_std": 0.13140531296869326,
+        "mean_diff_in_ns_std": 1.3124632828738243,
+        "std_ratio_npe_over_ns": 2.5728543291560824,
+        "overlap68_iou": 0.3917749297129501,
+        "overlap95_iou": 0.38724420067762966,
+        "npe_q68": [
+          2.417694444656372,
+          2.652253580093384
+        ],
+        "npe_q95": [
+          2.3810037672519684,
+          2.8849904000759126
+        ]
+      },
+      "powerlaw_1_norm": {
+        "ns_mean": 0.007220147115319051,
+        "ns_std": 0.00025713171505632753,
+        "npe_mean": 0.007638711812440306,
+        "npe_std": 0.0006756770542442709,
+        "mean_diff_in_ns_std": 1.6278221339968282,
+        "std_ratio_npe_over_ns": 2.627746849882973,
+        "overlap68_iou": 0.3559649481214123,
+        "overlap95_iou": 0.38923675414208425,
+        "npe_q68": [
+          0.007015459723770618,
+          0.008264893591403961
+        ],
+        "npe_q95": [
+          0.00662436067359522,
+          0.009198707784526052
+        ]
+      },
+      "blackbodyrad_1_kT": {
+        "ns_mean": 0.8724271162279652,
+        "ns_std": 0.42179702699945126,
+        "npe_mean": 1.0695653164833785,
+        "npe_std": 0.44675881710013354,
+        "mean_diff_in_ns_std": 0.4673769316436404,
+        "std_ratio_npe_over_ns": 1.0591796255138488,
+        "overlap68_iou": 0.7435993951096838,
+        "overlap95_iou": 0.8850375725692637,
+        "npe_q68": [
+          0.5225847601890564,
+          1.5256039905548096
+        ],
+        "npe_q95": [
+          0.3448028676211834,
+          1.851269418001175
+        ]
+      },
+      "blackbodyrad_1_norm": {
+        "ns_mean": 0.08162704031656001,
+        "ns_std": 0.1452734659673077,
+        "npe_mean": 0.07565083523374051,
+        "npe_std": 0.1188125673614811,
+        "mean_diff_in_ns_std": -0.04113762305474548,
+        "std_ratio_npe_over_ns": 0.8178545653217818,
+        "overlap68_iou": 0.893135720917032,
+        "overlap95_iou": 0.7230991787079944,
+        "npe_q68": [
+          0.014202830009162426,
+          0.1222394585609436
+        ],
+        "npe_q95": [
+          0.010279059736058116,
+          0.43281429558992407
+        ]
+      },
+      "gain_g": {
+        "ns_mean": 0.9998331644031315,
+        "ns_std": 0.024701647628150265,
+        "npe_mean": 1.001587893590331,
+        "npe_std": 0.028699736361936064,
+        "mean_diff_in_ns_std": 0.07103692893747847,
+        "std_ratio_npe_over_ns": 1.16185514399572,
+        "overlap68_iou": 0.8138479936529232,
+        "overlap95_iou": 0.9470823773400348,
+        "npe_q68": [
+          0.9680659151077271,
+          1.0345106649398803
+        ],
+        "npe_q95": [
+          0.9527052134275437,
+          1.0476602166891098
+        ]
+      }
+    },
+    "max_abs_mean_diff_in_ns_std": 1.6278221339968282,
+    "mean_overlap68_iou": 0.5994120399676649,
+    "npe_g_mean": 1.001587893590331,
+    "npe_g_std": 0.028699736361936064,
+    "npe_g_shrink": 0.9941880308541038
+  },
+  "metrics_clipped": {
+    "per_param": {
+      "tbabs_1_nh": {
+        "ns_mean": 0.19600961694470953,
+        "ns_std": 0.012261007118081911,
+        "npe_mean": 0.210548566583544,
+        "npe_std": 0.030298761310050756,
+        "mean_diff_in_ns_std": 1.185787553894588,
+        "std_ratio_npe_over_ns": 2.471147844402413,
+        "overlap68_iou": 0.40173565575341424,
+        "overlap95_iou": 0.4117379185557388,
+        "npe_q68": [
+          0.18120951771736146,
+          0.24049365699291228
+        ],
+        "npe_q95": [
+          0.164790466055274,
+          0.28202525004744533
+        ]
+      },
+      "powerlaw_1_alpha": {
+        "ns_mean": 2.4620572171075805,
+        "ns_std": 0.051073747735961135,
+        "npe_mean": 2.5279484798312186,
+        "npe_std": 0.12719181108119906,
+        "mean_diff_in_ns_std": 1.2901199861870314,
+        "std_ratio_npe_over_ns": 2.490355940565588,
+        "overlap68_iou": 0.39253158504086044,
+        "overlap95_iou": 0.40331355666927166,
+        "npe_q68": [
+          2.417743806838989,
+          2.651675271987915
+        ],
+        "npe_q95": [
+          2.3810037672519684,
+          2.8649098932743073
+        ]
+      },
+      "powerlaw_1_norm": {
+        "ns_mean": 0.007220147115319051,
+        "ns_std": 0.00025713171505632753,
+        "npe_mean": 0.0076341229729587215,
+        "npe_std": 0.000637881415003648,
+        "mean_diff_in_ns_std": 1.6099758738395407,
+        "std_ratio_npe_over_ns": 2.4807574392910383,
+        "overlap68_iou": 0.35729596956349546,
+        "overlap95_iou": 0.3941770867845152,
+        "npe_q68": [
+          0.00701537486165762,
+          0.008260281234979629
+        ],
+        "npe_q95": [
+          0.006632787210401147,
+          0.009174869302660227
+        ]
+      },
+      "blackbodyrad_1_kT": {
+        "ns_mean": 0.8724271162279652,
+        "ns_std": 0.42179702699945126,
+        "npe_mean": 1.0694752907082439,
+        "npe_std": 0.43974305376861966,
+        "mean_diff_in_ns_std": 0.4671634977657987,
+        "std_ratio_npe_over_ns": 1.0425465937890352,
+        "overlap68_iou": 0.7423104230646521,
+        "overlap95_iou": 0.8812342627664107,
+        "npe_q68": [
+          0.5286048221588134,
+          1.519445924758911
+        ],
+        "npe_q95": [
+          0.3525218278169632,
+          1.849135610461235
+        ]
+      },
+      "blackbodyrad_1_norm": {
+        "ns_mean": 0.08162704031656001,
+        "ns_std": 0.1452734659673077,
+        "npe_mean": 0.07559358806023374,
+        "npe_std": 0.11769779483762119,
+        "mean_diff_in_ns_std": -0.041531687952458166,
+        "std_ratio_npe_over_ns": 0.8101809511732023,
+        "overlap68_iou": 0.8988578897999157,
+        "overlap95_iou": 0.7585993081498273,
+        "npe_q68": [
+          0.014551492035388946,
+          0.12115719497203825
+        ],
+        "npe_q95": [
+          0.011078787758015097,
+          0.4539675503969195
+        ]
+      },
+      "gain_g": {
+        "ns_mean": 0.9998331644031315,
+        "ns_std": 0.024701647628150265,
+        "npe_mean": 1.0016376008540393,
+        "npe_std": 0.028485743353781734,
+        "mean_diff_in_ns_std": 0.07304923453168446,
+        "std_ratio_npe_over_ns": 1.1531920373327273,
+        "overlap68_iou": 0.8213979782271755,
+        "overlap95_iou": 0.9518519569964663,
+        "npe_q68": [
+          0.9684215331077576,
+          1.0342555475234985
+        ],
+        "npe_q95": [
+          0.9528750702738762,
+          1.04735426902771
+        ]
+      }
+    },
+    "max_abs_mean_diff_in_ns_std": 1.6099758738395407,
+    "mean_overlap68_iou": 0.6023549169082522,
+    "npe_g_mean": 1.0016376008540393,
+    "npe_g_std": 0.028485743353781734,
+    "npe_g_shrink": 0.9867750956023477
+  },
+  "clipped_draw_provenance": {
+    "used_fallback": false,
+    "fallback_exc": null,
+    "n_from_rejection": 4000,
+    "n_topped_up": 0,
+    "n_clipped": 0
+  },
+  "seed_scatter_clipped": {
+    "per_param_mean_diff_in_ns_std": {
+      "tbabs_1_nh": {
+        "mean_diff_in_ns_std_by_seed": [
+          1.185787553894588,
+          1.1973839866519975,
+          1.283028311064584
+        ],
+        "range": 0.09724075716999603,
+        "std": 0.05311181979525147
+      },
+      "powerlaw_1_alpha": {
+        "mean_diff_in_ns_std_by_seed": [
+          1.2901199861870314,
+          1.324430871422094,
+          1.4005609327920838
+        ],
+        "range": 0.11044094660505244,
+        "std": 0.05652466390410487
+      },
+      "powerlaw_1_norm": {
+        "mean_diff_in_ns_std_by_seed": [
+          1.6099758738395407,
+          1.6078409769526818,
+          1.6856990936949632
+        ],
+        "range": 0.07785811674228138,
+        "std": 0.04434796153271852
+      },
+      "blackbodyrad_1_kT": {
+        "mean_diff_in_ns_std_by_seed": [
+          0.4671634977657987,
+          0.43658866508619654,
+          0.4643409895090605
+        ],
+        "range": 0.03057483267960215,
+        "std": 0.01689663900068548
+      },
+      "blackbodyrad_1_norm": {
+        "mean_diff_in_ns_std_by_seed": [
+          -0.041531687952458166,
+          -0.0008414172427791828,
+          -0.018445993970846977
+        ],
+        "range": 0.04069027070967898,
+        "std": 0.0204065696889261
+      },
+      "gain_g": {
+        "mean_diff_in_ns_std_by_seed": [
+          0.07304923453168446,
+          0.08979009547276225,
+          0.06429197671658554
+        ],
+        "range": 0.025498118756176705,
+        "std": 0.012955694048002633
+      }
+    },
+    "npe_g_shrink_by_seed": [
+      0.9867750956023477,
+      0.9964953990450718,
+      0.9914564807768373
+    ],
+    "npe_g_shrink_range": 0.00972030344272412
+  },
+  "c2st": {
+    "ns_vs_npe": {
+      "status": "NOT_COMPUTABLE",
+      "committed_value": 0.877,
+      "reason": "NS posterior samples were never persisted. The worker holds res.samples in memory and writes only means/stds/quantiles (outputs/gain_marg/run_ns_smallset.py:130-137); no NS sample array exists under outputs/ (searched *.npy/*.npz across outputs/, and every ns_smallset*/ json). Recomputing it needs a full 6-param NS rerun (3426-18994 s per spectrum)."
+    },
+    "raw_npe_vs_clipped_npe": 0.5082500000000001,
+    "raw_npe_vs_clipped_npe_error": null,
+    "raw_npe_vs_clipped_npe_note": "raw seed 0 vs clipped seed 1, independent streams. How far the rejection-and-clip fix moves the NPE posterior; read against the null below.",
+    "null_clipped_seed1_vs_seed2": 0.501625,
+    "null_clipped_seed1_vs_seed2_error": null,
+    "null_note": "same-distribution calibration: two clipped draws differing only by torch seed, independent streams.",
+    "artifact_same_seed_raw_vs_clipped": 0.126875,
+    "artifact_n_shared_rows": 3851,
+    "artifact_note": "INVALID as a two-sample test, recorded so the trap stays visible: the raw and clipped draws at the same torch seed share 3851/4000 byte-identical rows (the rejection draw's first batch comes off the same RNG state), which drives c2st below chance instead of above it."
+  },
+  "committed_reference": {
+    "npe": {
+      "n_samples": 4000,
+      "means": {
+        "tbabs_1_nh": 0.21081887185573578,
+        "powerlaw_1_alpha": 2.5290896892547607,
+        "powerlaw_1_norm": 0.007638712413609028,
+        "blackbodyrad_1_kT": 1.0695650577545166,
+        "blackbodyrad_1_norm": 0.07565083354711533,
+        "gain_g": 1.0015878677368164
+      },
+      "stds": {
+        "tbabs_1_nh": 0.031032312661409378,
+        "powerlaw_1_alpha": 0.1314053237438202,
+        "powerlaw_1_norm": 0.0006756770308129489,
+        "blackbodyrad_1_kT": 0.44675880670547485,
+        "blackbodyrad_1_norm": 0.11881256103515625,
+        "gain_g": 0.028699740767478943
+      }
+    },
+    "comparison_ns_vs_npe": {
+      "per_param": {
+        "tbabs_1_nh": {
+          "ns_mean": 0.19600961694470953,
+          "npe_mean": 0.21081887506321073,
+          "ns_std": 0.012261007118081911,
+          "npe_std": 0.031032313149213463,
+          "mean_diff_in_ns_std": 1.2078337428465609,
+          "std_ratio_npe_over_ns": 2.53097586930266,
+          "overlap68_iou": 0.39814925229198833,
+          "overlap95_iou": 0.4006952099115568
+        },
+        "powerlaw_1_alpha": {
+          "ns_mean": 2.4620572171075805,
+          "npe_mean": 2.529089636862278,
+          "ns_std": 0.051073747735961135,
+          "npe_std": 0.13140532781541445,
+          "mean_diff_in_ns_std": 1.312463305047414,
+          "std_ratio_npe_over_ns": 2.572854619847912,
+          "overlap68_iou": 0.3917755758706446,
+          "overlap95_iou": 0.38724384345397395
+        },
+        "powerlaw_1_norm": {
+          "ns_mean": 0.007220147115319051,
+          "npe_mean": 0.00763871215673862,
+          "ns_std": 0.00025713171505632753,
+          "npe_std": 0.0006756770403618074,
+          "mean_diff_in_ns_std": 1.6278234729927343,
+          "std_ratio_npe_over_ns": 2.6277467958932754,
+          "overlap68_iou": 0.3559636253149841,
+          "overlap95_iou": 0.38923682806962423
+        },
+        "blackbodyrad_1_kT": {
+          "ns_mean": 0.8724271162279652,
+          "npe_mean": 1.0695650561004877,
+          "ns_std": 0.42179702699945126,
+          "npe_std": 0.44675882570433545,
+          "mean_diff_in_ns_std": 0.4673763143256554,
+          "std_ratio_npe_over_ns": 1.0591796459127643,
+          "overlap68_iou": 0.7436004410716659,
+          "overlap95_iou": 0.8850382924764058
+        },
+        "blackbodyrad_1_norm": {
+          "ns_mean": 0.08162704031656001,
+          "npe_mean": 0.07565083771198988,
+          "ns_std": 0.1452734659673077,
+          "npe_std": 0.1188125595500233,
+          "mean_diff_in_ns_std": -0.0411376059955437,
+          "std_ratio_npe_over_ns": 0.8178545115510691,
+          "overlap68_iou": 0.8931368826770952,
+          "overlap95_iou": 0.7231006011090432
+        },
+        "gain_g": {
+          "ns_mean": 0.9998331644031315,
+          "npe_mean": 1.0015878935754299,
+          "ns_std": 0.024701647628150265,
+          "npe_std": 0.02869973949056924,
+          "mean_diff_in_ns_std": 0.07103692833423161,
+          "std_ratio_npe_over_ns": 1.1618552706525822,
+          "overlap68_iou": 0.8138492201673665,
+          "overlap95_iou": 0.9470823773400348
+        }
+      },
+      "max_abs_mean_diff_in_ns_std": 1.6278234729927343,
+      "mean_overlap68_iou": 0.5994124995656241,
+      "c2st_accuracy": 0.877
+    },
+    "total_counts": 25067,
+    "npe_g_shrink_committed": 0.9941881834665858
+  },
+  "wall_s": 21.284375400020508
+}
