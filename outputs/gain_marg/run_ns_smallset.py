@@ -72,12 +72,30 @@ def _eval_seed(strength: float) -> int:
     return SEED_EVAL_BASE + int(strength * 10)
 
 
-def select_jobs():
+def select_jobs(indices=None, n_medium=None, n_bright=None):
     """Deterministic (level, strength, idx) job list. Seeded index choice within
-    each level's eval_gainmarg population; medium and bright drawn independently."""
-    rng = np.random.default_rng(SELECT_SEED)
-    med_idx = sorted(rng.choice(N_POP, size=N_MEDIUM, replace=False).tolist())
-    bri_idx = sorted(rng.choice(N_POP, size=N_BRIGHT, replace=False).tolist())
+    each level's eval_gainmarg population; medium and bright drawn independently.
+
+    `n_medium`/`n_bright`, if given, override the default counts N_MEDIUM/N_BRIGHT
+    (e.g. n_medium=0, n_bright=10 to run ten bright-only jobs).
+
+    `indices`, if given, overrides the seeded draw: exactly n_medium + n_bright
+    ints, the first n_medium taken as the medium indices and the remaining
+    n_bright as the bright indices (same order/grouping the default RNG draw
+    produces)."""
+    n_med = N_MEDIUM if n_medium is None else n_medium
+    n_bri = N_BRIGHT if n_bright is None else n_bright
+    if indices is not None:
+        indices = list(indices)
+        assert len(indices) == n_med + n_bri, (
+            f"--indices needs exactly {n_med + n_bri} values "
+            f"({n_med} medium + {n_bri} bright, in that order), got {len(indices)}")
+        med_idx = sorted(indices[:n_med])
+        bri_idx = sorted(indices[n_med:])
+    else:
+        rng = np.random.default_rng(SELECT_SEED)
+        med_idx = sorted(rng.choice(N_POP, size=n_med, replace=False).tolist())
+        bri_idx = sorted(rng.choice(N_POP, size=n_bri, replace=False).tolist())
     jobs = []
     for idx in med_idx:
         jobs.append({"level": "medium", "strength": STRENGTH, "idx": int(idx)})
@@ -184,8 +202,8 @@ def worker_cmd(job):
             "--strength", str(job["strength"]), "--idx", str(job["idx"])]
 
 
-def launch(max_concurrent=3, dry_run=False, poll_s=20):
-    jobs = select_jobs()
+def launch(max_concurrent=3, dry_run=False, poll_s=20, indices=None, n_medium=None, n_bright=None):
+    jobs = select_jobs(indices=indices, n_medium=n_medium, n_bright=n_bright)
     man = write_manifest(jobs)
     pending = [j for j in jobs if _status(j["spectrum_id"]) == "pending"]
     print(f"[driver] {len(jobs)} jobs, {len(pending)} pending, "
@@ -233,8 +251,8 @@ def launch(max_concurrent=3, dry_run=False, poll_s=20):
     return man
 
 
-def merge():
-    jobs = select_jobs()
+def merge(indices=None, n_medium=None, n_bright=None):
+    jobs = select_jobs(indices=indices, n_medium=n_medium, n_bright=n_bright)
     rows, summary = [], {}
     for j in jobs:
         sid = j["spectrum_id"]
@@ -269,6 +287,7 @@ def merge():
 
 
 def main():
+    global OUTDIR
     ap = argparse.ArgumentParser()
     ap.add_argument("--worker", action="store_true")
     ap.add_argument("--level", choices=list(LEVELS))
@@ -278,15 +297,37 @@ def main():
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--merge", action="store_true")
     ap.add_argument("--max-concurrent", type=int, default=3)
+    ap.add_argument("--indices", type=str, default=None,
+                     help="comma-separated ints overriding the seeded index draw "
+                          "in select_jobs(); exactly --n-medium + --n-bright values, "
+                          "in that order. Default: reproduce the seeded draw "
+                          f"(SELECT_SEED={SELECT_SEED}) unchanged.")
+    ap.add_argument("--n-medium", type=int, default=N_MEDIUM,
+                     help="number of medium jobs to select (default: "
+                          f"{N_MEDIUM}, unchanged). Set 0 with --n-bright to run "
+                          "bright-only.")
+    ap.add_argument("--n-bright", type=int, default=N_BRIGHT,
+                     help=f"number of bright jobs to select (default: {N_BRIGHT}, unchanged).")
+    ap.add_argument("--out-dir", type=str, default=None,
+                     help="override the output directory for MANIFEST/results/logs. "
+                          f"Default: {OUTDIR.relative_to(ROOT).as_posix()} (unchanged).")
     args = ap.parse_args()
+
+    if args.out_dir:
+        OUTDIR = Path(args.out_dir)
+
+    indices = None
+    if args.indices:
+        indices = [int(x) for x in args.indices.split(",") if x.strip() != ""]
 
     if args.worker:
         assert args.level is not None and args.idx is not None, "--worker needs --level and --idx"
         worker(args.level, args.strength, args.idx)
     elif args.merge:
-        merge()
+        merge(indices=indices, n_medium=args.n_medium, n_bright=args.n_bright)
     elif args.launch or args.dry_run:
-        launch(max_concurrent=args.max_concurrent, dry_run=args.dry_run)
+        launch(max_concurrent=args.max_concurrent, dry_run=args.dry_run, indices=indices,
+               n_medium=args.n_medium, n_bright=args.n_bright)
     else:
         ap.error("pick one of --worker / --launch / --dry-run / --merge")
 

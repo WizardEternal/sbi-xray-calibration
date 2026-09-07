@@ -131,7 +131,21 @@ def seed_set1_fresh(lev: R.Level, block_idx: int, lname: str):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--level", choices=["faint", "medium", "bright"], required=True)
+    ap.add_argument("--train-run", default=R.TRAIN_RUN,
+                    help="Checkpoint family passed through to run_is_ess_sweep; the flow is "
+                         f"outputs/models/<train-run>_<level>. Default {R.TRAIN_RUN!r} = the "
+                         "committed production flows.")
+    ap.add_argument("--out-dir", default=None,
+                    help="Where canonical_auc_results.json is written AND where "
+                         "is_ess_sweep_results.json is read from for seed set 0 (relative "
+                         "paths resolve against the repo root). Default = outputs/is_reweight, "
+                         "the committed production location. Point this at a directory that "
+                         "already holds the matching run_is_ess_sweep.py output, otherwise "
+                         "seed set 0 would mix flows.")
     args = ap.parse_args()
+    global OUT
+    R.configure(train_run=args.train_run, out_dir=args.out_dir)
+    OUT = R.OUT
     lname = args.level
     block_idx = LEVELS[lname]
 

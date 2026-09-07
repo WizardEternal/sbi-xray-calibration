@@ -352,8 +352,21 @@ def main(argv=None):
     ap.add_argument("--level", default=None, help="restrict to one count level")
     ap.add_argument("--family", default=None, help="restrict to one B-family")
     ap.add_argument("--device", default="cpu")
+    ap.add_argument("--train-run", default=None,
+                    help="override the config's train_run; the flow is "
+                         "outputs/models/<train-run>_<level>. Default = the config value "
+                         "(train_npe_prod for configs/detect.yaml).")
+    ap.add_argument("--out-dir", default=None,
+                    help="override the config's out_dir (relative paths resolve against the "
+                         "repo root). Default = the config value, i.e. outputs/detect. A new "
+                         "directory also means an empty results.jsonl, so no cell is skipped "
+                         "by the crash-resume logic.")
     args = ap.parse_args(argv)
     cfg = load_config(args.config)
+    if args.train_run is not None:
+        cfg["train_run"] = args.train_run
+    if args.out_dir is not None:
+        cfg["out_dir"] = args.out_dir
     run_benchmark(cfg, pilot=args.pilot, only_level=args.level,
                   only_family=args.family, device=args.device)
     return 0

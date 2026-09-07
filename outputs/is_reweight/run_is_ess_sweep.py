@@ -55,6 +55,27 @@ TRAIN_RUN = "train_npe_prod"
 GLOBAL_SEED = 20260611
 
 
+def configure(train_run: str | None = None, out_dir: str | Path | None = None):
+    """Repoint the checkpoint family and/or the output directory.
+
+    Both default to None = leave unchanged, so a no-argument run is exactly the
+    committed production configuration (TRAIN_RUN=train_npe_prod, OUT=outputs/
+    is_reweight). Used to re-run a level against an alternative checkpoint (e.g.
+    the uncapped retrain) without overwriting the committed production outputs.
+    ``Level`` reads TRAIN_RUN at construction time and every writer reads OUT at
+    call time, so setting these before any work is all that is needed. Importers
+    (run_canonical_auc.py) must re-read the globals after calling this.
+    """
+    global TRAIN_RUN, OUT
+    if train_run is not None:
+        TRAIN_RUN = str(train_run)
+    if out_dir is not None:
+        p = Path(out_dir)
+        OUT = p if p.is_absolute() else ROOT / p
+        OUT.mkdir(parents=True, exist_ok=True)
+    return TRAIN_RUN, OUT
+
+
 # ==========================================================================
 # PSIS k-hat  (Vehtari, Simpson, Gelman, Yao, Gabry 2024; Zhang & Stephens 2009 GPD fit)
 # ==========================================================================
@@ -319,7 +340,15 @@ def main():
                      help="Run only this level as its own process (crash-isolation across "
                           "levels); merges into the existing results JSON instead of "
                           "overwriting other levels.")
+    ap.add_argument("--train-run", default=TRAIN_RUN,
+                     help="Checkpoint family; the flow is outputs/models/<train-run>_<level>. "
+                          f"Default {TRAIN_RUN!r} = the committed production flows.")
+    ap.add_argument("--out-dir", default=None,
+                     help="Where to write results JSON + figures (relative paths resolve "
+                          "against the repo root). Default = outputs/is_reweight, the "
+                          "committed production location.")
     args = ap.parse_args()
+    configure(train_run=args.train_run, out_dir=args.out_dir)
 
     N_BUDGET = 6000
     N_CLEAN = 150        # shared negative class per level

@@ -1,0 +1,208 @@
+{
+  "exposure": 353.4,
+  "gain": 1.03,
+  "n": 12,
+  "seed": 20260630,
+  "param_order": [
+    "tbabs_1_nh",
+    "powerlaw_1_alpha",
+    "powerlaw_1_norm",
+    "blackbodyrad_1_kT",
+    "blackbodyrad_1_norm"
+  ],
+  "higson_reuse_ok": true,
+  "rows": [
+    {
+      "i": 0,
+      "counts_clean": 1403,
+      "counts_gain": 1416,
+      "committed_counts_clean": 468,
+      "committed_counts_gain": 468,
+      "committed_wall_s": 2903.9,
+      "n_channels": 102,
+      "theta": [
+        0.23033768085068584,
+        1.3511672991319115,
+        0.0024001862840105103,
+        1.5787970279502979,
+        0.04923835105541169
+      ]
+    },
+    {
+      "i": 1,
+      "counts_clean": 160,
+      "counts_gain": 155,
+      "committed_counts_clean": 505,
+      "committed_counts_gain": 515,
+      "committed_wall_s": 2864.2,
+      "n_channels": 102,
+      "theta": [
+        0.2550642522252031,
+        2.4872657359848844,
+        0.0005630499110532089,
+        0.45079195472704225,
+        0.4894060939918856
+      ]
+    },
+    {
+      "i": 2,
+      "counts_clean": 2162,
+      "counts_gain": 2170,
+      "committed_counts_clean": 3907,
+      "committed_counts_gain": 3890,
+      "committed_wall_s": 2376.0,
+      "n_channels": 102,
+      "theta": [
+        0.15038566990786997,
+        2.1135620106117656,
+        0.0009907852183768176,
+        1.7951224558197127,
+        0.5241175979895123
+      ]
+    },
+    {
+      "i": 3,
+      "counts_clean": 1222,
+      "counts_gain": 1255,
+      "committed_counts_clean": 5210,
+      "committed_counts_gain": 5261,
+      "committed_wall_s": 7119.2,
+      "n_channels": 102,
+      "theta": [
+        0.2938710433872952,
+        1.639956397058753,
+        0.0006052548640802006,
+        2.2647246707637745,
+        0.180044238935058
+      ]
+    },
+    {
+      "i": 4,
+      "counts_clean": 159,
+      "counts_gain": 159,
+      "committed_counts_clean": 777,
+      "committed_counts_gain": 798,
+      "committed_wall_s": 17069.1,
+      "n_channels": 102,
+      "theta": [
+        0.2516469612867756,
+        1.963872392691285,
+        0.00017090250361624174,
+        1.7510373669078532,
+        0.029579598341346696
+      ]
+    },
+    {
+      "i": 5,
+      "counts_clean": 1454,
+      "counts_gain": 1372,
+      "committed_counts_clean": 6187,
+      "committed_counts_gain": 6389,
+      "committed_wall_s": 452.8,
+      "n_channels": 102,
+      "theta": [
+        0.16329507696461368,
+        1.6925128730338594,
+        0.0004691196987314928,
+        2.400603947315143,
+        0.17545387428459
+      ]
+    },
+    {
+      "i": 6,
+      "counts_clean": 526,
+      "counts_gain": 521,
+      "committed_counts_clean": 467,
+      "committed_counts_gain": 453,
+      "committed_wall_s": 3161.4,
+      "n_channels": 102,
+      "theta": [
+        0.16319375580437429,
+        2.7537694587857606,
+        0.0014029007202468744,
+        2.5439255504753198,
+        0.010802436541494865
+      ]
+    },
+    {
+      "i": 7,
+      "counts_clean": 1616,
+      "counts_gain": 1658,
+      "committed_counts_clean": 1581,
+      "committed_counts_gain": 1588,
+      "committed_wall_s": 2051.8,
+      "n_channels": 102,
+      "theta": [
+        0.152148715237819,
+        2.983642220932847,
+        0.0017308441323721964,
+        1.7756400379581878,
+        0.3038437070411662
+      ]
+    },
+    {
+      "i": 8,
+      "counts_clean": 90,
+      "counts_gain": 90,
+      "committed_counts_clean": 368,
+      "committed_counts_gain": 330,
+      "committed_wall_s": 4422.1,
+      "n_channels": 102,
+      "theta": [
+        0.24847295866861635,
+        2.1540982924746337,
+        0.000239237212000084,
+        1.4542452969325765,
+        0.010294625339976153
+      ]
+    },
+    {
+      "i": 9,
+      "counts_clean": 2128,
+      "counts_gain": 2187,
+      "committed_counts_clean": 3035,
+      "committed_counts_gain": 3082,
+      "committed_wall_s": 3718.2,
+      "n_channels": 102,
+      "theta": [
+        0.25892532571600957,
+        1.4741932311594583,
+        0.0023741164029178917,
+        2.915270756469165,
+        0.11439314091532043
+      ]
+    },
+    {
+      "i": 10,
+      "counts_clean": 3659,
+      "counts_gain": 3700,
+      "committed_counts_clean": 1625,
+      "committed_counts_gain": 1613,
+      "committed_wall_s": 3885.7,
+      "n_channels": 102,
+      "theta": [
+        0.28186231470237355,
+        1.2034715665746674,
+        0.006498518965742676,
+        0.8107269801513397,
+        0.010443836097810586
+      ]
+    },
+    {
+      "i": 11,
+      "counts_clean": 1666,
+      "counts_gain": 1669,
+      "committed_counts_clean": 1836,
+      "committed_counts_gain": 1850,
+      "committed_wall_s": 2562.7,
+      "n_channels": 102,
+      "theta": [
+        0.19130297997472806,
+        2.0103610908807292,
+        0.004128029742294958,
+        1.1768346552818942,
+        0.06552246449130833
+      ]
+    }
+  ]
+}

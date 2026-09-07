@@ -235,15 +235,16 @@ def paired_stats(delta):
 # run
 # ----------------------------------------------------------------------------
 def run(n_test=N_TEST, n_samples=N_SAMPLES, max_sampling_time=MAX_SAMPLING_TIME,
-       write_outputs=True):
+       write_outputs=True, save_per_source=False):
     t_start = time.perf_counter()
 
     from sbixcal import priors as _priors
     lo5, hi5 = _priors.prior_bounds(PHYS_PRIORS, PHYS_ORDER)
     lo6, hi6 = _priors.prior_bounds({**PHYS_PRIORS, **GAIN_PRIOR}, GM_ORDER)
 
+    g_shift = GAIN_CASES[1][1]
     print(f"[gen] drawing {n_test} paired thetas (seed={SEED_THETA}), "
-         f"folding at g=1.00/1.03 with CRN Poisson (base seed={SEED_POISSON_BASE})...")
+         f"folding at g=1.00/{g_shift:.4f} with CRN Poisson (base seed={SEED_POISSON_BASE})...")
     t0 = time.perf_counter()
     theta, x_clean, x_gain, lam_clean, lam_gain = make_paired_population(
         n_test, SEED_THETA, SEED_POISSON_BASE)
@@ -258,6 +259,7 @@ def run(n_test=N_TEST, n_samples=N_SAMPLES, max_sampling_time=MAX_SAMPLING_TIME,
                   "exposure_s": EXPOSURE_S, "gain_prior": [GAIN_LO, GAIN_HI],
                   "max_sampling_time": max_sampling_time,
                   "seed_theta": SEED_THETA, "seed_poisson_base": SEED_POISSON_BASE,
+                  "gain_shift": g_shift,
                   "design": "paired (single theta draw, CRN Poisson per pair), "
                             "reject_outside_prior=True + clip-to-box"},
         "cases": {}, "diagnostics": {}, "paired": {},
@@ -394,7 +396,46 @@ def run(n_test=N_TEST, n_samples=N_SAMPLES, max_sampling_time=MAX_SAMPLING_TIME,
         jp.write_text(json.dumps(results, indent=2))
         print(f"[json] {jp}")
 
+        if save_per_source:
+            npz_path = OUT / "paired_gain_bias_medium_per_source.npz"
+            _write_per_source_npz(npz_path, theta, flow_out, n_test)
+            print(f"[npz] {npz_path}")
+
     return results
+
+
+def _write_per_source_npz(npz_path, theta, flow_out, n_test):
+    """Per-source (pre-aggregation) point estimates, beside the aggregated JSON.
+
+    For each (flow, gcase) in flow_out, saves the per-spectrum gamma bias
+    (med - truth) and log10norm bias (log10 med - log10 truth), plus the
+    90%% width and a truth-in-interval coverage indicator for both, so the
+    exact pairing across arms/levels can be checked and re-aggregated with a
+    paired (not naive-independent) standard error. Also saves the full theta
+    draw and the seeds, so two runs can be confirmed to share the same
+    underlying population before their FIXED arms are compared directly.
+    """
+    data = {
+        "idx": np.arange(n_test, dtype=np.int64),
+        "seed_theta": np.array(SEED_THETA, dtype=np.int64),
+        "seed_poisson_base": np.array(SEED_POISSON_BASE, dtype=np.int64),
+        "theta": theta,
+    }
+    for flow_key in ("fixed", "gainmarg"):
+        for gcase, _g in GAIN_CASES:
+            med, lo, hi = flow_out[(flow_key, gcase)]
+            pfx = f"{flow_key}_{gcase}"
+            data[f"{pfx}_gamma_bias"] = med[:, GAMMA_I] - theta[:, GAMMA_I]
+            data[f"{pfx}_log10norm_bias"] = (np.log10(med[:, NORM_I])
+                                             - np.log10(theta[:, NORM_I]))
+            data[f"{pfx}_gamma_width90"] = hi[:, GAMMA_I] - lo[:, GAMMA_I]
+            data[f"{pfx}_gamma_cover90"] = ((theta[:, GAMMA_I] >= lo[:, GAMMA_I])
+                                            & (theta[:, GAMMA_I] <= hi[:, GAMMA_I])).astype(np.int8)
+            data[f"{pfx}_log10norm_width90"] = np.log10(hi[:, NORM_I]) - np.log10(lo[:, NORM_I])
+            data[f"{pfx}_norm_cover90"] = ((theta[:, NORM_I] >= lo[:, NORM_I])
+                                           & (theta[:, NORM_I] <= hi[:, NORM_I])).astype(np.int8)
+            data[f"seed_sample_{pfx}"] = np.array(SEED_SAMPLE[(flow_key, gcase)], dtype=np.int64)
+    np.savez(npz_path, **data)
 
 
 def main():
@@ -404,9 +445,32 @@ def main():
     ap.add_argument("--max-sampling-time", type=float, default=MAX_SAMPLING_TIME)
     ap.add_argument("--no-write", action="store_true",
                     help="skip writing json/png (for quick wiring checks)")
+    ap.add_argument("--gain", type=float, default=1.03,
+                    help="shifted-arm gain factor g for the 'gain' case (the 'clean' case "
+                         "is always g=1.00). Default = 1.03, byte-identical to the "
+                         "pre-existing hardcoded 3%% shift. Use 1.001 / 1.003 for the "
+                         "0.1%% / 0.3%% sub-percent points.")
+    ap.add_argument("--out", default=None,
+                    help="directory for paired_gain_bias_medium.{json,png}; relative paths "
+                         "resolve against the repo root. Default = outputs/gain_marg, the "
+                         "committed production location. Filenames are unchanged. Mirrors "
+                         "the --out flag already added to eval_gainmarg_paired_bright.py.")
+    ap.add_argument("--save-per-source", action="store_true",
+                    help="also write paired_gain_bias_medium_per_source.npz beside --out, "
+                         "with the per-spectrum (pre-aggregation) gamma/log10norm bias, "
+                         "90%% width and coverage indicator for every (case, arm), plus the "
+                         "theta draw and seeds. Default off; with it off, JSON output is "
+                         "byte-identical to before this flag existed.")
     args = ap.parse_args()
+    global GAIN_CASES, OUT
+    GAIN_CASES = [("clean", 1.00), ("gain", args.gain)]
+    if args.out is not None:
+        p = Path(args.out)
+        OUT = p if p.is_absolute() else ROOT / p
+        OUT.mkdir(parents=True, exist_ok=True)
     run(n_test=args.n_test, n_samples=args.n_samples,
-       max_sampling_time=args.max_sampling_time, write_outputs=not args.no_write)
+       max_sampling_time=args.max_sampling_time, write_outputs=not args.no_write,
+       save_per_source=args.save_per_source)
 
 
 if __name__ == "__main__":

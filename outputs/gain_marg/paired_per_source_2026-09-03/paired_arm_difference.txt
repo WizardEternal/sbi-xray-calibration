@@ -1,0 +1,9 @@
+bright_uncapped/gamma/fixed_minus_gainmarg              mean -0.001803  se_paired 0.002637  t -0.68  (naive se 0.005457, corr 0.767)
+bright_uncapped/log10norm/fixed_minus_gainmarg          mean +0.000833  se_paired 0.000596  t +1.40  (naive se 0.001475, corr 0.838)
+bright_production/gamma/fixed_minus_gainmarg            mean -0.001908  se_paired 0.002659  t -0.72  (naive se 0.004848, corr 0.739)
+bright_production/log10norm/fixed_minus_gainmarg        mean +0.003515  se_paired 0.000700  t +5.02  (naive se 0.001462, corr 0.772)
+medium/gamma/fixed_minus_gainmarg                       mean -0.001329  se_paired 0.002979  t -0.45  (naive se 0.008003, corr 0.861)
+medium/log10norm/fixed_minus_gainmarg                   mean +0.001266  se_paired 0.000788  t +1.61  (naive se 0.002795, corr 0.921)
+bright/gamma/fixed_capped_minus_fixed_uncapped          mean -0.000105  se_paired 0.002027  t -0.05  (naive se 0.004708, corr 0.849)
+bright/log10norm/fixed_capped_minus_fixed_uncapped      mean +0.002682  se_paired 0.000495  t +5.42  (naive se 0.001504, corr 0.892)
+combined/log10norm/fixed_minus_gainmarg                 mean +0.000991  se_paired 0.000475  t +2.08

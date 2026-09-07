@@ -1,0 +1,17 @@
+{
+  "tag": "fixed_bright",
+  "level": "bright",
+  "flow": "fixed",
+  "N": 500,
+  "N_samp": 3000,
+  "gain": 1.03,
+  "gamma_bias_mean": 0.023762588858604432,
+  "gamma_bias_se": 0.003665741791681546,
+  "gamma_bias_z": 6.482341149212279,
+  "log10norm_bias_mean": 0.00176175894536276,
+  "log10norm_bias_se": 0.0009138120645184021,
+  "log10norm_bias_z": 1.9279226153478763,
+  "sigma_gamma_clean_mean": 0.21490200913459204,
+  "sigma_gamma_gain_mean": 0.22045846046192777,
+  "gamma_bias_in_sigma": 0.11057406561388658
+}

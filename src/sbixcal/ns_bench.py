@@ -21,8 +21,11 @@ sampled θ to machine precision (the exact-reuse check).
 
 In-memory, Windows-safe
 -----------------------
-``log_dir=None`` keeps the whole run in memory, no HDF5 point-store, so the
-UltraNest/h5py Windows file-locking quirk cannot bite.
+``run_ns_one(log_dir=None)`` (the default, and what every committed run used)
+keeps the whole run in memory, no HDF5 point-store, so the UltraNest/h5py
+Windows file-locking quirk cannot bite. Passing an *isolated* per-run
+``log_dir`` turns the point store back on, which is what the Higson (2018)
+thread bootstrap needs; concurrent runs must never share a directory.
 
 Append-resumable JSONL
 ----------------------
@@ -126,13 +129,29 @@ def run_ns_one(
     dlogz: float = 0.5,
     seed: int = 0,
     show_status: bool = False,
+    log_dir: str | Path | None = None,
+    resume: str = "overwrite",
+    run_num: int | None = None,
 ) -> NSResult:
     """Run UltraNest on one observed spectrum's exact Poisson posterior.
 
-    In-memory (``log_dir=None``), vectorized likelihood. Returns an
-    :class:`NSResult` with per-parameter quantiles, logZ (+ error), n_like_evals,
-    ESS, and wall-clock. ``min_num_live_points`` / ``max_ncalls`` / ``dlogz`` let
-    tests run a cheap, reduced-live-point version.
+    Vectorized likelihood. Returns an :class:`NSResult` with per-parameter
+    quantiles, logZ (+ error), n_like_evals, ESS, and wall-clock.
+    ``min_num_live_points`` / ``max_ncalls`` / ``dlogz`` let tests run a cheap,
+    reduced-live-point version.
+
+    Point store (``log_dir``)
+    ------------------------
+    Default ``log_dir=None`` keeps the whole run in memory with no HDF5 point
+    store, which is the historical behaviour every committed run used and the
+    reason the Windows h5py file-locking quirk never bit. Pass an *isolated*
+    per-run directory to make UltraNest write ``chains/run.txt`` and
+    ``results/points.hdf5``, which is what the Higson (2018) thread bootstrap
+    needs (``scripts/higson_common.reconstruct_tree``). Never point two
+    concurrent runs at the same directory. ``resume`` and ``run_num`` are
+    forwarded to ``ReactiveNestedSampler`` only when ``log_dir`` is set; the
+    default ``resume="overwrite"`` matches ``scripts/higson_batch.py``, so a
+    re-run starts clean instead of silently continuing a partial store.
     """
     from ultranest import ReactiveNestedSampler
 
@@ -140,9 +159,16 @@ def run_ns_one(
     loglike = make_poisson_loglike(counts, model_counts_fn)
     transform = make_box_transform(prior_cfg, param_names)
 
+    kw = {}
+    if log_dir is not None:
+        Path(log_dir).mkdir(parents=True, exist_ok=True)
+        kw["log_dir"] = str(log_dir)
+        kw["resume"] = resume
+        if run_num is not None:
+            kw["run_num"] = int(run_num)
     sampler = ReactiveNestedSampler(
         list(param_names), loglike, transform,
-        log_dir=None, vectorized=True,
+        vectorized=True, **kw,
     )
     t0 = time.perf_counter()
     res = sampler.run(

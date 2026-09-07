@@ -69,10 +69,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--level", required=True, choices=["medium","bright"])
     ap.add_argument("--flow", required=True, choices=["fixed","gainmarg"])
+    ap.add_argument("--fixed-dir", default=None,
+                    help="override the --flow fixed checkpoint dir (relative paths resolve "
+                         "against the repo root). Default = outputs/models/train_npe_prod_<level>, "
+                         "the committed production flow. Ignored when --flow gainmarg.")
+    ap.add_argument("--out", default=None,
+                    help="directory for cases_<tag>.npz and result_<tag>.json (relative paths "
+                         "resolve against the repo root). Default = outputs/gain_marg/seed_runs, "
+                         "the committed production location. Filenames are unchanged.")
     args = ap.parse_args()
     level, flow = args.level, args.flow
+    out_dir = OUT
+    if args.out is not None:
+        out_dir = args.out if os.path.isabs(args.out) else os.path.join(REPO, args.out)
+        os.makedirs(out_dir, exist_ok=True)
     tag = f"{flow}_{level}"
-    ckpt = os.path.join(OUT, f"cases_{tag}.npz")
+    ckpt = os.path.join(out_dir, f"cases_{tag}.npz")
 
     # --- responses ---
     base = R.load_base_obsconf("NGC7793_ULX4_PN")
@@ -100,7 +112,10 @@ def main():
                       "bright":"outputs/models/train_npe_prod_bright"},
             "gainmarg":{"medium":"outputs/gain_marg/model_medium",
                          "bright":"outputs/gain_marg/model_bright"}}[flow][level]
-    post, info = TN.load_posterior(os.path.join(REPO, mdir))
+    mpath = os.path.join(REPO, mdir)
+    if flow == "fixed" and args.fixed_dir is not None:
+        mpath = args.fixed_dir if os.path.isabs(args.fixed_dir) else os.path.join(REPO, args.fixed_dir)
+    post, info = TN.load_posterior(mpath)
     n_params = len(info["param_names"])
     lo, hi = prior_bounds(n_params)
 
@@ -167,7 +182,7 @@ def main():
             "g_marg_width_over_prior": float(np.mean(gm_width)/prior_w),
             "g_marg_frac_exclude_g1": float(np.mean(excl)),
         })
-    with open(os.path.join(OUT, f"result_{tag}.json"), "w") as f:
+    with open(os.path.join(out_dir, f"result_{tag}.json"), "w") as f:
         json.dump(res, f, indent=2)
     print("RESULT", json.dumps(res, indent=2), flush=True)
 
