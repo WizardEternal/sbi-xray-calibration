@@ -1,0 +1,23 @@
+[19:18:43] B1_medium linear shift |dc|/priorwidth: median max 1.928, per-param medians [0.913 0.655 0.077 0.686 0.643]
+[19:19:23] B1_medium R_lin median 289.8 -> R_nonlin median 311.5 (x1.04), I_nl median 0.112965, at-bound 0.71 (39s)
+[19:19:23] B2_medium linear shift |dc|/priorwidth: median max 3.379, per-param medians [3.159 0.466 0.19  0.07  0.099]
+[19:20:04] B2_medium R_lin median 0.6132 -> R_nonlin median 31.53 (x51.6), I_nl median 0.723217, at-bound 1.00 (41s)
+[19:20:04] B3_medium linear shift |dc|/priorwidth: median max 0.217, per-param medians [0.142 0.126 0.096 0.026 0.04 ]
+[19:20:42] B3_medium R_lin median 0.005068 -> R_nonlin median 0.05514 (x8.11), I_nl median 0.999547, at-bound 0.60 (38s)
+[19:20:42] B4_medium linear shift |dc|/priorwidth: median max 0.051, per-param medians [0.049 0.009 0.003 0.022 0.02 ]
+[19:21:20] B4_medium R_lin median 0.005899 -> R_nonlin median 0.006747 (x1.01), I_nl median 0.971545, at-bound 0.14 (38s)
+[19:21:20] B1_medium top-6 channels for R: E=[6.36 6.54 7.58 7.21 6.96 6.75] keV, fracR=[0.703 0.159 0.035 0.024 0.016 0.013], median mu0=[7.31 7.28 9.16 7.64 5.85 7.74]
+[19:21:20] B4_medium top-6 channels for R: E=[0.54 0.61 0.85 0.75 0.89 0.65] keV, fracR=[0.394 0.166 0.123 0.071 0.05  0.039], median mu0=[4.77 5.66 8.56 7.63 8.7  6.48]
+[19:21:22] B1_bright linear shift |dc|/priorwidth: median max 1.928, per-param medians [0.913 0.655 0.077 0.686 0.643]
+[19:22:02] B1_bright R_lin median 2898 -> R_nonlin median 3115 (x1.04), I_nl median 0.112965, at-bound 0.71 (40s)
+[19:22:02] B2_bright linear shift |dc|/priorwidth: median max 3.379, per-param medians [3.159 0.466 0.19  0.07  0.099]
+[19:22:41] B2_bright R_lin median 6.132 -> R_nonlin median 315.3 (x51.6), I_nl median 0.723217, at-bound 1.00 (39s)
+[19:22:41] B3_bright linear shift |dc|/priorwidth: median max 0.217, per-param medians [0.142 0.126 0.096 0.026 0.04 ]
+[19:23:19] B3_bright R_lin median 0.05068 -> R_nonlin median 0.5514 (x8.11), I_nl median 0.999547, at-bound 0.60 (38s)
+[19:23:19] B4_bright linear shift |dc|/priorwidth: median max 0.051, per-param medians [0.049 0.009 0.003 0.022 0.02 ]
+[19:23:58] B4_bright R_lin median 0.05899 -> R_nonlin median 0.06747 (x1.01), I_nl median 0.971545, at-bound 0.14 (39s)
+[19:23:58] B1_bright top-6 channels for R: E=[6.36 6.54 7.58 7.21 6.96 6.75] keV, fracR=[0.703 0.159 0.035 0.024 0.016 0.013], median mu0=[73.13 72.78 91.61 76.41 58.54 77.42]
+[19:23:58] B4_bright top-6 channels for R: E=[0.54 0.61 0.85 0.75 0.89 0.65] keV, fracR=[0.394 0.166 0.123 0.071 0.05  0.039], median mu0=[47.65 56.6  85.64 76.35 86.98 64.85]
+[19:23:58] sigma_eff bright: {'median': 0.12351822495848118, 'p16': 0.051568099373548636, 'p84': 0.20922839012527503, 'min': 0.02990240543701774, 'max': 0.3521493371719186}; n<0.06 = 44/200; median rescaled to 54509 counts = 0.0497
+[19:23:58] B3 vs B4 medium: frac(R_B4>R_B3)=0.610, median ratio 1.476
+[19:23:58] B3 vs B4 bright: frac(R_B4>R_B3)=0.610, median ratio 1.476

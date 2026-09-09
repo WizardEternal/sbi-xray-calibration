@@ -1,0 +1,30 @@
+[19:15:48] exposures: {'faint': 35.3, 'medium': 353.4, 'bright': 3534.0}
+[19:15:48] strengths (last grid entry): {'B1': 0.0003, 'B2': 0.3, 'B3': 1.5, 'B4': 3.0}
+[19:15:48] fixed: {'B1': {'line_energy_kev': 6.4, 'line_sigma_kev': 0.05}, 'B2': {}, 'B3': {'use_diskbb': False}, 'B4': {}}
+[19:15:54] channels: 102, band 0.5215-7.7950 keV
+[19:15:54] theta (200, 5) seed 20260611; medians [2.52747763e-01 2.02481109e+00 8.22691947e-04 1.78692520e+00
+ 1.00628437e-01]
+[19:15:56] medium: mu0 total counts median 882.3 [252, 2672]; min per-channel mu0 3.761e-02; channels<0.1 ct median 0; J in 1.5s
+[19:15:56] B1_medium: median R=289.8  median I=0.148419  median ||bw||^2=340.5  fracI>0.99=0.000  (0.4s)
+[19:15:56] B2_medium: median R=0.6132  median I=0.993818  median ||bw||^2=114.5  fracI>0.99=0.670  (0.3s)
+[19:15:56] B3_medium: median R=0.005068  median I=0.999931  median ||bw||^2=76.62  fracI>0.99=1.000  (0.3s)
+[19:15:57] B4_medium: median R=0.005899  median I=0.973177  median ||bw||^2=0.4554  fracI>0.99=0.250  (0.3s)
+[19:15:58] bright: mu0 total counts median 8822.7 [2523, 26723]; min per-channel mu0 3.761e-01; channels<0.1 ct median 0; J in 1.3s
+[19:15:58] B1_bright: median R=2898  median I=0.148419  median ||bw||^2=3405  fracI>0.99=0.000  (0.3s)
+[19:15:59] B2_bright: median R=6.132  median I=0.993818  median ||bw||^2=1145  fracI>0.99=0.670  (0.2s)
+[19:15:59] B3_bright: median R=0.05068  median I=0.999931  median ||bw||^2=766.2  fracI>0.99=1.000  (0.3s)
+[19:15:59] B4_bright: median R=0.05899  median I=0.973177  median ||bw||^2=4.554  fracI>0.99=0.250  (0.2s)
+[19:15:59] CHECK a: sigma_eff B4 medium: median 0.3906 [0.1631, 0.6616] (prior sd 0.0289)
+[19:15:59] CHECK a: sigma_eff B4 bright: median 0.1235 [0.0516, 0.2092] (prior sd 0.0289)
+[19:15:59] CHECK b: in-span null medium: max R/||bw||^2 = 2.400e-30, min I = 1.000000000
+[19:15:59] CHECK b: in-span null bright: max R/||bw||^2 = 2.219e-30, min I = 1.000000000
+[19:15:59] CHECK c: spike channel 96, e_mid 6.3575 keV
+[19:15:59] CHECK c: spike medium: median I = 0.062214 [0.0607, 0.0649], median R = 0.01714
+[19:15:59] CHECK c: spike bright: median I = 0.062214 [0.0607, 0.0649], median R = 0.1714
+[19:16:00] CHECK extra: reparam invariance (B4 bright, 40 draws): max |dR|/R = 1.220e-10
+[19:16:02] CHECK extra: step rel=0.0001 -> B1:R=2313 B2:R=3.344 B3:R=0.02778 B4:R=0.03763
+[19:16:03] CHECK extra: step rel=0.001 -> B1:R=2313 B2:R=3.344 B3:R=0.02778 B4:R=0.03763
+[19:16:04] CHECK extra: step rel=0.003 -> B1:R=2313 B2:R=3.344 B3:R=0.02777 B4:R=0.03763
+[19:16:06] CHECK extra: medium drop mu0<0.1ct (76/102 kept) -> B1:R=6.009e-05,I=0.6838 B2:R=0.3951,I=0.9961 B3:R=0.0006456,I=1.0000 B4:R=0.005739,I=0.9692
+[19:16:07] CHECK extra: bright drop mu0<0.1ct (102/102 kept) -> B1:R=2898,I=0.1484 B2:R=6.132,I=0.9938 B3:R=0.05068,I=0.9999 B4:R=0.05899,I=0.9732
+[19:16:07] wrote results.json; total runtime 19.3s

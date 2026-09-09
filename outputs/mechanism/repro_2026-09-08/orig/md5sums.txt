@@ -1,0 +1,2 @@
+1c419585498959738830d0e3c2476aaf *residual_power_results.json
+ff5ccfdbe91df1125beb920c2b569fd3 *mechanism_index_results.json

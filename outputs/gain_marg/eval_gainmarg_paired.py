@@ -155,9 +155,12 @@ def make_paired_population(n_test, theta_seed, poisson_seed_base):
             rng_p = np.random.default_rng(seed_i)  # SAME seed for both g -> CRN
             x[g][i] = rng_p.poisson(np.clip(lam[g][i], 0.0, None))
 
+    g_shift = GAIN_CASES[1][1]  # bugfix 2026-09-08: was hardcoded x[1.03]/lam[1.03],
+    # which KeyErrors for any --gain != 1.03 (never exercised before this session's
+    # sub-percent probe; GAIN_CASES[0] is always ("clean", 1.00) so that key is fine)
     return (theta,
-            x[1.00].astype(np.float32), x[1.03].astype(np.float32),
-            lam[1.00], lam[1.03])
+            x[1.00].astype(np.float32), x[g_shift].astype(np.float32),
+            lam[1.00], lam[g_shift])
 
 
 # ----------------------------------------------------------------------------
@@ -258,6 +261,7 @@ def run(n_test=N_TEST, n_samples=N_SAMPLES, max_sampling_time=MAX_SAMPLING_TIME,
         "config": {"n_test": n_test, "n_samples": n_samples, "cred": CRED,
                   "exposure_s": EXPOSURE_S, "gain_prior": [GAIN_LO, GAIN_HI],
                   "max_sampling_time": max_sampling_time,
+                  "seed": SEED,
                   "seed_theta": SEED_THETA, "seed_poisson_base": SEED_POISSON_BASE,
                   "gain_shift": g_shift,
                   "design": "paired (single theta draw, CRN Poisson per pair), "
@@ -439,6 +443,7 @@ def _write_per_source_npz(npz_path, theta, flow_out, n_test):
 
 
 def main():
+    global GAIN_CASES, OUT, SEED, SEED_THETA, SEED_POISSON_BASE, SEED_SAMPLE
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-test", type=int, default=N_TEST)
     ap.add_argument("--n-samples", type=int, default=N_SAMPLES)
@@ -450,6 +455,12 @@ def main():
                          "is always g=1.00). Default = 1.03, byte-identical to the "
                          "pre-existing hardcoded 3%% shift. Use 1.001 / 1.003 for the "
                          "0.1%% / 0.3%% sub-percent points.")
+    ap.add_argument("--seed", type=int, default=SEED,
+                    help="base RNG seed. SEED_THETA (+60000), SEED_POISSON_BASE "
+                         "(+70000) and the four SEED_SAMPLE offsets (+100100..+100400) "
+                         "are all derived from this value exactly as they were derived "
+                         "from the hardcoded 20260611 constant before this flag existed. "
+                         "Default = 20260611, byte-identical to today's behaviour.")
     ap.add_argument("--out", default=None,
                     help="directory for paired_gain_bias_medium.{json,png}; relative paths "
                          "resolve against the repo root. Default = outputs/gain_marg, the "
@@ -462,7 +473,15 @@ def main():
                          "theta draw and seeds. Default off; with it off, JSON output is "
                          "byte-identical to before this flag existed.")
     args = ap.parse_args()
-    global GAIN_CASES, OUT
+    SEED = args.seed
+    SEED_THETA = SEED + 60000            # single draw of the N_TEST paired thetas
+    SEED_POISSON_BASE = SEED + 70000     # per-spectrum CRN base; seed_i = BASE + i, reused for both g
+    SEED_SAMPLE = {
+        ("fixed", "clean"):    SEED + 100100,
+        ("fixed", "gain"):     SEED + 100200,
+        ("gainmarg", "clean"): SEED + 100300,
+        ("gainmarg", "gain"):  SEED + 100400,
+    }
     GAIN_CASES = [("clean", 1.00), ("gain", args.gain)]
     if args.out is not None:
         p = Path(args.out)
