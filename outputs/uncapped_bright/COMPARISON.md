@@ -14,11 +14,10 @@ Sources:
   `outputs/uncapped_bright/detect/{results.jsonl,consequence.jsonl}`,
   `outputs/uncapped_bright/gain_marg/paired_gain_bias_bright.json`,
   `outputs/uncapped_bright/gain_marg/seed_runs/result_fixed_bright.json`.
-- Paper: `paper-sbi-xray-article/arxiv_successor/main.tex` (Table `tab:auc` ~L80-100 bright row;
-  Section 5 `sec:isess` ~L264-296, Table `tab:e1auc`; Table `tab:matrix` ~L303-315; Section 7.1
-  `sec:fixbias` ~L330).
+- Paper: Table `tab:auc` bright row; Section 5 `sec:isess`, Table `tab:e1auc`;
+  Table `tab:matrix`; Section 7.1 `sec:fixbias`.
 
-## Table 1 — ESS / k-hat AUCs at bright (canonical, both seed sets)
+## Table 1. ESS / k-hat AUCs at bright (canonical, both seed sets)
 
 | family | statistic | paper-quoted | production | uncapped | Δ (unc−prod) | flag |
 |---|---|---|---|---|---|---|
@@ -27,7 +26,7 @@ Sources:
 | B1 | k-hat AUC (seed0) | 0.809 | 0.8094949 | 0.9553052 | +0.1458 | **FLAG** |
 | B4 | ESS AUC seed0 | 0.543 [0.471,0.615] | 0.5426667 | 0.5611333 | +0.0185 | perm p=0.112 |
 | B4 | ESS AUC seed1 | 0.496 | 0.4960000 | 0.5194667 | +0.0235 | perm p=0.606 |
-| B4 | k-hat AUC (seed0) | 0.540 | 0.5404667 | 0.5476000 | +0.0071 | — |
+| B4 | k-hat AUC (seed0) | 0.540 | 0.5404667 | 0.5476000 | +0.0071 | none |
 
 Note: the paper's quoted B1/B4 ESS AUCs (0.820/0.796, 0.543/0.496) match **production**
 exactly to 3 d.p., confirming production is what the paper currently cites. The
@@ -35,15 +34,15 @@ canonical_auc_results.json bright block is B1/B4 only in both runs (no B2/B3 can
 cell exists in either directory). Clean-population reference values also shift:
 clean ESS-frac median 0.00951 (prod) → 0.12282 (uncapped, +0.113); clean k-hat median
 0.800 (prod) → 0.358 (uncapped, −0.442); clean-control k-hat-frac>0.7 = 0.5 (prod, 6/12
-spectra) → 0.0 (uncapped, 0/12) — the uncapped flow's clean bright posteriors no longer
+spectra) → 0.0 (uncapped, 0/12). The uncapped flow's clean bright posteriors no longer
 fail the PSIS reliability threshold that the production (capped) flow fails on half its
-clean control spectra. Clean median ESS fraction: production 0.0095 vs uncapped 0.123.
+clean control spectra. Clean median ESS fraction: production 0.0095 against uncapped 0.123.
 
-**Verdict:** B1 ESS AUC rises by +0.11 on the uncapped flow; B4 stays null-consistent.
+B1 ESS AUC rises by +0.11 on the uncapped flow. B4 stays null-consistent.
 
-Corrected 2026-09-02 by supervisor after reading both canonical_auc_results.json files directly.
+Corrected 2026-09-02 after reading both canonical_auc_results.json files directly.
 
-## Table 2 — Detection AUCs at bright, per (family, strength, detector)
+## Table 2. Detection AUCs at bright, per (family, strength, detector)
 
 48/48 cells present in both runs (4 families × 4 strengths × D1/D2/D3). Full row-by-row
 diff computed; only cells with |Δ|>0.05 listed, all in D1:
@@ -90,11 +89,11 @@ increase (uncapped never moves D1 down by >0.05); no D2 or D3 cell moves by >0.0
 | 8e-5 | +0.00217 (0.4143) | +0.04747 (0.3323) | +0.0453 |
 | 3e-4 | +0.20101 (0.5328) | +0.22552 (0.4804) | +0.0245 |
 
-No mean-Δ flags (>0.05). Note bias_std shrinks at every strength in the uncapped run
-(tighter posteriors), consistent with the flow now being trained to convergence rather
-than capped.
+No mean-Δ flags (>0.05). bias_std shrinks at every strength in the uncapped run
+(tighter posteriors), consistent with the flow now being trained to convergence instead
+of capped.
 
-## Table 3 — Paired gain bias at bright (fixed flow: prod=capped / uncapped=converged; gain-marg flow unchanged, `model_bright`)
+## Table 3. Paired gain bias at bright (fixed flow: prod=capped / uncapped=converged; gain-marg flow unchanged, `model_bright`)
 
 | quantity | production fixed | uncapped fixed | gain-marg (unchanged) | paper-quoted |
 |---|---|---|---|---|
@@ -103,16 +102,16 @@ than capped.
 
 **PL-norm "halving" check:** production fixed/gain-marg ratio = 0.0063/0.0031 ≈ 2.0×
 (the paper's "halves"). Uncapped-fixed vs the same (unchanged) gain-marg value:
-0.0039/0.0031 ≈ 1.25×. The gap shrinks from Δ=0.0032 (production) to Δ=0.0008 (uncapped) —
-does **not** survive at the same magnitude when the fixed flow is the converged one;
-most of the apparent norm-bias reduction tracks flow training state, not marginalization.
+0.0039/0.0031 ≈ 1.25×. The gap shrinks from Δ=0.0032 (production) to Δ=0.0008 (uncapped),
+so it does **not** survive at the same magnitude when the fixed flow is the converged one,
+and most of the apparent norm-bias reduction tracks flow training state, not marginalization.
 
-**Γ bias "~+0.018" check:** production fixed +0.0182, uncapped fixed +0.0179 — both
+**Γ bias "~+0.018" check:** production fixed +0.0182, uncapped fixed +0.0179, both
 consistent with the paper's "~+0.018" and with each other (Δ=0.0003, well inside se).
 Gain-marg Γ bias also stays close (+0.0195 prod / +0.0197 unc). Marginalization does not
 move Γ bias in either flow-training state.
 
-## Table 4 — Seed run: gamma_bias_mean, fixed flow, bright, gain=1.03
+## Table 4. Seed run: gamma_bias_mean, fixed flow, bright, gain=1.03
 
 | | production (seed_20260724) | uncapped (result_fixed_bright) | Δ |
 |---|---|---|---|
@@ -121,9 +120,9 @@ move Γ bias in either flow-training state.
 
 Γ bias matches within ~0.7 se (not flagged). log10norm bias drops by more than either se
 individually but the two CIs still overlap; z drops from 4.78σ (significant) to 1.93σ
-(marginal) — direction consistent with the Table 3 norm-bias finding above.
+(marginal), a direction consistent with the Table 3 norm-bias finding above.
 
-## Table 5 — Uncapped flow's clean-data (unshifted) Γ bias, `paired_gain_bias_bright.json` → `cases.clean.fixed.gamma`
+## Table 5. Uncapped flow's clean-data (unshifted) Γ bias, `paired_gain_bias_bright.json` → `cases.clean.fixed.gamma`
 
 | | production (capped fixed flow) | uncapped (converged fixed flow) | gain-marg (unchanged, both runs) | Δ (unc−prod, fixed) |
 |---|---|---|---|---|

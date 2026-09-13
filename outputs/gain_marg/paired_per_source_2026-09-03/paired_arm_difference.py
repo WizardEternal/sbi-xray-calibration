@@ -1,4 +1,4 @@
-"""Paired standard error of the arm difference on the paper's statistic (supervisor own-check, 2026-09-03).
+"""Paired standard error of the arm difference on the paper's statistic (2026-09-03).
 
 Statistic per spectrum i and arm a in {fixed, gainmarg}: delta_a,i = bias_a(gain case)_i - bias_a(clean case)_i
 (the induced shift). Arm difference D_i = delta_fixed,i - delta_gainmarg,i over the same 500 CRN spectra.

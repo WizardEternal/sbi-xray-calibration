@@ -238,7 +238,7 @@
     {
       "pair_i": 0,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair0_clean",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair0_clean",
       "higson_sigma": 0.13697722536169873,
       "higson_logZ_reconstructed": -288.2748577099084,
       "n_threads": 400,
@@ -259,7 +259,7 @@
     {
       "pair_i": 0,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair0_gain",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair0_gain",
       "higson_sigma": 0.1348681593287306,
       "higson_logZ_reconstructed": -282.48626650578785,
       "n_threads": 400,
@@ -280,7 +280,7 @@
     {
       "pair_i": 1,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair1_clean",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair1_clean",
       "higson_sigma": 0.13999068631196404,
       "higson_logZ_reconstructed": -132.64779030848928,
       "n_threads": 400,
@@ -301,7 +301,7 @@
     {
       "pair_i": 1,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair1_gain",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair1_gain",
       "higson_sigma": 0.14734924309427067,
       "higson_logZ_reconstructed": -128.29994660895946,
       "n_threads": 400,
@@ -322,7 +322,7 @@
     {
       "pair_i": 2,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair2_clean",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair2_clean",
       "higson_sigma": 0.15791928752754456,
       "higson_logZ_reconstructed": -316.93287198204257,
       "n_threads": 400,
@@ -343,7 +343,7 @@
     {
       "pair_i": 2,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair2_gain",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair2_gain",
       "higson_sigma": 0.1542809027180152,
       "higson_logZ_reconstructed": -322.803106632298,
       "n_threads": 400,
@@ -364,7 +364,7 @@
     {
       "pair_i": 3,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair3_clean",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair3_clean",
       "higson_sigma": 0.15200952554648392,
       "higson_logZ_reconstructed": -273.54907637288255,
       "n_threads": 400,
@@ -385,7 +385,7 @@
     {
       "pair_i": 3,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair3_gain",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair3_gain",
       "higson_sigma": 0.14600582474787901,
       "higson_logZ_reconstructed": -273.4091080488151,
       "n_threads": 400,
@@ -406,7 +406,7 @@
     {
       "pair_i": 4,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair4_clean",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair4_clean",
       "higson_sigma": 0.14632959475536497,
       "higson_logZ_reconstructed": -165.7176674376678,
       "n_threads": 400,
@@ -427,7 +427,7 @@
     {
       "pair_i": 4,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair4_gain",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair4_gain",
       "higson_sigma": 0.14632959475536497,
       "higson_logZ_reconstructed": -165.7176674376678,
       "n_threads": 400,
@@ -448,7 +448,7 @@
     {
       "pair_i": 5,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair5_clean",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair5_clean",
       "higson_sigma": 0.1573699552505259,
       "higson_logZ_reconstructed": -279.53460994475904,
       "n_threads": 400,
@@ -469,7 +469,7 @@
     {
       "pair_i": 5,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair5_gain",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair5_gain",
       "higson_sigma": 0.16122954516252497,
       "higson_logZ_reconstructed": -280.31703823958986,
       "n_threads": 400,
@@ -490,7 +490,7 @@
     {
       "pair_i": 6,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair6_clean",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair6_clean",
       "higson_sigma": 0.16530828381532192,
       "higson_logZ_reconstructed": -211.37570514484224,
       "n_threads": 400,
@@ -511,7 +511,7 @@
     {
       "pair_i": 6,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair6_gain",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair6_gain",
       "higson_sigma": 0.1716968616091806,
       "higson_logZ_reconstructed": -212.6162603313159,
       "n_threads": 400,
@@ -532,7 +532,7 @@
     {
       "pair_i": 7,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair7_clean",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair7_clean",
       "higson_sigma": 0.16954411084719784,
       "higson_logZ_reconstructed": -281.5026252960764,
       "n_threads": 400,
@@ -553,7 +553,7 @@
     {
       "pair_i": 7,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair7_gain",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair7_gain",
       "higson_sigma": 0.17471319015544642,
       "higson_logZ_reconstructed": -284.9529711451285,
       "n_threads": 400,
@@ -574,7 +574,7 @@
     {
       "pair_i": 8,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair8_clean",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair8_clean",
       "higson_sigma": 0.14064960020695105,
       "higson_logZ_reconstructed": -121.40671109659148,
       "n_threads": 400,
@@ -595,7 +595,7 @@
     {
       "pair_i": 8,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair8_gain",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair8_gain",
       "higson_sigma": 0.14364000155773157,
       "higson_logZ_reconstructed": -121.81340528596277,
       "n_threads": 400,
@@ -616,7 +616,7 @@
     {
       "pair_i": 9,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair9_clean",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair9_clean",
       "higson_sigma": 0.1659301166739425,
       "higson_logZ_reconstructed": -309.5096649356366,
       "n_threads": 400,
@@ -637,7 +637,7 @@
     {
       "pair_i": 9,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair9_gain",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair9_gain",
       "higson_sigma": 0.13895469532799318,
       "higson_logZ_reconstructed": -311.0378948853406,
       "n_threads": 400,
@@ -658,7 +658,7 @@
     {
       "pair_i": 10,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair10_clean",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair10_clean",
       "higson_sigma": 0.13347087080348205,
       "higson_logZ_reconstructed": -326.68111769921984,
       "n_threads": 400,
@@ -679,7 +679,7 @@
     {
       "pair_i": 10,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/higson/runs/gain_pair10_gain",
+      "run_dir": "./outputs/ns_bench/higson/runs/gain_pair10_gain",
       "higson_sigma": 0.1426776282431027,
       "higson_logZ_reconstructed": -326.22542463508114,
       "n_threads": 400,
@@ -700,7 +700,7 @@
     {
       "pair_i": 11,
       "kind": "clean",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair11_clean",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair11_clean",
       "higson_sigma": 0.14031677447234642,
       "higson_logZ_reconstructed": -278.81798266164503,
       "n_threads": 400,
@@ -721,7 +721,7 @@
     {
       "pair_i": 11,
       "kind": "gain",
-      "run_dir": "C:/Users/Karan/Documents/Python stuff/IMPRS Repos/sbi-xray-calibration/outputs/ns_bench/revision_2026-09-02/medium/runs/pair11_gain",
+      "run_dir": "./outputs/ns_bench/revision_2026-09-02/medium/runs/pair11_gain",
       "higson_sigma": 0.14908783089264613,
       "higson_logZ_reconstructed": -274.7967851377814,
       "n_threads": 400,

@@ -1,16 +1,15 @@
 # PT2 pair-4 check and reused-pair per-channel checkability (2026-09-05)
 
-Read-only pass. No paper file edited, no NS run, no git commit. Repo branch
-`_release`, interpreter `.venv/Scripts/python.exe`, run from repo root with
+Run from the repo root with `.venv/Scripts/python.exe` and
 `OMP_NUM_THREADS=MKL_NUM_THREADS=OPENBLAS_NUM_THREADS=1`.
 
-Helper script (committed alongside this report, not run as part of any
+Helper script (committed alongside this note, not run as part of any
 pipeline): `outputs/ns_bench/revision_2026-09-02/pair4_check.py`. It imports
 `sbixcal.responses`, `sbixcal.simulate`, `sbixcal.models`, `sbixcal.priors`
 directly and reproduces, verbatim, the constants and the draw block of
 `scripts/paired_ns_gain_check.py` (`BASE_MODEL`, `RESP`, `EXPOSURE=353.4`,
 `GAIN=1.03`, `N=12`, `THETA_SEED=20260630`, `POISSON_SEED_BASE=1000`,
-`PRIOR_CFG`), i.e. the same seed convention the campaign used: theta block
+`PRIOR_CFG`), i.e. the same seed convention the run set used: theta block
 drawn once from `np.random.default_rng(20260630)` via `P.sample_prior`, then
 per pair `i` the clean and gain lambdas are folded through
 `R.scale_exposure(base, 353.4)` and `R.gain_shift_obsconf(clean_oc, 1.03)`,
@@ -61,11 +60,11 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
 
 **1. Draw comparison.** Pair 4: 159/159 total counts, matches the recorded
 `counts_clean`/`counts_gain`. 102 channels, **0 of 102 differ**, max
-|difference| = 0, summed |difference| = 0 — the two 102-length count vectors
+|difference| = 0, summed |difference| = 0, so the two 102-length count vectors
 are bit-identical. Pair 0 (control): 1403/1416 total counts, matches the
 recorded values and the runbook's stated gate value; 68 of 102 channels
 differ, max |difference| = 15 counts in one channel, summed |difference| =
-225 counts — the draw path clearly does distinguish clean from gain when
+225 counts. The draw path clearly does distinguish clean from gain when
 counts are high enough, so the identity at pair 4 is not an artifact of a
 broken gain application.
 
@@ -83,12 +82,12 @@ independently for each vector, not literally the same draw call, but at these
 tiny rates the quantile function is so flat between successive integers that
 a fixed seed reproduces the same integer both times). Compare pair 0: peak
 channel rate is 24.7 counts/channel and the largest per-channel lambda shift
-is 0.83 counts — an order of magnitude larger absolute perturbation on a
+is 0.83 counts, an order of magnitude larger perturbation on a
 higher-rate channel, which is enough to occasionally flip a threshold (68
 channels do). So pair 4's identical clean/gain data, and hence its
 bit-identical NS run and `d_paired = 0.0000` exactly, is a genuine
-low-count degeneracy of the common-random-number draw, not a script bug —
-consistent with `PT2_RESULT.md`'s existing note on this pair. No further
+low-count degeneracy of the common-random-number draw, and not a script bug.
+It is consistent with `PT2_RESULT.md`'s note on this pair. No further
 explanation is needed since the vectors are provably identical, not merely
 NS-degenerate on non-identical inputs.
 
@@ -106,11 +105,10 @@ results/points.hdf5                     clean=d64de9ac0f9fe6af2ea1eaa33dca59f2  
 
 Every store file that exists in both directories is byte-identical. One
 asymmetry: `pair4_clean/debug.log` exists (1.35 MB) but `pair4_gain/debug.log`
-does not — this is an UltraNest logging artifact (verbose log written only
-once per process in some code paths), not a data or results file, and does
-not change the verdict: given identical input data and identical
-`seed=i` NS seed, UltraNest reproducing byte-identical output is expected,
-not surprising.
+does not. That is an UltraNest logging artifact (verbose log written only
+once per process in some code paths), not a data or results file, and it
+changes nothing: given identical input data and an identical `seed=i` NS
+seed, UltraNest reproducing byte-identical output is what you would expect.
 
 ## Check B: the five reused pairs (0, 6, 8, 9, 10)
 
@@ -121,19 +119,19 @@ Searched `outputs/ns_bench/higson/runs/gain_pair{0,6,8,9,10}_{clean,gain}/`
 vector.
 
 - `results/points.hdf5` per run holds one dataset, `points`, shape
-  `(n_samples, 13)` — UltraNest's internal live/dead-point array in
+  `(n_samples, 13)`, UltraNest's internal live/dead-point array in
   parameter (u-space/transformed) coordinates plus bookkeeping columns, **not**
   the input count data; root attrs hold only `{"ncalls": ...}`.
 - `info/results.json` and `DONE.json` hold posterior summaries, `logz`,
-  `ncall`, `niter`, and (in `DONE.json`) a scalar `"counts": 1403` — the
+  `ncall`, `niter`, and (in `DONE.json`) a scalar `"counts": 1403`, the
   *total*, never a per-channel array.
 - `extra/` and `plots/` are empty for these runs.
 - `outputs/ns_bench/higson/logs/gain_pair0_clean.log` logs
-  `reconstructed spectrum counts_sum=1403` — again the total only.
+  `reconstructed spectrum counts_sum=1403`, again the total only.
 - `outputs/ns_bench/paired_gain_check.jsonl` (the July run this script's
   docstring says is not reproducible with the current draw) has keys `i,
   counts_clean, counts_gain, logz_clean, logzerr_clean, logz_gain,
-  logzerr_gain, d_paired, wall_s` — no per-channel field, and irrelevant
+  logzerr_gain, d_paired, wall_s`, so no per-channel field, and irrelevant
   anyway since it predates the current draw code.
 - No `.npz` file exists anywhere under `outputs/ns_bench/` and no file
   matching `*data*` exists under `outputs/ns_bench/higson/`.
@@ -156,54 +154,18 @@ disk: the paper's "reproduces exactly" can be supported for total counts only
 supported at per-channel resolution because no per-channel data vector was
 ever persisted for the five higson-reused runs.
 
-## Check C: git status (read-only)
+## Summary
 
-**Commands**
-
-```
-git ls-files --error-unmatch scripts/paired_ns_gain_check.py scripts/paired_higson_analyze.py scripts/analyze_count_regression.py scripts/import_higson_pairs.py
-git status --short -- scripts/paired_ns_gain_check.py scripts/paired_higson_analyze.py scripts/analyze_count_regression.py scripts/import_higson_pairs.py
-```
-
-**Verbatim output**
-
-```
-scripts/paired_ns_gain_check.py
-error: pathspec 'scripts/paired_higson_analyze.py' did not match any file(s) known to git
-Did you forget to 'git add'?
-scripts/analyze_count_regression.py
-error: pathspec 'scripts/import_higson_pairs.py' did not match any file(s) known to git
-Did you forget to 'git add'?
-
- M scripts/paired_ns_gain_check.py
-?? scripts/import_higson_pairs.py
-?? scripts/paired_higson_analyze.py
-```
-
-| file | tracked? | working-tree state |
-|---|---|---|
-| `scripts/paired_ns_gain_check.py` | tracked | **modified** (unstaged) vs HEAD |
-| `scripts/paired_higson_analyze.py` | **untracked** | new file, not in git |
-| `scripts/analyze_count_regression.py` | tracked | clean, no diff vs HEAD |
-| `scripts/import_higson_pairs.py` | **untracked** | new file, not in git |
-
-## Verdict (three lines)
-
-- **A:** Pair 4's clean and gain draws are bit-identical — yes, identical,
-  because at 159 total counts/102 channels the 3% gain shift moves the model
-  mean by at most 0.085 counts/channel (peak rate 2.13), too small to flip any
-  Poisson threshold under the shared `default_rng(1000+i)` seed; pair 0
-  (peak rate 24.7, max lambda shift 0.83) shows the same draw path does
-  differ 68/102 channels when counts are high enough, and the two UltraNest
-  stores for pair 4 are md5-identical on every shared file, consistent with
-  identical inputs and identical `seed=i`.
+- **A:** Pair 4's clean and gain draws are bit-identical. At 159 total counts
+  over 102 channels the 3% gain shift moves the model mean by at most 0.085
+  counts/channel (peak rate 2.13), too small to flip any Poisson threshold under
+  the shared `default_rng(1000+i)` seed. Pair 0 (peak rate 24.7, max lambda shift
+  0.83) shows the same draw path does differ on 68 of 102 channels when counts
+  are high enough, and the two UltraNest stores for pair 4 are md5-identical on
+  every shared file, consistent with identical inputs and identical `seed=i`.
 - **B:** Per-channel identity for the five reused pairs (0, 6, 8, 9, 10) is
-  **not checkable** from anything on disk — `points.hdf5` stores NS
-  parameter-space samples not input data, `DONE.json`/`results.json`/logs
-  store only the total `counts`, and no `.npz` or data-array sidecar exists
-  anywhere under `outputs/ns_bench/`; only total counts were matched (all 10
-  totals reproduce exactly: 1403/1416, 526/521, 90/90, 2128/2187, 3659/3700).
-- **C:** `paired_ns_gain_check.py` and `analyze_count_regression.py` are
-  tracked (the former modified, unstaged; the latter clean);
-  `paired_higson_analyze.py` and `import_higson_pairs.py` are both untracked
-  (new, not in git).
+  **not checkable** from anything on disk. `points.hdf5` stores NS
+  parameter-space samples and not input data, `DONE.json`, `results.json` and
+  the logs store only the total `counts`, and no `.npz` or data-array sidecar
+  exists anywhere under `outputs/ns_bench/`. Only total counts were matched, and
+  all 10 reproduce exactly: 1403/1416, 526/521, 90/90, 2128/2187, 3659/3700.

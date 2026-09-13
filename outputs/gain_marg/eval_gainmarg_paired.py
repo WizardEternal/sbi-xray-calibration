@@ -156,7 +156,7 @@ def make_paired_population(n_test, theta_seed, poisson_seed_base):
             x[g][i] = rng_p.poisson(np.clip(lam[g][i], 0.0, None))
 
     g_shift = GAIN_CASES[1][1]  # bugfix 2026-09-08: was hardcoded x[1.03]/lam[1.03],
-    # which KeyErrors for any --gain != 1.03 (never exercised before this session's
+    # which KeyErrors for any --gain != 1.03 (never exercised before the
     # sub-percent probe; GAIN_CASES[0] is always ("clean", 1.00) so that key is fine)
     return (theta,
             x[1.00].astype(np.float32), x[g_shift].astype(np.float32),

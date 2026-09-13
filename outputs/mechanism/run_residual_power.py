@@ -1,8 +1,7 @@
 r"""E6b: residual Fisher power R = (1-I) * ||b||^2, extending the E6
 invisibility-index mechanism computation.
 
-Motivation (see paper-sbi-xray-article/deliberation/E6_mechanism_report.md,
-"E6b: residual power" section): I = ||P_A b||^2 / ||b||^2 is a *fraction* --
+Motivation: I = ||P_A b||^2 / ||b||^2 is a *fraction* --
 level-invariant by construction (a uniform rescaling of b leaves the ratio of
 squared norms unchanged). For B2/B3, I ~ 0.99-0.9999 makes them look "more
 invisible than B4" (I ~ 0.976) by the fraction alone, but B2/B3 are in fact

@@ -1,5 +1,6 @@
-"""ADVERSARY: the 'single NPE draw' caveat. BOTH computations used exactly ONE flow
-draw seed (primary torch seed 10; re-derivation torch seed 8675309). If the flow
+"""Seed-variance check on the 'single NPE draw' caveat. Both computations used
+exactly one flow draw seed (primary torch seed 10; the second torch seed
+8675309). If the flow
 draw carries appreciable seed variance, neither number has a quoted uncertainty
 that covers it, and 'stable across sampler settings' is measuring only the NS side
 (the NPE side is a shared constant in the primary, since torch.manual_seed(10) is
@@ -16,7 +17,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-ROOT = pathlib.Path(__file__).resolve().parents[4]  # repo root (was a hardcoded absolute path)
+ROOT = pathlib.Path(__file__).resolve().parents[4]  # repo root
 GM = ROOT/"outputs"/"gain_marg"; NS24 = GM/"ns_smallset_v2"; NS48 = GM/"ns_smallset_v2_ns48"
 sys.path.insert(0, str(ROOT/"src")); sys.path.insert(0, str(GM)); sys.path.insert(0, str(ROOT))
 from sbixcal import train_npe as tn

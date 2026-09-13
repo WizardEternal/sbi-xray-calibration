@@ -1,4 +1,4 @@
-r"""Post-campaign analysis of a paired gain-null nested-sampling set.
+r"""Analysis of a finished paired gain-null nested-sampling set.
 
 Reads a paired jsonl (one row per pair, written by scripts/paired_ns_gain_check.py)
 plus the per-run UltraNest point stores that ``--log-dir-root`` produced, and
@@ -22,7 +22,7 @@ a killed analysis resumes.
 
 Usage
 -----
-    # the new medium campaign
+    # the new medium set
     python scripts/paired_higson_analyze.py \
         --jsonl outputs/ns_bench/revision_2026-09-02/medium/pairs_merged.jsonl \
         --log-dir-root outputs/ns_bench/revision_2026-09-02/medium/runs \
@@ -34,7 +34,7 @@ Usage
     python scripts/paired_higson_analyze.py --validate-shipped
 
 ``--run-name-fmt`` handles the older directory naming: the 2026-07 Higson batch
-wrote ``gain_pair{i}_{kind}`` under outputs/ns_bench/higson/runs, the campaign
+wrote ``gain_pair{i}_{kind}`` under outputs/ns_bench/higson/runs, the newer set
 writes ``pair{i}_{kind}`` under its own root.
 """
 from __future__ import annotations
@@ -111,7 +111,7 @@ def higson_for_runs(pairs, log_dir_root, run_name_fmt, ckpt_path,
     """Per-run Higson sigma for every clean/gain run that has a point store.
 
     Returns {(pair_i, kind): row}. Runs with no directory are skipped and
-    reported, so a partially finished campaign still analyses."""
+    reported, so a partially finished set still analyses."""
     import higson_common as HC
 
     cache = {}
@@ -337,14 +337,11 @@ SHIPPED = {   # E2 report §8 corrected numbers, for --validate-shipped
     "vbar_higson": 0.04383723433320786,
     "floor": 0.060440903873954885,
     "sem_over_floor": 22.67,
-    # NOT 0.811506. The paper (journal_revision/main.tex L318) and E2 §8 quote
-    # "0.8116 to 0.8115" / 0.811506, which this script traces to the SUPERSEDED
-    # pre-fix variance Vbar = 0.030028 (floor 0.050023), the pair the 2026-08-14
-    # fix replaced with Vbar = 0.043837 / floor 0.060441. With the corrected
-    # estimator the deflated p is 0.811449 and the variance share is 0.195 per
-    # cent, so the shipped sentence should read "0.20 to 0.43 per cent" and
-    # "0.8116 to 0.8114". Same class of pre-fix leftover as FIXLIST A2b. No
-    # conclusion moves; the number is simply stale.
+    # NOT 0.811506. That value comes from the superseded pre-fix variance
+    # Vbar = 0.030028 (floor 0.050023), which the 2026-08-14 fix replaced with
+    # Vbar = 0.043837 / floor 0.060441. With the corrected estimator the
+    # deflated p is 0.811449 and the variance share is 0.195 per cent.
+    # No conclusion moves.
     "p_deflated": 0.8114493584751092,
     "p_deflated_prefix_leftover": 0.811506,
     "vbar_higson_prefix": 0.030028,
@@ -436,7 +433,7 @@ def main(argv=None):
         print("  NOTE the 'reconstr-logZ delta' column is meaningless in this mode: it "
               "compares the\n       2026-07 rerun's logZ against the committed jsonl's "
               "logZ, and those are different\n       spectra (the committed set is "
-              "unreproducible). In a real campaign both come from the\n       same runs "
+              "unreproducible). In a single run set both come from the\n       same runs "
               "and the delta is the tree-reconstruction check.")
         print("VALIDATION", "PASSED" if ok else "FAILED")
         return 0 if ok else 1

@@ -1,7 +1,7 @@
 r"""Turn the 2026-07 Higson gain-pair runs into paired-jsonl rows.
 
 The 2026-07-23 Higson batch (scripts/higson_batch.py) ran pairs 8, 6, 0, 9, 10 of
-the CURRENT scripts/paired_ns_gain_check.py draw with exactly the campaign's NS
+the CURRENT scripts/paired_ns_gain_check.py draw with exactly the new set's NS
 settings (min_num_live_points=400, dlogz=0.5, max_ncalls=400000, np.random.seed =
 pair index) and an isolated per-run log_dir. Their total counts reproduce the
 current draw exactly (1403/1416, 526/521, 90/90, 2128/2187, 3659/3700), so they
@@ -9,7 +9,7 @@ ARE five of the new twelve pairs and do not need re-running.
 
 This writes them as paired rows (same schema as paired_ns_gain_check.py, with
 log_dir_clean/log_dir_gain pointing at the existing run directories) so
-scripts/paired_higson_analyze.py can merge them with the campaign's own jsonls.
+scripts/paired_higson_analyze.py can merge them with the new set's own jsonls.
 
     python scripts/import_higson_pairs.py \
         --out outputs/ns_bench/revision_2026-09-02/medium/pairs_reused.jsonl

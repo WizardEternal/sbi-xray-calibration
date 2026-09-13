@@ -4,8 +4,7 @@ gain-bias JSONs written by ``eval_gainmarg_paired.py`` /
 ``outputs/gain_marg/subpercent_bias_2026-09-08/``.
 
 Field paths used (pinned by reading the shipped 3% JSONs and the committed
-regression test, ``BASE/run_regression_test.sh`` — see
-``journal_revision_apj/REVIEW2_F17_NUMBERS.md`` for the full derivation):
+regression test, ``BASE/run_regression_test.sh``):
 
     paired.gamma_bias_delta.{fixed,gain_marg}.{mean,sd,se,n}
         -- the PAIRED (shifted-minus-clean, same CRN-matched theta) delta in
@@ -23,8 +22,8 @@ regression test, ``BASE/run_regression_test.sh`` — see
         scatter used as "sigma" in N* = (sigma/b)^2 (paper: 0.37 medium,
         0.34 bright -- bright is unambiguous, "the bright one on the capped
         production flow" = fixed; medium is ~equally close to fixed (0.3704)
-        and gain_marg (0.3670) -- this script headlines fixed for both
-        levels for consistency; see the Choices section of the report).
+        and gain_marg (0.3670) -- this script uses fixed for both
+        levels for consistency).
 
 Only json / numpy / argparse / glob / pathlib / math / sys (stdlib + numpy).
 No torch, no sbixcal import -- this script must run standalone off the
@@ -66,7 +65,7 @@ IMPLIED_DEFAULT_SEED = 20260611
 IMPLIED_SEED_THETA = 20320611
 IMPLIED_SEED_POISSON_BASE = 20330611
 
-# Extrapolated bias points, taken verbatim from the task brief / paper
+# Extrapolated bias points, taken verbatim from the paper
 # (Section F17 text, "grows linearly in g-1"): medium is given directly at
 # both 0.3% and 0.1%; bright is given only at 0.3% (0.1x the shipped 3%
 # mean). The 0.1% bright point is this script's own linear extension (1/30x
@@ -182,7 +181,7 @@ def pool_groups(ns: np.ndarray, means: np.ndarray, sds: np.ndarray) -> dict:
             SS_between = sum_k n_k * (mean_k - grand_mean)^2
             pooled_var = (SS_within + SS_between) / (N_total - 1)
 
-    (b) "approx" -- the task brief's stated equal-N formula: mean of the
+    (b) "approx" -- the equal-N formula: mean of the
         per-seed (ddof=1) variances, plus the (population, ddof=0) variance
         of the per-seed means about the pooled mean. This equals (a) up to
         an O(1/n) correction on the within-seed term (exactly (n-1)/n for
@@ -451,10 +450,10 @@ def main() -> None:
             )
 
         # ---- §4: N* lines ----
-        sigma_headline = level_report["amps"][pool_amp]["sigma_fixed"]
-        print(f"\n[{level}] sigma (headline, fixed-flow clean-arm bias_std @ pool-amp) = {sigma_headline:.6f}")
+        sigma_pool = level_report["amps"][pool_amp]["sigma_fixed"]
+        print(f"\n[{level}] sigma (fixed-flow clean-arm bias_std @ pool-amp) = {sigma_pool:.6f}")
 
-        md_lines.append(f"\n### N* lines, {level} (sigma = {sigma_headline:.6f}, fixed-flow clean-arm bias_std)\n")
+        md_lines.append(f"\n### N* lines, {level} (sigma = {sigma_pool:.6f}, fixed-flow clean-arm bias_std)\n")
         md_lines.append("| flow | b measured (0.3%) | SE | resolved (|b|/SE>=2)? | N* measured | b_ext (amp) | N* extrapolated | N_3sigma(amp) | 2sigma upper |b| | N* lower limit |")
         md_lines.append("|---|---|---|---|---|---|---|---|---|---|")
 
@@ -468,7 +467,7 @@ def main() -> None:
 
         for flow in FLOWS:
             pooled = level_report["pooled"][pool_amp][flow]
-            lines = nstar_lines(level, flow, sigma_headline, pooled, b_ext_map)
+            lines = nstar_lines(level, flow, sigma_pool, pooled, b_ext_map)
             level_report["nstar"][flow] = lines
             resolved_str = (
                 f"N*={lines['nstar_measured']:.4g}" if lines["nstar_measured"] is not None

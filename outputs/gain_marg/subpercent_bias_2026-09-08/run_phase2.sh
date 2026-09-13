@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Phase 2 (seed-averaging follow-up): NOT launched by this campaign.
-# The supervisor launches this after the probe's measured scatter is known
+# Phase 2: seed-averaging follow-up.
+# Run after the probe's measured scatter is known
 # (probe = run_probe_medium.sh / run_probe_bright.sh, single seed, 5 amplitudes).
 #
 # Usage: run_phase2.sh <level: medium|bright> <amp> <seed_start> <seed_end>

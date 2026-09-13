@@ -1,7 +1,7 @@
 #!/bin/bash
 # Sequential, crash-resistant driver for the 3 per-source paired evals.
-# One eval at a time (laptop RAM tight). Each writes a per-run DONE marker
-# and EXITCODE so a killed orchestrator agent can resume-poll instead of
+# One eval at a time (memory-bound). Each writes a per-run DONE marker
+# and EXITCODE so a killed driver can resume-poll instead of
 # re-launching. Never overwrites an existing run (checked before each launch).
 set -u
 cd "$(git rev-parse --show-toplevel)"

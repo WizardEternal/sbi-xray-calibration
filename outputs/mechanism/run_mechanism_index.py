@@ -1,6 +1,6 @@
 r"""E6: Fisher-metric invisibility index (absorbable-fraction mechanism figure).
 
-Explanatory MECHANISM figure for the successor paper (not a headline result).
+Explanatory mechanism figure for the successor paper. Not a quoted result.
 Answers: for a given misspecification family, how much of the data perturbation
 it induces can be reabsorbed by shifting the well-specified model's own 5
 parameters, in the local Poisson-Fisher metric? This is the standard Fisher-
@@ -64,7 +64,7 @@ from jaxspec.data.util import fakeit_for_multiple_parameters
 # fixed configuration (matches the note's production setup and its committed
 # misspecification grids -- see configs/sim_modelA_prod.yaml and
 # configs/detect.yaml; strengths below match the E1 IS-ESS committed-grid
-# comparison point, deliberation/E1_is_ess_report.md)
+# comparison point)
 # ---------------------------------------------------------------------------
 RESPONSE = "NGC7793_ULX4_PN"                 # bundled real XMM EPIC-pn (Quintin+2021)
 BASE_MODEL = "tbabs_powerlaw_bb"             # Model A production, 5 params
@@ -77,7 +77,7 @@ LEVELS = {
     "bright": 3534.0,  # seconds; sim_modelA_prod.yaml level 'bright' (~9982 counts median)
 }
 
-# committed single-point strengths (strongest / headline grid point for each
+# committed single-point strengths (strongest grid point for each
 # family, matching configs/detect.yaml production grids and the E1 report's
 # single-point comparison: B1 norm=3e-4, B4 gain=3%).
 FAMILY_STRENGTH = {

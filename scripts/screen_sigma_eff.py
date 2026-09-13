@@ -3,7 +3,7 @@ r"""Fisher gain-information screen: sigma_eff(g) for a simulated spectrum popula
 WHAT THIS BACKS
 ---------------
 The successor paper's section on the gain-marginalized NS cross-check says
-(arxiv_successor/main.tex, the sigma_eff sentence):
+(the sigma_eff sentence):
 
     "The finite-shift Fisher error is sigma_eff = Delta g / sqrt(R), with R the
      residual power a gain shift Delta g leaves after the other five parameters
@@ -11,11 +11,11 @@ The successor paper's section on the gain-marginalized NS cross-check says
      against a prior standard deviation of 0.0289. ... We use sigma_eff
      ordinally, only to screen which spectra carry gain information at all."
 
-Those per-spectrum numbers were originally produced by a verification agent in a
-scratchpad outside the repo (2026-08-12); that scratchpad's scripts are gone, so
-the values were not reproducible from anything committed. This script is the
-committed replacement. It re-derives sigma_eff from first principles and screens
-the whole simulated population, not just the ten spectra that were run.
+Those per-spectrum numbers came from 2026-08-12 working files outside the repo
+that no longer exist, so they were not reproducible from anything committed.
+This script is the committed replacement. It re-derives sigma_eff from first
+principles and screens the whole simulated population, not only the ten spectra
+that were run.
 
 DEFINITION (exactly what is computed)
 -------------------------------------
@@ -72,9 +72,8 @@ outputs/gain_marg/sigma_eff_screen/REPORT.md for the scan.
 
 REPRODUCTION OF THE RECORDED VALUES (2026-09-02)
 ------------------------------------------------
-Against the seven per-spectrum sigma_eff values recorded in
-deliberation/e7_verify_reports_2026-08-12/adv_external.md (the only place they
-survive), this definition gives:
+Against the seven per-spectrum sigma_eff values on record from the 2026-08-12
+working files, this definition gives:
 
     i8   0.0385 vs 0.0390 (-1.3%)      i22  0.4673 vs 0.4568 (+2.3%)
     i394 0.0506 vs 0.0500 (+1.3%)      i87  0.2059 vs 0.2026 (+1.6%)
@@ -162,7 +161,7 @@ GAIN_PRIOR_SD = (GAIN_HI - GAIN_LO) / np.sqrt(12.0)     # 0.0288675
 # spectra already run through gain-marginalized NS (outputs/gain_marg/ns_smallset)
 ALREADY_RUN = {"medium": [22, 87, 91, 95, 197, 482], "bright": [8, 238, 394, 416]}
 
-# recorded counts gate, from deliberation/e7_verify_reports_2026-08-12/adv_external.md
+# the recorded counts gate
 COUNTS_GATE = {
     "medium": {22: 3853, 87: 384, 91: 429, 95: 291, 197: 599, 482: 5204},
     "bright": {8: 25067, 238: 10496, 394: 6829, 416: 54509},

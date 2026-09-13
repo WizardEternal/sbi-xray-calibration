@@ -4,8 +4,8 @@ Only the repo's forward fold (fold_theta), the response machinery and the flow
 loader (load_posterior) are reused.
 
 It differs from eval_gainmarg_paired_bright.py in two ways that matter when the
-numbers are compared: the point estimate is the posterior MEDIAN rather than the
-mean, and N_SAMP is 3000 rather than 1000. The estimand is the same, the paired
+numbers are compared: the point estimate is the posterior MEDIAN, not the mean,
+and N_SAMP is 3000 instead of 1000. The estimand is the same, the paired
 (gain minus clean) Gamma offset over N_THETA=500 common-parameter pairs.
 
 One (level, flow) combination per process. Per-case checkpoint -> resumable.
